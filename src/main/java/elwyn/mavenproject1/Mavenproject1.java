@@ -10,41 +10,41 @@ public class Mavenproject1 {
     public static void main(String[] args) {
         JTabbedPane tabbedPane = new JTabbedPane();
         
-        JPanel panel1 = new JPanel();
-        tabbedPane.addTab("Home", panel1);
+        JPanel homePanel = new JPanel();
+        tabbedPane.addTab("Home", homePanel);
 
-        JPanel panel2 = new JPanel();
-        panel2.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        new UsersView(panel2);
-        tabbedPane.addTab("Roles", panel2);
+        JPanel rolesPanel = new JPanel();
+        rolesPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        tabbedPane.addTab("Roles", rolesPanel);
 
-        JPanel panel3 = new JPanel();
-        panel3.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        tabbedPane.addTab("Users", panel3);
+        JPanel customersPanel = new JPanel();
+        customersPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        tabbedPane.addTab("Customers", customersPanel);
 
-        JPanel panel4 = new JPanel();
-        panel4.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        tabbedPane.addTab("Customers", panel4);
+        JPanel contactsPanel = new JPanel();
+        contactsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        tabbedPane.addTab("Contacts", contactsPanel);
 
-        JPanel panel5 = new JPanel();
-        panel5.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        tabbedPane.addTab("Contacts", panel5);
+        JPanel casesPanel = new JPanel();
+        casesPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        tabbedPane.addTab("Cases", casesPanel);
 
-        JPanel panel6 = new JPanel();
-        panel6.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        tabbedPane.addTab("Cases", panel6);
+        JPanel subscriptionsPanel = new JPanel();
+        subscriptionsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        tabbedPane.addTab("Subscriptions", subscriptionsPanel);
 
-        JPanel panel7 = new JPanel();
-        panel7.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        tabbedPane.addTab("Subscriptions", panel7);
+        JPanel performancePanel = new JPanel();
+        performancePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        tabbedPane.addTab("Performance", performancePanel);
 
-        JPanel panel8 = new JPanel();
-        panel8.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        tabbedPane.addTab("Performance", panel8);
+        JPanel userManagementPanel = new JPanel();
+        userManagementPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        new UserManagementView(userManagementPanel);
+        tabbedPane.addTab("User Management", userManagementPanel);
 
-        JPanel panel9 = new JPanel();
-        panel9.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        tabbedPane.addTab("Login", panel9);
+        JPanel loginPanel = new JPanel();
+        loginPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        tabbedPane.addTab("Login", loginPanel);
 
         JFrame frame = new JFrame();
         frame.add(tabbedPane);
