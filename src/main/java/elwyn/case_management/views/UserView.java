@@ -1,4 +1,4 @@
-package elwyn.mavenproject1;
+package elwyn.case_management.views;
 
 import java.awt.Color;
 import java.awt.event.*;
@@ -9,8 +9,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -20,9 +18,9 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
-import elwyn.mavenproject1.User.Role;
+import elwyn.case_management.models.User;
 
-public class UserManagementView {
+public class UserView {
   final static String viewUsersTabName = "View Users";
   final static String createUserTabName = "Create User";
   final static String editUserTabName = "Edit User";
@@ -36,12 +34,13 @@ public class UserManagementView {
   JTextField passwordTextField;
   JList<String> roleList;
     
-  public UserManagementView(JPanel displayPanel) {
+  public UserView(JPanel displayPanel) {
     try {
       Class.forName("org.sqlite.JDBC");
       conn = DriverManager.getConnection("jdbc:sqlite:assets/caseManagement.db");
     } catch (Exception ex) {
-      Logger.getLogger(UserManagementView.class.getName()).log(Level.SEVERE, null, ex);
+      // eTODO: logging
+      // Logger.getLogger(UserManagementView.class.getName()).log(Level.SEVERE, null, ex);
     }
     this.displayPanel = displayPanel;
     initComponents();
@@ -124,17 +123,17 @@ public class UserManagementView {
     }
     return true;
   }
-  private Role parseSelectedRole(String rawRole) {
+  private User.Role parseSelectedRole(String rawRole) {
     if (rawRole == null)
       return null;
     if (rawRole.equals("AGENT")) {
-      return Role.AGENT;
+      return User.Role.AGENT;
     }
     if (rawRole.equals("LEADER")) {
-      return Role.LEADER;
+      return User.Role.LEADER;
     }
     if (rawRole.equals("ADMIN")) {
-      return Role.ADMIN;
+      return User.Role.ADMIN;
     }
     return null;
   }

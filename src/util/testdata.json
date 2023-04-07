@@ -12,5 +12,41 @@
       "name": "name2",
       "role": "LEADER"
     }
+  ],
+  "customers": [
+    {
+      "firstName": "first1",
+      "lastName": "last1",
+      "sirname": "sirname1",
+      "gender": "male1",
+      "dateOfBirth": "19-09-1991",
+      "otherNotes": "Other Notes 1",
+      "email": "email1",
+      "phoneNumber": "phoneNumber1",
+      "addressLine1": "addressLine1 1",
+      "addressLine2": "addressLine2 1",
+      "addressLine3": "addressLine3 1",
+      "addressLine4": "addressLine4 1",
+      "postcode": "postcode1",
+      "country": "country1",
+      "phoneNumber": "07460773211"
+    },
+    {
+      "firstName": "first2",
+      "lastName": "last2",
+      "sirname": "sirname2",
+      "gender": "female2",
+      "dateOfBirth": "19-09-1992",
+      "otherNotes": "Other Notes 2",
+      "email": "email2",
+      "phoneNumber": "phoneNumber2",
+      "addressLine1": "addressLine1 2",
+      "addressLine2": "addressLine2 2",
+      "addressLine3": "addressLine3 2",
+      "addressLine4": "addressLine4 2",
+      "postcode": "postcode2",
+      "country": "country2",
+      "phoneNumber": "07460773212"
+    }
   ]
 }

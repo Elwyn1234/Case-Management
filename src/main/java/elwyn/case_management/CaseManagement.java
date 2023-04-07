@@ -1,11 +1,15 @@
-package elwyn.mavenproject1;
+package elwyn.case_management;
 
 import java.awt.FlowLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-public class Mavenproject1 {
+import elwyn.case_management.views.CustomerView;
+import elwyn.case_management.views.UserView;
+import elwyn.case_management.controllers.CustomerController;
+
+public class CaseManagement {
 
     public static void main(String[] args) {
         JTabbedPane tabbedPane = new JTabbedPane();
@@ -17,9 +21,7 @@ public class Mavenproject1 {
         rolesPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
         tabbedPane.addTab("Roles", rolesPanel);
 
-        JPanel customersPanel = new JPanel();
-        customersPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        tabbedPane.addTab("Customers", customersPanel);
+        tabbedPane.addTab("Customers", new CustomerView(new CustomerController()));
 
         JPanel contactsPanel = new JPanel();
         contactsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
@@ -39,7 +41,7 @@ public class Mavenproject1 {
 
         JPanel userManagementPanel = new JPanel();
         userManagementPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        new UserManagementView(userManagementPanel);
+        new UserView(userManagementPanel);
         tabbedPane.addTab("User Management", userManagementPanel);
 
         JPanel loginPanel = new JPanel();
