@@ -5,9 +5,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-import elwyn.case_management.views.CustomerView;
 import elwyn.case_management.views.UserView;
+import elwyn.case_management.views.CustomerView;
+import elwyn.case_management.views.CaseView;
 import elwyn.case_management.controllers.CustomerController;
+import elwyn.case_management.controllers.CaseController;
 
 public class CaseManagement {
 
@@ -17,36 +19,28 @@ public class CaseManagement {
         JPanel homePanel = new JPanel();
         tabbedPane.addTab("Home", homePanel);
 
-        JPanel rolesPanel = new JPanel();
-        rolesPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        tabbedPane.addTab("Roles", rolesPanel);
-
         tabbedPane.addTab("Customers", new CustomerView(new CustomerController()));
 
-        JPanel contactsPanel = new JPanel();
-        contactsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        tabbedPane.addTab("Contacts", contactsPanel);
+        // tabbedPane.addTab("Contacts", null);
 
-        JPanel casesPanel = new JPanel();
-        casesPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        tabbedPane.addTab("Cases", casesPanel);
+        tabbedPane.addTab("Cases", new CaseView(new CaseController(new CustomerController())));
 
-        JPanel subscriptionsPanel = new JPanel();
-        subscriptionsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        tabbedPane.addTab("Subscriptions", subscriptionsPanel);
+        // JPanel subscriptionsPanel = new JPanel();
+        // subscriptionsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        // tabbedPane.addTab("Subscriptions", subscriptionsPanel);
 
-        JPanel performancePanel = new JPanel();
-        performancePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        tabbedPane.addTab("Performance", performancePanel);
+        // JPanel performancePanel = new JPanel();
+        // performancePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        // tabbedPane.addTab("Performance", performancePanel);
 
         JPanel userManagementPanel = new JPanel();
         userManagementPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
         new UserView(userManagementPanel);
         tabbedPane.addTab("User Management", userManagementPanel);
 
-        JPanel loginPanel = new JPanel();
-        loginPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        tabbedPane.addTab("Login", loginPanel);
+        // JPanel loginPanel = new JPanel();
+        // loginPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        // tabbedPane.addTab("Login", loginPanel);
 
         JFrame frame = new JFrame();
         frame.add(tabbedPane);
@@ -55,3 +49,9 @@ public class CaseManagement {
         frame.setVisible(true);
     }
 }
+
+//  eTODO:
+//    fix enum CRUD actions
+//    display customer id in the customer listing
+//    display a list of contacts under the cases listing
+//    add a vip boolean to customer and add this field to the cases and contacts views as well

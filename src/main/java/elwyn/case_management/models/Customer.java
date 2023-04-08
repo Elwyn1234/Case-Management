@@ -1,7 +1,5 @@
 package elwyn.case_management.models;
 
-import elwyn.case_management.models.*;
-
 public class Customer extends Record {
   public String firstName;
   public String secondName;

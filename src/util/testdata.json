@@ -48,5 +48,23 @@
       "country": "country2",
       "phoneNumber": "07460773212"
     }
+  ],
+  "cases": [
+    {
+      "summary": "summary1",
+      "description": "description1",
+      "customer": "1",
+      "dateOpened": "19-09-1981",
+      "dateClosed": "19-09-1991",
+      "priority": "High"
+    },
+    {
+      "summary": "summary2",
+      "description": "description2",
+      "customer": "2",
+      "dateOpened": "19-09-1982",
+      "dateClosed": "19-09-1992",
+      "priority": "Urgent"
+    }
   ]
 }

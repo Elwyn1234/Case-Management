@@ -52,12 +52,9 @@ public abstract class RecordController <T extends Record> {
 
   //*********** Utilities ***********//
 
+  public abstract boolean isRecordValid(T record);
+
   private void createOrUpdateRecord(T record, boolean createMode) {
-    if (!isRecordValid(record))
-    {
-      // eTODO: user feedback
-      return;
-    }
     try {
       PreparedStatement pStatement = createMode ? buildInsertPreparedStatement(record) : buildUpdatePreparedStatement(record);
       pStatement.executeUpdate();
@@ -66,7 +63,6 @@ public abstract class RecordController <T extends Record> {
         e.printStackTrace();
     }
   }
-  protected abstract boolean isRecordValid(T record);
   protected abstract PreparedStatement buildUpdatePreparedStatement(T record) throws SQLException;
   protected abstract PreparedStatement buildInsertPreparedStatement(T record) throws SQLException;
 }

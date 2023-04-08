@@ -70,6 +70,21 @@ func createdb() {
   if (err != nil) { logError.Fatal(err.Error()) }
   log.Print("customers table created!")
 
+  _, err = pool.Exec(`CREATE TABLE cases (
+    summary VARCHAR(80) NOT NULL,
+    description TEXT,
+    customer INTEGER NOT NULL,
+    dateOpened CHAR(10) NOT NULL,
+    dateClosed CHAR(10),
+    PRIORITY VARCHAR(32) NOT NULL,
+    FOREIGN KEY (customer)
+      REFERENCES customers(rowid)
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
+  );`)
+  if (err != nil) { logError.Fatal(err.Error()) }
+  log.Print("customers table created!")
+
   // _, err = pool.Exec(`CREATE TABLE wishedModelCars (
   //   modelCarId VARCHAR(64) NOT NULL,
   //   username VARCHAR(32) NOT NULL,
@@ -129,8 +144,22 @@ func addTestData() {
     if (err != nil) { logError.Fatal(err.Error()) }
   }
   log.Print("Test data created for the customers tables!")
+
+  for caseIndex := 0; caseIndex < len(caseManagement.Cases); caseIndex++ {
+    caseRecord := caseManagement.Cases[caseIndex]
+    _, err = pool.Exec(`INSERT INTO cases (summary, description, customer, dateOpened, dateClosed, priority) VALUES (?, ?, ?, ?, ?, ?);`, caseRecord.Summary, caseRecord.Description, caseRecord.Customer, caseRecord.DateOpened, caseRecord.DateClosed, caseRecord.Priority)
+    if (err != nil) { logError.Fatal(err.Error()) }
+  }
+  log.Print("Test data created for the cases tables!")
 }
 
+type User struct {
+  Username string
+  Password string
+  Name string
+  Role string
+  // OwnedModelCars []OwnedModelCar
+}
 type Customer struct {
   FirstName string
   SecondName string
@@ -147,16 +176,18 @@ type Customer struct {
   postcode string;
   country string;
 }
-type User struct {
-  Username string
-  Password string
-  Name string
-  Role string
-  // OwnedModelCars []OwnedModelCar
+type Case struct {
+  Summary string
+  Description string
+  Customer string
+  DateOpened string
+  DateClosed string
+  Priority string
 }
 type CaseManagement struct {
   Users []User
   Customers []Customer
+  Cases []Case
 }
 
 func (errorWriter ErrorWriter) Write(p []byte) (n int, err error) { // TODO: fix common code across modules

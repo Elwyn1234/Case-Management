@@ -1,7 +1,7 @@
 package elwyn.case_management.views;
 
 import javax.swing.JList;
-import javax.swing.JTextField;
+import javax.swing.text.JTextComponent;
 import javax.swing.JComponent;
 
 import elwyn.case_management.controllers.RecordController;
@@ -9,20 +9,20 @@ import elwyn.case_management.models.Customer;
 import elwyn.case_management.models.Gender;
 
 public class CustomerView extends RecordView<Customer> {
-  JTextField firstNameLabel;
-  JTextField secondNameLabel;
-  JTextField sirnameLabel;
+  JTextComponent firstNameLabel;
+  JTextComponent secondNameLabel;
+  JTextComponent sirnameLabel;
   JList<String> genderList;
-  JTextField dateOfBirthLabel;
-  JTextField otherNotesLabel;
-  JTextField emailLabel;
-  JTextField phoneNumberLabel;
-  JTextField addressLine1Label;
-  JTextField addressLine2Label;
-  JTextField addressLine3Label;
-  JTextField addressLine4Label;
-  JTextField postcodeLabel;
-  JTextField countryLabel;
+  JTextComponent dateOfBirthLabel;
+  JTextComponent otherNotesLabel;
+  JTextComponent emailLabel;
+  JTextComponent phoneNumberLabel;
+  JTextComponent addressLine1Label;
+  JTextComponent addressLine2Label;
+  JTextComponent addressLine3Label;
+  JTextComponent addressLine4Label;
+  JTextComponent postcodeLabel;
+  JTextComponent countryLabel;
 
   protected String tabNameOfViewRecords() { return "View Customers"; }
   protected String tabNameOfCreateRecord() { return "Create Customer"; }
@@ -52,7 +52,7 @@ public class CustomerView extends RecordView<Customer> {
 
     String genderString = record.gender == null ? null : record.gender.toString();
     if (editable)
-      genderList = addSelectList(panel, "Gender", new String[] { "NON_BINARY", "MALE", "FEMALE", "OTHER" }, genderString);
+      genderList = addSelectList(panel, "Gender", new String[] { "Non-Binary", "Male", "Female", "Other" }, genderString);
     else
       addTextField(panel, "Gender", genderString, true, false);
   }

@@ -20,29 +20,51 @@ public class CustomerController extends RecordController<Customer> {
       ResultSet rs = pStatement.executeQuery();
             
       while (rs.next()) {
-        Customer customer = new Customer();
-        customer.id = rs.getLong("rowid");
-        customer.firstName = rs.getString("firstName");
-        customer.secondName = rs.getString("secondName");
-        customer.sirname = rs.getString("sirname");
-        customer.gender = Gender.parseSelectedGender(rs.getString("gender"));
-        customer.dateOfBirth = rs.getString("dateOfBirth");
-        customer.otherNotes = rs.getString("otherNotes");
-        customer.email = rs.getString("email");
-        customer.phoneNumber = rs.getString("phoneNumber");
-        customer.addressLine1 = rs.getString("addressLine1");
-        customer.addressLine2 = rs.getString("addressLine2");
-        customer.addressLine3 = rs.getString("addressLine3");
-        customer.addressLine4 = rs.getString("addressLine4");
-        customer.postcode = rs.getString("postcode");
-        customer.country = rs.getString("country");
-        customers.add(customer);
+        customers.add(readResultSet(rs));
       }
     } catch (Exception e) {
       System.out.println("Error: " + e.getMessage());
       e.printStackTrace();
     }
     return customers;
+  }
+
+  public Customer readRecord(long rowid) {
+    Customer customer = new Customer();
+    try {
+      String sql = "SELECT rowid, * FROM customers WHERE rowid=?";
+      PreparedStatement pStatement = conn.prepareStatement(sql);
+      pStatement.setLong(1, rowid);
+      ResultSet rs = pStatement.executeQuery();
+            
+      while (rs.next()) {
+        customer = readResultSet(rs);
+      }
+    } catch (Exception e) {
+      System.out.println("Error: " + e.getMessage());
+      e.printStackTrace();
+    }
+    return customer;
+  }
+
+  public Customer readResultSet(ResultSet rs) throws SQLException {
+    Customer customer = new Customer();
+    customer.id = rs.getLong("rowid");
+    customer.firstName = rs.getString("firstName");
+    customer.secondName = rs.getString("secondName");
+    customer.sirname = rs.getString("sirname");
+    customer.gender = Gender.parseSelectedGender(rs.getString("gender"));
+    customer.dateOfBirth = rs.getString("dateOfBirth");
+    customer.otherNotes = rs.getString("otherNotes");
+    customer.email = rs.getString("email");
+    customer.phoneNumber = rs.getString("phoneNumber");
+    customer.addressLine1 = rs.getString("addressLine1");
+    customer.addressLine2 = rs.getString("addressLine2");
+    customer.addressLine3 = rs.getString("addressLine3");
+    customer.addressLine4 = rs.getString("addressLine4");
+    customer.postcode = rs.getString("postcode");
+    customer.country = rs.getString("country");
+    return customer;
   }
 
   protected void recursiveDelete(long rowid) {}
@@ -82,7 +104,7 @@ public class CustomerController extends RecordController<Customer> {
     return pStatement;
   }
     
-  protected boolean isRecordValid(Customer record) {
+  public boolean isRecordValid(Customer record) {
     if (record.firstName.length() <= 0)
       return false;
     if (record.phoneNumber.length() <= 0)

@@ -10,7 +10,9 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.text.JTextComponent;
 import javax.swing.JComponent;
 
 import elwyn.case_management.models.Record;
@@ -33,42 +35,42 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
   //*********** Component Initialisation ***********//
 
   void initComponents() {
-    // panel.addComponentListener(new ComponentListener() {
-    //     @Override
-    //     public void componentShown(ComponentEvent e) {
-    //       createRecordsListPanel(panel);
-    //     }
-    //     @Override
-    //     public void componentResized(ComponentEvent e) {}
-    //     @Override
-    //     public void componentMoved(ComponentEvent e) {}
-    //     @Override
-    //     public void componentHidden(ComponentEvent e) {}
-    // });
-
-    setViewportView(createRecordsListPanel());
+    setViewportView(displayRecordListing());
   }
   protected abstract void addRecordFields(JComponent panel, T record, boolean editable);
   
-  protected JComponent createRecordsListPanel() {
+  protected JComponent displayRecordListing() {
     JComponent panel = new JPanel();
-    panel.setSize(1028, 330);
+    panel.setSize(1028, 630);
     panel.setBorder(BorderFactory.createLineBorder(Color.black));
     panel.setLayout(new FlowLayout(FlowLayout.CENTER, 40, 10));
     // panel.removeAll();
+    addComponentListener(new ComponentListener() { // This must be done to handle databases changes that could happen in other tabs
+        @Override
+        public void componentShown(ComponentEvent e) {
+          setViewportView(displayRecordListing());
+        }
+        @Override
+        public void componentResized(ComponentEvent e) {}
+        @Override
+        public void componentMoved(ComponentEvent e) {}
+        @Override
+        public void componentHidden(ComponentEvent e) {}
+    });
+
 
     JButton createButton = new JButton("Create");
     createButton.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent event) {
-          setViewportView(createRecordManagementPanel(null));
+          setViewportView(displayRecordManagementPanel(null));
         }
     });
     panel.add(createButton);
 
     for (T record: controller.readRecords()) {
       JPanel leftFields = new JPanel();
-      leftFields.setSize(300, 330);
+      leftFields.setSize(500, 630);
       leftFields.setLayout(new BoxLayout(leftFields, BoxLayout.Y_AXIS));
 
       JPanel rightFields = new JPanel();
@@ -81,7 +83,7 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
       editButton.addActionListener(new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent event) {
-            setViewportView(createRecordManagementPanel(record)); // eTODO: Rename to displayRecordManagementPanel
+            setViewportView(displayRecordManagementPanel(record)); // eTODO: Rename to displayRecordManagementPanel
           }
       });
       panel.add(editButton);
@@ -92,7 +94,7 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
           @Override
           public void actionPerformed(ActionEvent event) {
             controller.deleteRecord(recordId); // eTODO: This is going to cause jumping
-            setViewportView(createRecordsListPanel());
+            setViewportView(displayRecordListing());
           }
       });
       panel.add(deleteButton);
@@ -102,7 +104,7 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
     return panel;
   }
 
-  protected JComponent createRecordManagementPanel(T record) {
+  protected JComponent displayRecordManagementPanel(T record) {
     boolean createMode = record == null;
 
     JComponent panel = new JPanel();
@@ -114,7 +116,7 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
     backButton.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent event) {
-          setViewportView(createRecordsListPanel());
+          setViewportView(displayRecordListing());
         }
     });
     panel.add(backButton);
@@ -129,13 +131,18 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
         public void actionPerformed(ActionEvent event) {
           T record = getFormValues();
           record.id = recordId;
+          if (!controller.isRecordValid(record))
+          {
+            // eTODO: user feedback
+            return;
+          }
 
           if (createMode)
             controller.createRecord(record);
           else
             controller.updateRecord(record);
 
-          setViewportView(createRecordsListPanel());
+          setViewportView(displayRecordListing());
       }
     });
     panel.add(commitButton);
@@ -148,18 +155,27 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
 
   //*********** Utilities ***********//
 
-  protected static JTextField addTextField(JComponent panel, String labelText, String string, boolean hasTopMargin, boolean editable) {
+  private static JTextComponent addTextComponent(JComponent panel, String labelText, JTextComponent textComponent, boolean hasTopMargin, boolean editable) {
     JLabel label = new JLabel(labelText);
     if (hasTopMargin)
       label.setBorder(BorderFactory.createEmptyBorder(TOP_MARGIN, 0, 0, 0));
     panel.add(label);
-    JTextField textField = new JTextField(string);
-    if (editable)
-      panel.add(textField);
-    else
-      panel.add(new JLabel(string));
-    return textField;
+
+    textComponent.setEditable(editable);
+    panel.add(textComponent);
+    return textComponent;
   }
+
+  protected static JTextComponent addTextArea(JComponent panel, String labelText, String string, boolean hasTopMargin, boolean editable) {
+    JTextComponent textComponent = new JTextArea(string);
+    return addTextComponent(panel, labelText, textComponent, hasTopMargin, editable);
+  }
+
+  protected static JTextComponent addTextField(JComponent panel, String labelText, String string, boolean hasTopMargin, boolean editable) {
+    JTextComponent textComponent = new JTextField(string);
+    return addTextComponent(panel, labelText, textComponent, hasTopMargin, editable);
+  }
+
   protected static JList<String> addSelectList(JComponent panel, String labelText, String[] strings, String defaultSelection) {
     JLabel label = new JLabel("labelText");
     label.setBorder(BorderFactory.createEmptyBorder(TOP_MARGIN, 0, 0, 0));
