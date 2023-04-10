@@ -26,23 +26,45 @@ public class CaseController extends RecordController<Case> {
       ResultSet rs = pStatement.executeQuery();
             
       while (rs.next()) {
-        Case record = new Case();
-        long customerId = rs.getLong("customer");
-        record.customer = customerController.readRecord(customerId);
-
-        record.id = rs.getLong("rowid");
-        record.summary = rs.getString("summary");
-        record.description = rs.getString("description");
-        record.dateOpened = rs.getString("dateOpened");
-        record.dateClosed = rs.getString("dateClosed");
-        record.priority = Priority.parseSelectedPriority(rs.getString("priority"));
-        cases.add(record);
+        cases.add(readResultSet(rs));
       }
     } catch (Exception e) {
       System.out.println("Error: " + e.getMessage());
       e.printStackTrace();
     }
     return cases;
+  }
+
+  public Case readRecord(long rowid) {
+    Case caseRecord = new Case();
+    try {
+      String sql = "SELECT rowid, * FROM cases WHERE rowid=?"; // eTODO: Use tableName function
+      PreparedStatement pStatement = conn.prepareStatement(sql);
+      pStatement.setLong(1, rowid);
+      ResultSet rs = pStatement.executeQuery();
+            
+      while (rs.next()) {
+        caseRecord = readResultSet(rs);
+      }
+    } catch (Exception e) {
+      System.out.println("Error: " + e.getMessage());
+      e.printStackTrace();
+    }
+    return caseRecord;
+  }
+
+  public Case readResultSet(ResultSet rs) throws SQLException {
+    Case record = new Case();
+    long customerId = rs.getLong("customer");
+    record.customer = customerController.readRecord(customerId);
+
+    record.id = rs.getLong("rowid");
+    record.summary = rs.getString("summary");
+    record.description = rs.getString("description");
+    record.dateOpened = rs.getString("dateOpened");
+    record.dateClosed = rs.getString("dateClosed");
+    record.priority = Priority.parseSelectedPriority(rs.getString("priority"));
+    return record;
   }
 
   protected void recursiveDelete(long rowid) {}

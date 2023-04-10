@@ -14,17 +14,14 @@ public class CaseView extends RecordView<Case> {
   JTextComponent summaryLabel;
   JTextComponent descriptionLabel;
   JTextComponent customerIdLabel;
-  JTextComponent customerNameLabel;
-  JTextComponent customerEmailLabel;
-  JTextComponent customerPhoneNumberLabel;
   JTextComponent dateOpenedLabel;
   JTextComponent dateClosedLabel;
   JList<String> priorityList;
   // Contacts List
 
-  protected String tabNameOfViewRecords() { return "View Customers"; } // eTODO: use these again to add titles
-  protected String tabNameOfCreateRecord() { return "Create Customer"; }
-  protected String tabNameOfEditRecord() { return "Edit Customer"; }
+  protected String tabNameOfViewRecords() { return "View Cases"; } // eTODO: use these again to add titles
+  protected String tabNameOfCreateRecord() { return "Create Case"; }
+  protected String tabNameOfEditRecord() { return "Edit Case"; }
 
   public CaseView(RecordController<Case> controller) {
     super(controller);
@@ -44,9 +41,9 @@ public class CaseView extends RecordView<Case> {
     if (!editable) {// Only want to see these fields in the Read view, not the Create or Update views
       boolean hasSecondName = (record.customer.secondName != "" | record.customer.secondName != null);
       String fullName = record.customer.firstName + " " + (hasSecondName ? record.customer.secondName + " " : "") + record.customer.sirname;
-      customerNameLabel = addTextField(panel, "Customer Name", fullName, false, editable);
-      customerEmailLabel = addTextField(panel, "Customer Email", record.customer.email, false, editable);
-      customerPhoneNumberLabel = addTextField(panel, "Customer Phone Number", record.customer.phoneNumber, false, editable);
+      addTextField(panel, "Customer Name", fullName, false, editable);
+      addTextField(panel, "Customer Email", record.customer.email, false, editable);
+      addTextField(panel, "Customer Phone Number", record.customer.phoneNumber, false, editable);
 
       // eTODO: button \/
       // JButton commitButton = new JButton("View Customer Details");

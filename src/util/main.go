@@ -76,7 +76,7 @@ func createdb() {
     customer INTEGER NOT NULL,
     dateOpened CHAR(10) NOT NULL,
     dateClosed CHAR(10),
-    PRIORITY VARCHAR(32) NOT NULL,
+    priority VARCHAR(32) NOT NULL,
     FOREIGN KEY (customer)
       REFERENCES customers(rowid)
       ON DELETE CASCADE
@@ -84,6 +84,21 @@ func createdb() {
   );`)
   if (err != nil) { logError.Fatal(err.Error()) }
   log.Print("customers table created!")
+
+  // eTODO: we probably dont want to rely on rowid as per the rowid docs
+  _, err = pool.Exec(`CREATE TABLE contacts (
+    description TEXT NOT NULL,
+    date CHAR(10) NOT NULL,
+    time CHAR(5) NOT NULL,
+    contactMethod VARCHAR(10) NOT NULL,
+    caseId INTEGER NOT NULL,
+    FOREIGN KEY (caseId)
+      REFERENCES cases(rowid)
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
+  );`)
+  if (err != nil) { logError.Fatal(err.Error()) }
+  log.Print("cases table created!")
 
   // _, err = pool.Exec(`CREATE TABLE wishedModelCars (
   //   modelCarId VARCHAR(64) NOT NULL,
@@ -151,6 +166,13 @@ func addTestData() {
     if (err != nil) { logError.Fatal(err.Error()) }
   }
   log.Print("Test data created for the cases tables!")
+
+  for contactIndex := 0; contactIndex < len(caseManagement.Contacts); contactIndex++ {
+    contact := caseManagement.Contacts[contactIndex]
+    _, err = pool.Exec(`INSERT INTO contacts (description, date, time, contactMethod, caseId) VALUES (?, ?, ?, ?, ?);`, contact.Description, contact.Date, contact.Time, contact.ContactMethod, contact.CaseId)
+    if (err != nil) { logError.Fatal(err.Error()) }
+  }
+  log.Print("Test data created for the contacts tables!")
 }
 
 type User struct {
@@ -179,15 +201,23 @@ type Customer struct {
 type Case struct {
   Summary string
   Description string
-  Customer string
+  Customer int64
   DateOpened string
   DateClosed string
   Priority string
+}
+type Contact struct {
+  Description string
+  Date string
+  Time string
+  ContactMethod string
+  CaseId int64
 }
 type CaseManagement struct {
   Users []User
   Customers []Customer
   Cases []Case
+  Contacts []Contact
 }
 
 func (errorWriter ErrorWriter) Write(p []byte) (n int, err error) { // TODO: fix common code across modules

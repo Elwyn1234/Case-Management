@@ -8,8 +8,10 @@ import javax.swing.JTabbedPane;
 import elwyn.case_management.views.UserView;
 import elwyn.case_management.views.CustomerView;
 import elwyn.case_management.views.CaseView;
+import elwyn.case_management.views.ContactView;
 import elwyn.case_management.controllers.CustomerController;
 import elwyn.case_management.controllers.CaseController;
+import elwyn.case_management.controllers.ContactController;
 
 public class CaseManagement {
 
@@ -21,7 +23,7 @@ public class CaseManagement {
 
         tabbedPane.addTab("Customers", new CustomerView(new CustomerController()));
 
-        // tabbedPane.addTab("Contacts", null);
+        tabbedPane.addTab("Contacts", new ContactView(new ContactController(new CaseController(new CustomerController()))));
 
         tabbedPane.addTab("Cases", new CaseView(new CaseController(new CustomerController())));
 
@@ -55,3 +57,4 @@ public class CaseManagement {
 //    display customer id in the customer listing
 //    display a list of contacts under the cases listing
 //    add a vip boolean to customer and add this field to the cases and contacts views as well
+//    add status field to case records
