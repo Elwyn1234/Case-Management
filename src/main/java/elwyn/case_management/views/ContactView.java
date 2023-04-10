@@ -30,7 +30,7 @@ public class ContactView extends RecordView<Contact> {
     if (record == null) {
       record = new Contact();
     }
-    description = addTextField(panel, "Description", record.description, false, editable); //eTODO: rename from "Label" to "Field"
+    description = addTextField(panel, "Description", record.description, false, editable);
     date = addTextField(panel, "Date", record.date, false, editable);
     time = addTextField(panel, "Time", record.time, false, editable);
     String contactMethodString = record.contactMethod == null ? null : record.contactMethod.toString();

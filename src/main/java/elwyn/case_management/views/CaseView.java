@@ -11,11 +11,11 @@ import elwyn.case_management.models.Customer;
 import elwyn.case_management.models.Priority;
 
 public class CaseView extends RecordView<Case> {
-  JTextComponent summaryLabel;
-  JTextComponent descriptionLabel;
-  JTextComponent customerIdLabel;
-  JTextComponent dateOpenedLabel;
-  JTextComponent dateClosedLabel;
+  JTextComponent summary;
+  JTextComponent description;
+  JTextComponent customerId;
+  JTextComponent dateOpened;
+  JTextComponent dateClosed;
   JList<String> priorityList;
   // Contacts List
 
@@ -31,13 +31,13 @@ public class CaseView extends RecordView<Case> {
     if (record == null) {
       record = new Case();
     }
-    summaryLabel = addTextField(panel, "Summary", record.summary, false, editable); //eTODO: rename from "Label" to "Field"
+    summary = addTextField(panel, "Summary", record.summary, false, editable); //eTODO: rename from "" to "Field"
 
-    descriptionLabel = addTextArea(panel, "Description", record.description, false, editable);
-    descriptionLabel.setPreferredSize(new Dimension(600, 400));
+    description = addTextArea(panel, "Description", record.description, false, editable);
+    description.setPreferredSize(new Dimension(600, 400));
 
     String customerId = record.customer == null ? "" : Long.toString(record.customer.id);
-    customerIdLabel = addTextField(panel, "Customer ID", customerId, false, editable); // eTODO: can we embed CustomerView here
+    this.customerId = addTextField(panel, "Customer ID", customerId, false, editable); // eTODO: can we embed CustomerView here
     if (!editable) {// Only want to see these fields in the Read view, not the Create or Update views
       boolean hasSecondName = (record.customer.secondName != "" | record.customer.secondName != null);
       String fullName = record.customer.firstName + " " + (hasSecondName ? record.customer.secondName + " " : "") + record.customer.sirname;
@@ -57,8 +57,8 @@ public class CaseView extends RecordView<Case> {
       // panel.add(commitButton);
     }
 
-    dateOpenedLabel = addTextField(panel, "Date Opened", record.dateOpened, false, editable);
-    dateClosedLabel = addTextField(panel, "Date Closed", record.dateOpened, false, editable);
+    dateOpened = addTextField(panel, "Date Opened", record.dateOpened, false, editable);
+    dateClosed = addTextField(panel, "Date Closed", record.dateOpened, false, editable);
     String priorityString = record.priority == null ? null : record.priority.toString();
     if (editable)
       priorityList = addSelectList(panel, "Priority", new String[] { "Urgent", "High", "Medium", "Low" }, priorityString);
@@ -69,11 +69,11 @@ public class CaseView extends RecordView<Case> {
   protected Case getFormValues() {
     Case record = new Case();
     record.customer = new Customer();
-    record.summary = summaryLabel.getText();
-    record.description = descriptionLabel.getText();
-    record.customer.id = Long.parseLong(customerIdLabel.getText()); // eTODO: handle exception
-    record.dateOpened = dateOpenedLabel.getText();
-    record.dateClosed = dateClosedLabel.getText();
+    record.summary = summary.getText();
+    record.description = description.getText();
+    record.customer.id = Long.parseLong(customerId.getText()); // eTODO: handle exception
+    record.dateOpened = dateOpened.getText();
+    record.dateClosed = dateClosed.getText();
     record.priority = Priority.parseSelectedPriority(priorityList.getSelectedValue()); //eTODO: rename parseSelectedX mthods
     return record;
   }

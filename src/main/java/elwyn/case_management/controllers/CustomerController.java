@@ -58,10 +58,8 @@ public class CustomerController extends RecordController<Customer> {
     customer.otherNotes = rs.getString("otherNotes");
     customer.email = rs.getString("email");
     customer.phoneNumber = rs.getString("phoneNumber");
-    customer.addressLine1 = rs.getString("addressLine1");
-    customer.addressLine2 = rs.getString("addressLine2");
-    customer.addressLine3 = rs.getString("addressLine3");
-    customer.addressLine4 = rs.getString("addressLine4");
+    customer.address = rs.getString("address");
+    customer.city = rs.getString("city");
     customer.postcode = rs.getString("postcode");
     customer.country = rs.getString("country");
     return customer;
@@ -71,18 +69,18 @@ public class CustomerController extends RecordController<Customer> {
 
   protected PreparedStatement buildInsertPreparedStatement(Customer record) throws SQLException {
     String sql="INSERT INTO customers " + 
-        "(firstName, secondName, sirname, dateOfBirth, otherNotes, email, phoneNumber, addressLine1, addressLine2, addressLine3, addressLine4, postcode, country, gender) " +
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        "(firstName, secondName, sirname, dateOfBirth, otherNotes, email, phoneNumber, address, city, postcode, country, gender) " +
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
     PreparedStatement pStatement = PopulateCommonSqlParameters(sql, record);
     return pStatement;
   }
 
   protected PreparedStatement buildUpdatePreparedStatement(Customer record) throws SQLException {
     String sql="UPDATE customers SET " +
-        "firstName=?, secondName=?, sirname=?, dateOfBirth=?, otherNotes=?, email=?, phoneNumber=?, addressLine1=?, addressLine2=?, addressLine3=?, addressLine4=?, postcode=?, country=?, gender=?" +
+        "firstName=?, secondName=?, sirname=?, dateOfBirth=?, otherNotes=?, email=?, phoneNumber=?, address=?, city=?, postcode=?, country=?, gender=?" +
         "WHERE rowid=?";
     PreparedStatement pStatement = PopulateCommonSqlParameters(sql, record);
-    pStatement.setLong(15, record.id);
+    pStatement.setLong(13, record.id);
     return pStatement;
   }
   private PreparedStatement PopulateCommonSqlParameters(String sql, Customer record) throws SQLException {
@@ -94,13 +92,11 @@ public class CustomerController extends RecordController<Customer> {
     pStatement.setString(5, record.otherNotes);
     pStatement.setString(6, record.email);
     pStatement.setString(7, record.phoneNumber);
-    pStatement.setString(8, record.addressLine1);
-    pStatement.setString(9, record.addressLine2);
-    pStatement.setString(10, record.addressLine3);
-    pStatement.setString(11, record.addressLine4);
-    pStatement.setString(12, record.postcode);
-    pStatement.setString(13, record.country);
-    pStatement.setString(14, record.gender == null ? null : record.gender.toString());
+    pStatement.setString(8, record.address);
+    pStatement.setString(9, record.city);
+    pStatement.setString(10, record.postcode);
+    pStatement.setString(11, record.country);
+    pStatement.setString(12, record.gender == null ? null : record.gender.toString());
     return pStatement;
   }
     

@@ -60,10 +60,8 @@ func createdb() {
     otherNotes TEXT,
     email VARCHAR(32),
     phoneNumber VARCHAR(32) NOT NULL,
-    addressLine1 VARCHAR(32),
-    addressLine2 VARCHAR(32),
-    addressLine3 VARCHAR(32),
-    addressLine4 VARCHAR(32),
+    address VARCHAR(32),
+    city VARCHAR(32),
     postcode VARCHAR(32),
     country VARCHAR(32)
   );`)
@@ -169,7 +167,7 @@ func addTestData() {
   for customerIndex := 0; customerIndex < len(caseManagement.Customers); customerIndex++ {
     customer := caseManagement.Customers[customerIndex]
 ;
-    _, err = pool.Exec(`INSERT INTO customers (firstName, secondName, sirname, gender, dateOfBirth, otherNotes, email, phoneNumber, addressLine1, addressLine2, addressLine3, addressLine4, postcode, country) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`, customer.FirstName, customer.SecondName, customer.Sirname, customer.Gender, customer.DateOfBirth, customer.OtherNotes, customer.email, customer.phoneNumber, customer.addressLine1, customer.addressLine2, customer.addressLine3, customer.addressLine4, customer.postcode, customer.country)
+    _, err = pool.Exec(`INSERT INTO customers (firstName, secondName, sirname, gender, dateOfBirth, otherNotes, email, phoneNumber, address, city, postcode, country) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`, customer.FirstName, customer.SecondName, customer.Sirname, customer.Gender, customer.DateOfBirth, customer.OtherNotes, customer.email, customer.phoneNumber, customer.address, customer.city, customer.postcode, customer.country)
     if (err != nil) { logError.Fatal(err.Error()) }
   }
   log.Print("Test data created for the customers tables!")
@@ -212,10 +210,8 @@ type Customer struct {
   OtherNotes string
   email string;
   phoneNumber string;
-  addressLine1 string;
-  addressLine2 string;
-  addressLine3 string;
-  addressLine4 string;
+  address string;
+  city string;
   postcode string;
   country string;
 }

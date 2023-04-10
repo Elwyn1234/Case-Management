@@ -53,7 +53,6 @@ public class CaseManagement {
 }
 
 //  eTODO:
-//    fix enum CRUD actions
 //    display customer id in the customer listing
 //    display a list of contacts under the cases listing
 //    add a vip boolean to customer and add this field to the cases and contacts views as well

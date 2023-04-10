@@ -9,10 +9,8 @@ public class Customer extends Record {
   public String otherNotes;
   public String email;
   public String phoneNumber;
-  public String addressLine1;
-  public String addressLine2;
-  public String addressLine3;
-  public String addressLine4;
+  public String address;
+  public String city;
   public String postcode;
   public String country;
 }
