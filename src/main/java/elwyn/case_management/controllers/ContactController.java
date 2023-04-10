@@ -6,16 +6,19 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import elwyn.case_management.models.Case;
 import elwyn.case_management.models.Contact;
 import elwyn.case_management.models.ContactMethod;
 
 public class ContactController extends RecordController<Contact> {
   CaseController caseController;
+  UserController userController;
   protected String tableName() { return "contacts"; }
 
-  public ContactController(CaseController caseController) {
+  public ContactController(CaseController caseController, UserController userController) {
     super();
     this.caseController = caseController;
+    this.userController = userController;
   } // eTODO: this can probably be replaced with RecordController
 
   public List<Contact> readRecords() {
@@ -27,7 +30,7 @@ public class ContactController extends RecordController<Contact> {
             
       while (rs.next()) {
         Contact record = new Contact();
-        long caseId = rs.getLong("caseId");
+        long caseId = rs.getLong("case");
         record.caseRecord = caseController.readRecord(caseId);
 
         record.id = rs.getLong("rowid");
@@ -48,7 +51,7 @@ public class ContactController extends RecordController<Contact> {
 
   protected PreparedStatement buildInsertPreparedStatement(Contact record) throws SQLException {
     String sql="INSERT INTO contacts " + 
-        "(description, date, time, contactMethod, caseId) " +
+        "(description, date, time, contactMethod, case) " +
         "VALUES (?, ?, ?, ?, ?);";
     PreparedStatement pStatement = PopulateCommonSqlParameters(sql, record);
     return pStatement;
@@ -56,7 +59,7 @@ public class ContactController extends RecordController<Contact> {
 
   protected PreparedStatement buildUpdatePreparedStatement(Contact record) throws SQLException {
     String sql="UPDATE contacts SET " +
-        "description=?, date=?, time=?, contactMethod=?, caseId=?" +
+        "description=?, date=?, time=?, contactMethod=?, case=?" +
         "WHERE rowid=?";
     PreparedStatement pStatement = PopulateCommonSqlParameters(sql, record);
     pStatement.setLong(6, record.id);
@@ -84,5 +87,14 @@ public class ContactController extends RecordController<Contact> {
     if (record.caseRecord == null)
       return false;
     return true;
+  }
+
+  public static List<Contact> selectMyContacts(List<Contact> contacts) {
+    List<Contact> filteredContacts = new ArrayList<Contact>();
+    for (Contact contactRecord : contacts) {
+      if (contactRecord.user.id == 1)
+        filteredContacts.add(contactRecord);
+    }
+    return filteredContacts;
   }
 }

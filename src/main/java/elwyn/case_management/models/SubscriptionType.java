@@ -22,6 +22,7 @@ public enum SubscriptionType {
       return ENTERPRISE;
     return null;
   }
+
   public static String[] stringValues() {
     String[] array = new String[values().length];
     for (int i = 0; i < values().length; i++) {

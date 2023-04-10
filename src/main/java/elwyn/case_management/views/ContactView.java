@@ -7,6 +7,7 @@ import javax.swing.text.JTextComponent;
 import elwyn.case_management.controllers.RecordController;
 import elwyn.case_management.models.Case;
 import elwyn.case_management.models.Customer;
+import elwyn.case_management.models.User;
 import elwyn.case_management.models.Contact;
 import elwyn.case_management.models.ContactMethod;
 
@@ -16,6 +17,7 @@ public class ContactView extends RecordView<Contact> {
   JTextComponent time;
   JList<String> contactMethods;
   JTextComponent caseId;
+  JTextComponent userId;
   // Contacts List
 
   protected String tabNameOfViewRecords() { return "View Contact"; } // eTODO: use these again to add titles
@@ -35,7 +37,7 @@ public class ContactView extends RecordView<Contact> {
     time = addTextField(panel, "Time", record.time, false, editable);
     String contactMethodString = record.contactMethod == null ? null : record.contactMethod.toString();
     if (editable)
-      contactMethods = addSelectList(panel, "Contact Method", new String[] { "Phone", "Email", "Post", "Other" }, contactMethodString);
+      contactMethods = addSelectList(panel, "Contact Method", ContactMethod.stringValues(), contactMethodString);
     else
       addTextField(panel, "Contact Method", contactMethodString, true, false);
 
@@ -54,15 +56,23 @@ public class ContactView extends RecordView<Contact> {
       addTextField(panel, "Customer Email", customer.email, false, editable);
       addTextField(panel, "Customer Phone Number", customer.phoneNumber, false, editable);
     }
+
+    String userId = record.user == null ? "" : Long.toString(record.user.id);
+    this.userId = addTextField(panel, "User ID", userId, false, editable); // eTODO: can we embed CustomerView here
+    if (!editable) {// Only want to see these fields in the Read view, not the Create or Update views
+      addTextField(panel, "User's Name", record.user.name, false, editable);
+    }
   }
     
   protected Contact getFormValues() {
     Contact record = new Contact();
     record.caseRecord = new Case();
+    record.user = new User();
     record.description = description.getText();
     record.date = date.getText();
     record.time = time.getText();
     record.caseRecord.id = Long.parseLong(caseId.getText()); // eTODO: handle exception
+    record.user.id = Long.parseLong(userId.getText()); // eTODO: handle exception
     record.contactMethod = ContactMethod.parseSelectedContactMethod(contactMethods.getSelectedValue()); //eTODO: rename parseSelectedX mthods
     return record;
   }

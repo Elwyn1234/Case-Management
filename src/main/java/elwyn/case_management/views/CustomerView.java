@@ -48,7 +48,7 @@ public class CustomerView extends RecordView<Customer> {
 
     String genderString = record.gender == null ? null : record.gender.toString();
     if (editable)
-      genderList = addSelectList(panel, "Gender", new String[] { "Non-Binary", "Male", "Female", "Other" }, genderString);
+      genderList = addSelectList(panel, "Gender", Gender.stringValues(), genderString);
     else
       addTextField(panel, "Gender", genderString, true, false);
   }

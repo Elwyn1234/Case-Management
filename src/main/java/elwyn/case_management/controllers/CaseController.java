@@ -11,11 +11,13 @@ import elwyn.case_management.models.Priority;
 
 public class CaseController extends RecordController<Case> {
   CustomerController customerController;
+  UserController userController;
   protected String tableName() { return "cases"; }
 
-  public CaseController(CustomerController customerController) {
+  public CaseController(CustomerController customerController, UserController userController) {
     super();
     this.customerController = customerController;
+    this.userController = userController;
   }
 
   public List<Case> readRecords() {
@@ -57,6 +59,8 @@ public class CaseController extends RecordController<Case> {
     Case record = new Case();
     long customerId = rs.getLong("customer");
     record.customer = customerController.readRecord(customerId);
+    long userId = rs.getLong("user");
+    record.user = userController.readRecord(userId);
 
     record.id = rs.getLong("rowid");
     record.summary = rs.getString("summary");
@@ -107,5 +111,21 @@ public class CaseController extends RecordController<Case> {
     if (record.priority == null)
       return false;
     return true;
+  }
+
+  public static boolean caseClosed(Case record) {
+    if (record.dateClosed == null || record.dateClosed.equals(""))
+      return false;
+    else
+      return true;
+  }
+
+  public static List<Case> selectMyCases(List<Case> cases) {
+    List<Case> filteredCases = new ArrayList<Case>();
+    for (Case caseRecord : cases) {
+      if (caseRecord.user.id == 1)
+        filteredCases.add(caseRecord);
+    }
+    return filteredCases;
   }
 }

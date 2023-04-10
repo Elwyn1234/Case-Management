@@ -6,4 +6,5 @@ public class Contact extends Record {
   public String time;
   public ContactMethod contactMethod;
   public Case caseRecord;
+  public User user;
 }

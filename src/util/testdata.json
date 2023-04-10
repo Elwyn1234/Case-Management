@@ -50,6 +50,7 @@
       "summary": "summary1",
       "description": "description1",
       "customer": 1,
+      "user": 1,
       "dateOpened": "19-09-1981",
       "dateClosed": "19-09-1991",
       "priority": "High"
@@ -58,6 +59,7 @@
       "summary": "summary2",
       "description": "description2",
       "customer": 2,
+      "user": 2,
       "dateOpened": "19-09-1982",
       "dateClosed": "19-09-1992",
       "priority": "Urgent"
@@ -69,14 +71,16 @@
       "date": "date1",
       "time": "time1",
       "contactMethod": "Phone",
-      "caseId": 1
+      "case": 1,
+      "user": 1
     },
     {
       "description": "description2",
       "date": "date2",
       "time": "time2",
       "contactMethod": "Phone",
-      "caseId": 2
+      "case": 2,
+      "user": 2
     }
   ],
   "subscriptions": [
