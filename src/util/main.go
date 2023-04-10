@@ -72,11 +72,16 @@ func createdb() {
     summary VARCHAR(80) NOT NULL,
     description TEXT,
     customer INTEGER NOT NULL,
+    user INTEGER NOT NULL,
     dateOpened CHAR(10) NOT NULL,
     dateClosed CHAR(10),
     priority VARCHAR(32) NOT NULL,
     FOREIGN KEY (customer)
       REFERENCES customers(rowid)
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
+    FOREIGN KEY (user)
+      REFERENCES users(rowid)
       ON DELETE CASCADE
       ON UPDATE CASCADE
   );`)
@@ -89,9 +94,14 @@ func createdb() {
     date CHAR(10) NOT NULL,
     time CHAR(5) NOT NULL,
     contactMethod VARCHAR(10) NOT NULL,
-    caseId INTEGER NOT NULL,
+    caseId INTEGER,
+    user INTEGER NOT NULL,
     FOREIGN KEY (caseId)
       REFERENCES cases(rowid)
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
+    FOREIGN KEY (user)
+      REFERENCES users(rowid)
       ON DELETE CASCADE
       ON UPDATE CASCADE
   );`)
@@ -174,14 +184,14 @@ func addTestData() {
 
   for caseIndex := 0; caseIndex < len(caseManagement.Cases); caseIndex++ {
     caseRecord := caseManagement.Cases[caseIndex]
-    _, err = pool.Exec(`INSERT INTO cases (summary, description, customer, dateOpened, dateClosed, priority) VALUES (?, ?, ?, ?, ?, ?);`, caseRecord.Summary, caseRecord.Description, caseRecord.Customer, caseRecord.DateOpened, caseRecord.DateClosed, caseRecord.Priority)
+    _, err = pool.Exec(`INSERT INTO cases (summary, description, customer, user, dateOpened, dateClosed, priority) VALUES (?, ?, ?, ?, ?, ?, ?);`, caseRecord.Summary, caseRecord.Description, caseRecord.Customer, caseRecord.User, caseRecord.DateOpened, caseRecord.DateClosed, caseRecord.Priority)
     if (err != nil) { logError.Fatal(err.Error()) }
   }
   log.Print("Test data created for the cases tables!")
 
   for contactIndex := 0; contactIndex < len(caseManagement.Contacts); contactIndex++ {
     contact := caseManagement.Contacts[contactIndex]
-    _, err = pool.Exec(`INSERT INTO contacts (description, date, time, contactMethod, caseId) VALUES (?, ?, ?, ?, ?);`, contact.Description, contact.Date, contact.Time, contact.ContactMethod, contact.CaseId)
+    _, err = pool.Exec(`INSERT INTO contacts (description, date, time, contactMethod, caseId, user) VALUES (?, ?, ?, ?, ?, ?);`, contact.Description, contact.Date, contact.Time, contact.ContactMethod, contact.Case, contact.User)
     if (err != nil) { logError.Fatal(err.Error()) }
   }
   log.Print("Test data created for the contacts tables!")
@@ -219,6 +229,7 @@ type Case struct {
   Summary string
   Description string
   Customer int64
+  User int64
   DateOpened string
   DateClosed string
   Priority string
@@ -228,7 +239,8 @@ type Contact struct {
   Date string
   Time string
   ContactMethod string
-  CaseId int64
+  Case int64
+  User int64
 }
 type Subscription struct {
   Customer int64
