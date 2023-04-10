@@ -76,18 +76,18 @@ public class CaseController extends RecordController<Case> {
   protected PreparedStatement buildInsertPreparedStatement(Case record) throws SQLException {
   // public List<Contact> contacts
     String sql="INSERT INTO cases " + 
-        "(summary, description, customer, dateOpened, dateClosed, priority) " +
-        "VALUES (?, ?, ?, ?, ?, ?);";
+        "(summary, description, customer, user, dateOpened, dateClosed, priority) " +
+        "VALUES (?, ?, ?, ?, ?, ?, ?);";
     PreparedStatement pStatement = PopulateCommonSqlParameters(sql, record);
     return pStatement;
   }
 
   protected PreparedStatement buildUpdatePreparedStatement(Case record) throws SQLException {
     String sql="UPDATE cases SET " +
-        "summary=?, description=?, customer=?, dateOpened=?, dateClosed=?, priority=?" +
+        "summary=?, description=?, customer=?, user=?, dateOpened=?, dateClosed=?, priority=?" +
         "WHERE rowid=?";
     PreparedStatement pStatement = PopulateCommonSqlParameters(sql, record);
-    pStatement.setLong(7, record.id);
+    pStatement.setLong(8, record.id);
     return pStatement;
   }
   private PreparedStatement PopulateCommonSqlParameters(String sql, Case record) throws SQLException {
@@ -95,9 +95,10 @@ public class CaseController extends RecordController<Case> {
     pStatement.setString(1, record.summary);
     pStatement.setString(2, record.description);
     pStatement.setLong(3, record.customer.id);
-    pStatement.setString(4, record.dateOpened);
-    pStatement.setString(5, record.dateClosed);
-    pStatement.setString(6, record.priority == null ? null : record.priority.toString());
+    pStatement.setLong(4, record.user.id);
+    pStatement.setString(5, record.dateOpened);
+    pStatement.setString(6, record.dateClosed);
+    pStatement.setString(7, record.priority == null ? null : record.priority.toString());
     return pStatement;
   }
     
@@ -105,6 +106,8 @@ public class CaseController extends RecordController<Case> {
     if (record.summary.length() <= 0)
       return false;
     if (record.customer == null)
+      return false;
+    if (record.user == null)
       return false;
     if (record.dateOpened.length() <= 0)
       return false;

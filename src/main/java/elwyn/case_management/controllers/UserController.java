@@ -34,6 +34,7 @@ public class UserController extends RecordController<User> {
     try {
       String sql = "SELECT rowid, * from users WHERE rowid=?";
       PreparedStatement pStatement = conn.prepareStatement(sql);
+      pStatement.setLong(1, rowid);
       ResultSet rs = pStatement.executeQuery();
             
       while (rs.next()) {
@@ -60,7 +61,7 @@ public class UserController extends RecordController<User> {
     if (user.name.length() <= 0) {
       return false;
     }
-    if (user.username.length() <= 0) {
+    if (user.username.length() <= 0) { // eTODO: Check username is unique
       return false;
     }
     if (user.password.length() <= 0) {
