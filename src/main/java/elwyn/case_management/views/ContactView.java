@@ -65,12 +65,6 @@ public class ContactView extends RecordView<Contact> {
     if (!editable) {// Only want to see these fields in the Read view, not the Create or Update views
       addTextField(panel, "User's Name", record.user.name, false, editable);
     }
-
-    String userId = record.user == null ? "" : Long.toString(record.user.id);
-    this.userId = addTextField(panel, "User ID", userId, false, editable); // eTODO: can we embed CustomerView here
-    if (!editable) {// Only want to see these fields in the Read view, not the Create or Update views
-      addTextField(panel, "User's Name", record.user.name, false, editable);
-    }
   }
     
   protected Contact getFormValues() {

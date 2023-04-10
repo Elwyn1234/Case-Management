@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import elwyn.case_management.models.Case;
 import elwyn.case_management.models.Contact;
 import elwyn.case_management.models.ContactMethod;
 
@@ -29,7 +30,7 @@ public class ContactController extends RecordController<Contact> {
             
       while (rs.next()) {
         Contact record = new Contact();
-        long caseId = rs.getLong("case");
+        long caseId = rs.getLong("caseId");
         record.caseRecord = caseController.readRecord(caseId);
         long userId = rs.getLong("user");
         record.user = userController.readRecord(userId);
