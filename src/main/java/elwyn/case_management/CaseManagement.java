@@ -7,9 +7,11 @@ import javax.swing.JTabbedPane;
 
 import elwyn.case_management.views.UserView;
 import elwyn.case_management.views.CustomerView;
+import elwyn.case_management.views.SubscriptionView;
 import elwyn.case_management.views.CaseView;
 import elwyn.case_management.views.ContactView;
 import elwyn.case_management.controllers.CustomerController;
+import elwyn.case_management.controllers.SubscriptionController;
 import elwyn.case_management.controllers.CaseController;
 import elwyn.case_management.controllers.ContactController;
 
@@ -27,9 +29,7 @@ public class CaseManagement {
 
         tabbedPane.addTab("Cases", new CaseView(new CaseController(new CustomerController())));
 
-        // JPanel subscriptionsPanel = new JPanel();
-        // subscriptionsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        // tabbedPane.addTab("Subscriptions", subscriptionsPanel);
+        tabbedPane.addTab("Subscriptions", new SubscriptionView(new SubscriptionController(new CustomerController())));
 
         // JPanel performancePanel = new JPanel();
         // performancePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));

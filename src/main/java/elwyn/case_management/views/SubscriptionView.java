@@ -27,7 +27,8 @@ public class SubscriptionView extends RecordView<Subscription> {
     if (record == null) {
       record = new Subscription();
     }
-    customerId = addTextField(panel, "Customer ID", Long.toString(record.customer.id), false, editable); //eTODO: rename from "Label" to "Field"
+    String customerId = record.customer == null ? "" : Long.toString(record.customer.id);
+    this.customerId = addTextField(panel, "Customer ID", customerId, false, editable); // eTODO: can we embed CustomerView here
 
     String subscriptionType = record.subscriptionType == null ? null : record.subscriptionType.toString();
     if (editable)
@@ -35,8 +36,6 @@ public class SubscriptionView extends RecordView<Subscription> {
     else
       addTextField(panel, "Priority", subscriptionType, true, false);
 
-    String customerId = record.customer == null ? "" : Long.toString(record.customer.id);
-    this.customerId = addTextField(panel, "Customer ID", customerId, false, editable); // eTODO: can we embed CustomerView here
     if (!editable) {// Only want to see these fields in the Read view, not the Create or Update views
       boolean hasSecondName = (record.customer.secondName != "" | record.customer.secondName != null);
       String fullName = record.customer.firstName + " " + (hasSecondName ? record.customer.secondName + " " : "") + record.customer.sirname;
