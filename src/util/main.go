@@ -98,7 +98,21 @@ func createdb() {
       ON UPDATE CASCADE
   );`)
   if (err != nil) { logError.Fatal(err.Error()) }
-  log.Print("cases table created!")
+  log.Print("contacts table created!")
+
+  // eTODO: we probably dont want to rely on rowid as per the rowid docs
+  _, err = pool.Exec(`CREATE TABLE subscriptions (
+    customer INTEGER NOT NULL,
+    subscriptionType VARCHAR(32) NOT NULL,
+    dateStarted CHAR(10) NOT NULL,
+    days INTEGER NOT NULL,
+    FOREIGN KEY (customer)
+      REFERENCES customers(rowid)
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
+  );`)
+  if (err != nil) { logError.Fatal(err.Error()) }
+  log.Print("subscriptions table created!")
 
   // _, err = pool.Exec(`CREATE TABLE wishedModelCars (
   //   modelCarId VARCHAR(64) NOT NULL,
@@ -173,6 +187,13 @@ func addTestData() {
     if (err != nil) { logError.Fatal(err.Error()) }
   }
   log.Print("Test data created for the contacts tables!")
+
+  for subscriptionIndex := 0; subscriptionIndex < len(caseManagement.Subscriptions); subscriptionIndex++ {
+    subscription := caseManagement.Subscriptions[subscriptionIndex]
+    _, err = pool.Exec(`INSERT INTO subscriptions (customer, subscriptionType, dateStarted, days) VALUES (?, ?, ?, ?);`, subscription.Customer, subscription.SubscriptionType, subscription.DateStarted, subscription.Days)
+    if (err != nil) { logError.Fatal(err.Error()) }
+  }
+  log.Print("Test data created for the subscriptions tables!")
 }
 
 type User struct {
@@ -213,11 +234,18 @@ type Contact struct {
   ContactMethod string
   CaseId int64
 }
+type Subscription struct {
+  Customer int64
+  SubscriptionType string
+  DateStarted string
+  Days int
+}
 type CaseManagement struct {
   Users []User
   Customers []Customer
   Cases []Case
   Contacts []Contact
+  Subscriptions []Subscription
 }
 
 func (errorWriter ErrorWriter) Write(p []byte) (n int, err error) { // TODO: fix common code across modules

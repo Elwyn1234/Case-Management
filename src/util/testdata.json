@@ -82,5 +82,19 @@
       "contactMethod": "Phone",
       "caseId": 2
     }
+  ],
+  "subscriptions": [
+    {
+      "customer": 1,
+      "subscriptionType": "Personal",
+      "dateStarted": "date1",
+      "days": 1
+    },
+    {
+      "customer": 2,
+      "subscriptionType": "Enterprise",
+      "dateStarted": "date2",
+      "days": 2
+    }
   ]
 }
