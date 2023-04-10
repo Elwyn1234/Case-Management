@@ -12,17 +12,22 @@ public enum Gender {
     this.gender = gender;
   }
 
-  public static Gender parseSelectedGender(String rawGender) {
-    if (rawGender == null)
+  public static Gender parseSelectedGender(String gender) {
+    if (gender == null)
       return null;
-    if (rawGender == "Non-Binary")
-      return Gender.NON_BINARY;
-    if (rawGender == "Male")
-      return Gender.MALE;
-    if (rawGender == "Female")
-      return Gender.FEMALE;
-    if (rawGender == "Other")
-      return Gender.OTHER;
+    if (gender.equals(NON_BINARY.toString()))
+      return NON_BINARY;
+    if (gender.equals(MALE.toString()))
+      return MALE;
+    if (gender.equals(FEMALE.toString()))
+      return FEMALE;
+    if (gender.equals(OTHER.toString()))
+      return OTHER;
     return null;
+  }
+
+  @Override
+  public String toString() {
+    return gender;
   }
 }

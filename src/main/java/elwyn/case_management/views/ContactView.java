@@ -63,11 +63,7 @@ public class ContactView extends RecordView<Contact> {
     record.date = date.getText();
     record.time = time.getText();
     record.caseRecord.id = Long.parseLong(caseId.getText()); // eTODO: handle exception
-
-
-    String contactMethod = contactMethods.getSelectedValue();
-    if (contactMethod != null)
-      record.contactMethod = ContactMethod.parseSelectedContactMethod(contactMethod); //eTODO: rename parseSelectedX mthods
+    record.contactMethod = ContactMethod.parseSelectedContactMethod(contactMethods.getSelectedValue()); //eTODO: rename parseSelectedX mthods
     return record;
   }
 }

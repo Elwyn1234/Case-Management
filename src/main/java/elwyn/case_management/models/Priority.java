@@ -15,14 +15,19 @@ public enum Priority {
   public static Priority parseSelectedPriority(String rawPriority) {
     if (rawPriority == null)
       return null;
-    if (rawPriority == "Low")
-      return Priority.LOW;
-    if (rawPriority == "Medium")
-      return Priority.MEDIUM;
-    if (rawPriority == "High")
-      return Priority.HIGH;
-    if (rawPriority == "Urgent")
-      return Priority.URGENT;
+    if (rawPriority.equals(LOW.toString()))
+      return LOW;
+    if (rawPriority.equals(MEDIUM.toString()))
+      return MEDIUM;
+    if (rawPriority.equals(HIGH.toString()))
+      return HIGH;
+    if (rawPriority.equals(URGENT.toString()))
+      return URGENT;
     return null;
+  }
+
+  @Override
+  public String toString() {
+    return priority;
   }
 }

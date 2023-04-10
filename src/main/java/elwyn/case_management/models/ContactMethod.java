@@ -13,6 +13,8 @@ public enum ContactMethod {
   }
 
   public static ContactMethod parseSelectedContactMethod(String contactMethod) {
+    if (contactMethod == null)
+      return null;
     if (contactMethod.equals(PHONE.toString()))
       return ContactMethod.PHONE;
     if (contactMethod.equals(EMAIL.toString()))

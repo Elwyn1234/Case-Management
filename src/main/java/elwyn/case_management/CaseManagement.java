@@ -58,3 +58,5 @@ public class CaseManagement {
 //    display a list of contacts under the cases listing
 //    add a vip boolean to customer and add this field to the cases and contacts views as well
 //    add status field to case records
+//    Pull the User View into the new methodology
+//    Change the address fields for customers
