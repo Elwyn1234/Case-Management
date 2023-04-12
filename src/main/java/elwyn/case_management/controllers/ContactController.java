@@ -5,21 +5,23 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
-import elwyn.case_management.models.Case;
 import elwyn.case_management.models.Contact;
 import elwyn.case_management.models.ContactMethod;
 
 public class ContactController extends RecordController<Contact> {
   CaseController caseController;
   UserController userController;
+  Function<List<Contact>, List<Contact>> filter;
   protected String tableName() { return "contacts"; }
 
-  public ContactController(CaseController caseController, UserController userController) {
+  public ContactController(Function<List<Contact>, List<Contact>> filter) {
     super();
-    this.caseController = caseController;
-    this.userController = userController;
-  } // eTODO: this can probably be replaced with RecordController
+    this.caseController = new CaseController(null);
+    this.userController = new UserController();
+    this.filter = filter;
+  }
 
   public List<Contact> readRecords() {
     ArrayList<Contact> contacts = new ArrayList<Contact>();
@@ -46,7 +48,10 @@ public class ContactController extends RecordController<Contact> {
       System.out.println("Error: " + e.getMessage());
       e.printStackTrace();
     }
-    return contacts;
+    if (filter != null)
+      return filter.apply(contacts);
+    else
+      return contacts;
   }
 
   protected void recursiveDelete(long rowid) {} // eTODO: how does this work, does sql cascade on delete handle this

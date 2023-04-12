@@ -13,9 +13,9 @@ public class SubscriptionController extends RecordController<Subscription> {
   CustomerController customerController;
   protected String tableName() { return "subscriptions"; }
 
-  public SubscriptionController(CustomerController customerController) {
+  public SubscriptionController() {
     super();
-    this.customerController = customerController;
+    this.customerController = new CustomerController();
   }
 
   public List<Subscription> readRecords() {

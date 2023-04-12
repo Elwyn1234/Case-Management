@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import elwyn.case_management.models.Case;
 import elwyn.case_management.models.Priority;
@@ -12,12 +13,14 @@ import elwyn.case_management.models.Priority;
 public class CaseController extends RecordController<Case> {
   CustomerController customerController;
   UserController userController;
+  Function<List<Case>, List<Case>> filter;
   protected String tableName() { return "cases"; }
 
-  public CaseController(CustomerController customerController, UserController userController) {
+  public CaseController(Function<List<Case>, List<Case>> filter) {
     super();
-    this.customerController = customerController;
-    this.userController = userController;
+    this.customerController = new CustomerController();
+    this.userController = new UserController();
+    this.filter = filter;
   }
 
   public List<Case> readRecords() {
@@ -34,7 +37,10 @@ public class CaseController extends RecordController<Case> {
       System.out.println("Error: " + e.getMessage());
       e.printStackTrace();
     }
-    return cases;
+    if (filter != null)
+      return filter.apply(cases);
+    else
+      return cases;
   }
 
   public Case readRecord(long rowid) {

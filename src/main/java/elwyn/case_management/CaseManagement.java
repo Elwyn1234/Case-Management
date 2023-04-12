@@ -1,12 +1,11 @@
 package elwyn.case_management;
 
-import java.awt.FlowLayout;
-
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import java.awt.event.*;
 
 import elwyn.case_management.views.UserView;
 import elwyn.case_management.views.CustomerView;
@@ -14,51 +13,65 @@ import elwyn.case_management.views.SubscriptionView;
 import elwyn.case_management.views.CaseView;
 import elwyn.case_management.views.ContactView;
 import elwyn.case_management.controllers.CustomerController;
+import elwyn.case_management.controllers.HomeController;
 import elwyn.case_management.controllers.SubscriptionController;
 import elwyn.case_management.controllers.UserController;
 import elwyn.case_management.controllers.CaseController;
 import elwyn.case_management.controllers.ContactController;
 
 public class CaseManagement {
-
-    public static void main(String[] args) {
-        JTabbedPane tabbedPane = new JTabbedPane();
+  public static void main(String[] args) {
+    JTabbedPane tabbedPane = new JTabbedPane();
         
-        // JScrollPane home = new JScrollPane();
-        // JPanel panel = new JPanel();
-        // panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        // panel.add(new CaseView(new CaseController(new CustomerController())));
-        // panel.add(new ContactView(new ContactController(new CaseController(new CustomerController()))));
-        // home.setViewportView(panel);
-        // tabbedPane.addTab("Home", home);
+    CaseView caseView = new CaseView(new CaseController(HomeController::selectMyCases));
+    ContactView contactView = new ContactView(new ContactController(HomeController::selectMyContacts));
+    JPanel panel = new JPanel();
+    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+    panel.add(caseView);
+    panel.add(contactView);
 
-        tabbedPane.addTab("Customers", new CustomerView(new CustomerController()));
+    JScrollPane home = new JScrollPane();
+    home.setViewportView(panel);
+    home.addComponentListener(new ComponentListener() { // This must be done to handle databases changes that could happen in other tabs
+        @Override
+        public void componentShown(ComponentEvent e) {
+          caseView.setViewportView(caseView.displayRecordListing());
+          contactView.setViewportView(contactView.displayRecordListing()); //eTODO: refactor, displayX should display it, not return a panel
+        }
+        @Override
+        public void componentResized(ComponentEvent e) {}
+        @Override
+        public void componentMoved(ComponentEvent e) {}
+        @Override
+        public void componentHidden(ComponentEvent e) {}
+    });
 
-        CaseController caseController = new CaseController(new CustomerController(), new UserController());
-        ContactController contactController = new ContactController(caseController, new UserController());
-        tabbedPane.addTab("Contacts", new ContactView(contactController));
+    tabbedPane.addTab("Home", home);
+
+    tabbedPane.addTab("Customers", new CustomerView(new CustomerController()));
+
+    tabbedPane.addTab("Contacts", new ContactView(new ContactController(null)));
         
-        caseController = new CaseController(new CustomerController(), new UserController());
-        tabbedPane.addTab("Cases", new CaseView(caseController));
+    tabbedPane.addTab("Cases", new CaseView(new CaseController(null)));
 
-        tabbedPane.addTab("Subscriptions", new SubscriptionView(new SubscriptionController(new CustomerController())));
+    tabbedPane.addTab("Subscriptions", new SubscriptionView(new SubscriptionController()));
 
-        // JPanel performancePanel = new JPanel();
-        // performancePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        // tabbedPane.addTab("Performance", performancePanel);
+    // JPanel performancePanel = new JPanel();
+    // performancePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+    // tabbedPane.addTab("Performance", performancePanel);
 
-        tabbedPane.addTab("Users", new UserView(new UserController()));
+    tabbedPane.addTab("Users", new UserView(new UserController()));
 
-        // JPanel loginPanel = new JPanel();
-        // loginPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        // tabbedPane.addTab("Login", loginPanel);
+    // JPanel loginPanel = new JPanel();
+    // loginPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+    // tabbedPane.addTab("Login", loginPanel);
 
-        JFrame frame = new JFrame();
-        frame.add(tabbedPane);
-        frame.setExtendedState( frame.getExtendedState()|JFrame.MAXIMIZED_BOTH );
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
-    }
+    JFrame frame = new JFrame();
+    frame.add(tabbedPane);
+    frame.setExtendedState( frame.getExtendedState()|JFrame.MAXIMIZED_BOTH );
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    frame.setVisible(true);
+  }
 }
 
 //  eTODO:

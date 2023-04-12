@@ -39,7 +39,7 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
   }
   protected abstract void addRecordFields(JComponent panel, T record, boolean editable);
   
-  protected JComponent displayRecordListing() {
+  public JComponent displayRecordListing() {
     JComponent panel = new JPanel();
     panel.setSize(1028, 630);
     panel.setBorder(BorderFactory.createLineBorder(Color.black));
@@ -104,7 +104,7 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
     return panel;
   }
 
-  protected JComponent displayRecordManagementPanel(T record) {
+  public JComponent displayRecordManagementPanel(T record) {
     boolean createMode = record == null;
 
     JComponent panel = new JPanel();
