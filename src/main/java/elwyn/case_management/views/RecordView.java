@@ -166,17 +166,17 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
     return textComponent;
   }
 
-  protected static JTextComponent addTextArea(JComponent panel, String labelText, String string, boolean hasTopMargin, boolean editable) {
+  public static JTextComponent addTextArea(JComponent panel, String labelText, String string, boolean hasTopMargin, boolean editable) {
     JTextComponent textComponent = new JTextArea(string);
     return addTextComponent(panel, labelText, textComponent, hasTopMargin, editable);
   }
 
-  protected static JTextComponent addTextField(JComponent panel, String labelText, String string, boolean hasTopMargin, boolean editable) {
+  public static JTextComponent addTextField(JComponent panel, String labelText, String string, boolean hasTopMargin, boolean editable) {
     JTextComponent textComponent = new JTextField(string);
     return addTextComponent(panel, labelText, textComponent, hasTopMargin, editable);
   }
 
-  protected static JList<String> addSelectList(JComponent panel, String labelText, String[] strings, String defaultSelection) {
+  public static JList<String> addSelectList(JComponent panel, String labelText, String[] strings, String defaultSelection) {
     JLabel label = new JLabel("labelText");
     label.setBorder(BorderFactory.createEmptyBorder(TOP_MARGIN, 0, 0, 0));
     panel.add(label);

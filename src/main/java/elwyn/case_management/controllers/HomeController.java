@@ -5,20 +5,28 @@ import java.util.List;
 
 import elwyn.case_management.models.Case;
 import elwyn.case_management.models.Contact;
+import elwyn.case_management.models.User;
 
 public class HomeController {
-  public static List<Contact> selectMyContacts(List<Contact> contacts) {
+  public User user; // eTODO: getter setter
+
+  public HomeController(User user) {
+    this.user = user;
+  }
+
+  public List<Contact> selectMyContacts(List<Contact> contacts) {
     List<Contact> filteredContacts = new ArrayList<Contact>();
     for (Contact contact : contacts) {
-      if (contact.user.id == 1)
+      if (contact.user.id == user.id)
         filteredContacts.add(contact);
     }
     return filteredContacts;
   }
-  public static List<Case> selectMyCases(List<Case> cases) {
+
+  public List<Case> selectMyCases(List<Case> cases) {
     List<Case> filteredCases = new ArrayList<Case>();
     for (Case caseRecord : cases) {
-      if (caseRecord.user.id == 1)
+      if (caseRecord.user.id == user.id)
         filteredCases.add(caseRecord);
     }
     return filteredCases;

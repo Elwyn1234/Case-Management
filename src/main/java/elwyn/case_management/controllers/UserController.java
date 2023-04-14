@@ -29,6 +29,24 @@ public class UserController extends RecordController<User> {
     return users;
   }
 
+  public User readRecord(String username) { // eTODO: can we abstract this
+    User user = new User();
+    try {
+      String sql = "SELECT rowid, * from users WHERE username=?";
+      PreparedStatement pStatement = conn.prepareStatement(sql);
+      pStatement.setString(1, username);
+      ResultSet rs = pStatement.executeQuery();
+            
+      while (rs.next()) {
+        user = readResultSet(rs);
+      }
+    } catch (Exception e) {
+      System.out.println("Error: " + e.getMessage());
+      e.printStackTrace();
+    }
+    return user;
+  }
+
   public User readRecord(long rowid) {
     User user = new User();
     try {
@@ -56,7 +74,7 @@ public class UserController extends RecordController<User> {
     user.role = Role.parseSelectedRole(rs.getString("role"));
     return user;
   }
-    
+
   public boolean isRecordValid(User user) {
     if (user.name.length() <= 0) {
       return false;
@@ -70,6 +88,15 @@ public class UserController extends RecordController<User> {
     if (user.role == null) {
       return false;
     }
+    return true;
+  }
+
+  public boolean areCredentialsValid(String username, String password) {
+    User user = readRecord(username);
+    if (user.username == null)
+      return false;
+    if (!password.equals(user.password))
+      return false;
     return true;
   }
 

@@ -9,7 +9,7 @@ import java.util.List;
 import elwyn.case_management.models.Record;
 
 public abstract class RecordController <T extends Record> {
-  public List<T> records;
+  public List<T> records; // eTODO: is this ever getting set / used
   Connection conn;
 
   protected abstract String tableName();
