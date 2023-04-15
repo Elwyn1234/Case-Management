@@ -1,0 +1,1 @@
+mvn clean; mvn package; java -Xint -Xdebug -Xnoagent -Xrunjdwp:transport=dt\_socket,server=y,address=localhost:12999,suspend=n -cp ".\target\case-management-1.0-SNAPSHOT.jar" elwyn.case\_management.CaseManagement
