@@ -36,17 +36,17 @@ public class ContactView extends RecordView<Contact> {
     if (record == null) {
       record = new Contact();
     }
-    description = addTextField(panel, "Description", record.description, false, editable);
+    description = addTextArea(panel, "Description", record.description, false, editable);
     date = addTextField(panel, "Date", record.date.toString(), false, editable);
     time = addTextField(panel, "Time", record.time, false, editable);
     String contactMethodString = record.contactMethod == null ? null : record.contactMethod.toString();
     if (editable)
       contactMethods = addSelectList(panel, "Contact Method", ContactMethod.stringValues(), contactMethodString);
     else
-      addTextField(panel, "Contact Method", contactMethodString, true, false);
+      addTextField(panel, "Contact Method", contactMethodString, false, false);
 
     String caseId = record.caseRecord == null ? "" : Long.toString(record.caseRecord.id);
-    this.caseId = addTextField(panel, "Case ID", caseId, false, editable); // eTODO: can we embed CaseView here
+    this.caseId = addTextField(panel, "Case ID", caseId, true, editable); // eTODO: can we embed CaseView here
     if (!editable) {// Only want to see these fields in the Read view, not the Create or Update views
       if (record.caseRecord != null) {
         addTextField(panel, "Case Summary", record.caseRecord.summary, false, editable);
@@ -57,7 +57,7 @@ public class ContactView extends RecordView<Contact> {
         if (customer != null) { // eTODO: Add checks like this (especially important to deal with cases or customers that are deleted)
           boolean hasSecondName = (customer.secondName != "" | customer.secondName != null);
           String fullName = customer.firstName + " " + (hasSecondName ? customer.secondName + " " : "") + customer.sirname;
-          addTextField(panel, "Customer Name", fullName, false, editable);
+          addTextField(panel, "Customer Name", fullName, true, editable);
           addTextField(panel, "Customer Email", customer.email, false, editable);
           addTextField(panel, "Customer Phone Number", customer.phoneNumber, false, editable);
         }
@@ -65,7 +65,7 @@ public class ContactView extends RecordView<Contact> {
     }
 
     String userId = record.user == null ? "" : Long.toString(record.user.id);
-    this.userId = addTextField(panel, "User ID", userId, false, editable); // eTODO: can we embed CustomerView here
+    this.userId = addTextField(panel, "User ID", userId, true, editable); // eTODO: can we embed CustomerView here
     if (!editable) {// Only want to see these fields in the Read view, not the Create or Update views
       addTextField(panel, "User's Name", record.user.name, false, editable);
     }

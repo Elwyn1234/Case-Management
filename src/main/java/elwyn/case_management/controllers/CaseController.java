@@ -23,11 +23,13 @@ public class CaseController extends RecordController<Case> {
     this.filter = filter;
   }
 
-  public List<Case> readRecords() {
+  public List<Case> readRecords(int page) {
     ArrayList<Case> cases = new ArrayList<Case>();
     try {
-      String sql = "SELECT rowid, * from cases"; // eTODO: Use tableName function
+      String sql = "SELECT rowid, * FROM cases ORDER BY dateOpened DESC LIMIT ?,?"; // eTODO: Use tableName function
       PreparedStatement pStatement = conn.prepareStatement(sql);
+      pStatement.setInt(1, page * PAGE_SIZE);
+      pStatement.setInt(2, PAGE_SIZE);
       ResultSet rs = pStatement.executeQuery();
             
       while (rs.next()) {

@@ -158,7 +158,7 @@ public class PerformanceView extends JScrollPane {
     // List<int> solvedCaseDates = new ArrayList<Date>();
 
     CaseController caseController = new CaseController(performanceController::selectMyCases);
-    List<Case> cases = caseController.readRecords();
+    List<Case> cases = caseController.readRecords(0); // eTODO: fix: pagination
     for (int i = 0; i < cases.size(); i++) {
       Case caseRecord = cases.get(i);
       switch (caseRecord.priority) {

@@ -37,13 +37,13 @@ public class HomeView extends JTabbedPane {
     CaseController caseController = new CaseController(homeController::selectMyCases);
     ContactController contactController = new ContactController(homeController::selectMyContacts);
     CaseView caseView = new CaseView(caseController);
-    // ContactView contactView = new ContactView(contactController);
+    ContactView contactView = new ContactView(contactController);
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
     panel.add(new JLabel("Hello " + homeController.user.name));
-    panel.add(new JLabel("You have " + caseController.readRecords().size() + " cases assigned to you"));
-    panel.add(new JLabel("You have " + contactController.readRecords().size() + " contacts assigned to you")); // eTODO: how many contacts in the last week?
+    panel.add(new JLabel("You have " + caseController.readRecords(0).size() + " cases assigned to you")); // eTODO: fix pagination
+    panel.add(new JLabel("You have " + contactController.readRecords(0).size() + " contacts assigned to you")); // eTODO: how many contacts in the last week?
     JButton logoutButton = new JButton("Logout");
     logoutButton.addActionListener(new ActionListener() {
         @Override
@@ -53,7 +53,7 @@ public class HomeView extends JTabbedPane {
     });
     panel.add(logoutButton);
     panel.add(caseView);
-    // panel.add(contactView);
+    panel.add(contactView);
 
     JScrollPane home = new JScrollPane();
     home.setViewportView(panel);
@@ -61,7 +61,7 @@ public class HomeView extends JTabbedPane {
         @Override
         public void componentShown(ComponentEvent e) {
           caseView.setViewportView(caseView.displayRecordListing());
-          // contactView.setViewportView(contactView.displayRecordListing()); //eTODO: refactor, displayX should display it, not return a panel
+          contactView.setViewportView(contactView.displayRecordListing()); //eTODO: refactor, displayX should display it, not return a panel
         }
         @Override
         public void componentResized(ComponentEvent e) {}
@@ -75,7 +75,7 @@ public class HomeView extends JTabbedPane {
 
     addTab("Customers", new CustomerView(new CustomerController()));
 
-    // addTab("Contacts", new ContactView(new ContactController(null)));
+    addTab("Contacts", new ContactView(new ContactController(null)));
         
     addTab("Cases", new CaseView(new CaseController(null)));
 

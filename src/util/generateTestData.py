@@ -17,7 +17,7 @@ def main():
     
     CONTACT_NUM = 11000
     def requestLoremIpsum(dict):
-        response = requests.get("https://baconipsum.com/api/?type=all-meat&sentences=1", verify=False)
+        response = requests.get("https://loripsum.net/api/1/short/plaintext", verify=False)
         dict["loremIpsumArray"].append(response.text)
     
     start = time.time()
