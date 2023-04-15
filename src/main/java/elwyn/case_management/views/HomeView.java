@@ -13,6 +13,7 @@ import java.util.function.Consumer;
 
 import elwyn.case_management.controllers.CustomerController;
 import elwyn.case_management.controllers.HomeController;
+import elwyn.case_management.controllers.PerformanceController;
 import elwyn.case_management.controllers.SubscriptionController;
 import elwyn.case_management.controllers.UserController;
 import elwyn.case_management.models.RouterModel;
@@ -36,7 +37,7 @@ public class HomeView extends JTabbedPane {
     CaseController caseController = new CaseController(homeController::selectMyCases);
     ContactController contactController = new ContactController(homeController::selectMyContacts);
     CaseView caseView = new CaseView(caseController);
-    ContactView contactView = new ContactView(contactController);
+    // ContactView contactView = new ContactView(contactController);
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
@@ -52,7 +53,7 @@ public class HomeView extends JTabbedPane {
     });
     panel.add(logoutButton);
     panel.add(caseView);
-    panel.add(contactView);
+    // panel.add(contactView);
 
     JScrollPane home = new JScrollPane();
     home.setViewportView(panel);
@@ -60,7 +61,7 @@ public class HomeView extends JTabbedPane {
         @Override
         public void componentShown(ComponentEvent e) {
           caseView.setViewportView(caseView.displayRecordListing());
-          contactView.setViewportView(contactView.displayRecordListing()); //eTODO: refactor, displayX should display it, not return a panel
+          // contactView.setViewportView(contactView.displayRecordListing()); //eTODO: refactor, displayX should display it, not return a panel
         }
         @Override
         public void componentResized(ComponentEvent e) {}
@@ -74,21 +75,25 @@ public class HomeView extends JTabbedPane {
 
     addTab("Customers", new CustomerView(new CustomerController()));
 
-    addTab("Contacts", new ContactView(new ContactController(null)));
+    // addTab("Contacts", new ContactView(new ContactController(null)));
         
     addTab("Cases", new CaseView(new CaseController(null)));
 
     addTab("Subscriptions", new SubscriptionView(new SubscriptionController()));
 
-    // JPanel performancePanel = new JPanel();
-    // performancePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-    // addTab("Performance", performancePanel);
+    PerformanceController performanceController = new PerformanceController(homeController.user);
+    addTab("Team's Performance", new PerformanceView(performanceController));
 
-    addTab("Users", new UserView(new UserController()));
+    // addTab("My Performance", performancePanel);
+
+    // if (homeController.user.role == Role.ADMIN)
+      addTab("Users", new UserView(new UserController()));
   }
 }
 
 //  eTODO:
+//    Add notes to customer contacts
+//    Cancel Subscriptions
 //    display customer id in the customer listing
 //    display a list of contacts under the cases listing
 //    add a vip boolean to customer and add this field to the cases and contacts views as well

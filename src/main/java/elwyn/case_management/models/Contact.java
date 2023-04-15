@@ -1,8 +1,10 @@
 package elwyn.case_management.models;
 
+import java.util.Date;
+
 public class Contact extends Record {
   public String description;
-  public String date;
+  public Date date;
   public String time;
   public ContactMethod contactMethod;
   public Case caseRecord;

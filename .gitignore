@@ -3,4 +3,6 @@
 /assets
 *.jar
 go.sum
+testData.json
+/src/util/testdata.json
 /src/main/java/elwyn/mavenproject1/old

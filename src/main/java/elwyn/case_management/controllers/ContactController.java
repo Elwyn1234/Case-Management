@@ -3,12 +3,14 @@ package elwyn.case_management.controllers;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
 import elwyn.case_management.models.Contact;
 import elwyn.case_management.models.ContactMethod;
+import elwyn.case_management.models.User;
 
 public class ContactController extends RecordController<Contact> {
   CaseController caseController;
@@ -39,8 +41,38 @@ public class ContactController extends RecordController<Contact> {
 
         record.id = rs.getLong("rowid");
         record.description = rs.getString("description");
-        record.date = rs.getString("date");
+
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+        record.date = df.parse(rs.getString("date"));
+
         record.time = rs.getString("time");
+        record.contactMethod = ContactMethod.parseSelectedContactMethod(rs.getString("contactMethod"));
+        contacts.add(record);
+      }
+    } catch (Exception e) {
+      System.out.println("Error: " + e.getMessage());
+      e.printStackTrace();
+    }
+    if (filter != null)
+      return filter.apply(contacts);
+    else
+      return contacts;
+  }
+
+  public List<Contact> readRecords(long userId) {
+    ArrayList<Contact> contacts = new ArrayList<Contact>();
+    try {
+      String sql = "SELECT date, contactMethod FROM contacts WHERE user=?"; // eTODO: Use tableName function
+      PreparedStatement pStatement = conn.prepareStatement(sql);
+      pStatement.setLong(1, userId);
+      ResultSet rs = pStatement.executeQuery();
+            
+      while (rs.next()) {
+        Contact record = new Contact();
+        record.user = new User();
+        record.user.id = userId;
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+        record.date = df.parse(rs.getString("date"));
         record.contactMethod = ContactMethod.parseSelectedContactMethod(rs.getString("contactMethod"));
         contacts.add(record);
       }

@@ -1,6 +1,10 @@
 package elwyn.case_management.views;
 
 import javax.swing.JList;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 import javax.swing.JComponent;
 import javax.swing.text.JTextComponent;
 
@@ -33,7 +37,7 @@ public class ContactView extends RecordView<Contact> {
       record = new Contact();
     }
     description = addTextField(panel, "Description", record.description, false, editable);
-    date = addTextField(panel, "Date", record.date, false, editable);
+    date = addTextField(panel, "Date", record.date.toString(), false, editable);
     time = addTextField(panel, "Time", record.time, false, editable);
     String contactMethodString = record.contactMethod == null ? null : record.contactMethod.toString();
     if (editable)
@@ -72,7 +76,13 @@ public class ContactView extends RecordView<Contact> {
     record.caseRecord = new Case();
     record.user = new User();
     record.description = description.getText();
-    record.date = date.getText();
+    DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+    try {
+      record.date = df.parse(date.getText());
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+      e.printStackTrace();
+    }
     record.time = time.getText();
     record.caseRecord.id = Long.parseLong(caseId.getText()); // eTODO: handle exception
     record.user.id = Long.parseLong(userId.getText()); // eTODO: handle exception
