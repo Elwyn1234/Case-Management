@@ -12,11 +12,13 @@ import elwyn.case_management.models.Gender;
 public class CustomerController extends RecordController<Customer> {
   protected String tableName() { return "customers"; }
 
-  public List<Customer> readRecords() {
+  public List<Customer> readRecords(int page) {
     ArrayList<Customer> customers = new ArrayList<Customer>();
     try {
-      String sql = "SELECT rowid, * from customers";
+      String sql = "SELECT rowid, * FROM customers ORDER BY firstName ASC LIMIT ?,?";
       PreparedStatement pStatement = conn.prepareStatement(sql);
+      pStatement.setInt(1, page * PAGE_SIZE);
+      pStatement.setInt(2, PAGE_SIZE);
       ResultSet rs = pStatement.executeQuery();
             
       while (rs.next()) {

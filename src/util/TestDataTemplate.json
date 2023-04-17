@@ -50,7 +50,8 @@
       "summary": "summary1",
       "description": "description1",
       "customer": 1,
-      "user": 1,
+      "createdBy": 1,
+      "assignedTo": 1,
       "dateOpened": "19-09-1981",
       "dateClosed": "19-09-1991",
       "priority": "High"
@@ -59,7 +60,8 @@
       "summary": "summary2",
       "description": "description2",
       "customer": 2,
-      "user": 2,
+      "createdBy": 1,
+      "assignedTo": 1,
       "dateOpened": "19-09-1982",
       "dateClosed": "19-09-1992",
       "priority": "Urgent"

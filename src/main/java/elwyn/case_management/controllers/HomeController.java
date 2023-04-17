@@ -26,7 +26,7 @@ public class HomeController {
   public List<Case> selectMyCases(List<Case> cases) {
     List<Case> filteredCases = new ArrayList<Case>();
     for (Case caseRecord : cases) {
-      if (caseRecord.user.id == user.id)
+      if (caseRecord.assignedTo.id == user.id)
         filteredCases.add(caseRecord);
     }
     return filteredCases;

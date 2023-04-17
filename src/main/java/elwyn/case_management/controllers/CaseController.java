@@ -23,11 +23,13 @@ public class CaseController extends RecordController<Case> {
     this.filter = filter;
   }
 
-  public List<Case> readRecords() {
+  public List<Case> readRecords(int page) {
     ArrayList<Case> cases = new ArrayList<Case>();
     try {
-      String sql = "SELECT rowid, * from cases"; // eTODO: Use tableName function
+      String sql = "SELECT rowid, * FROM cases ORDER BY dateOpened DESC LIMIT ?,?"; // eTODO: Use tableName function
       PreparedStatement pStatement = conn.prepareStatement(sql);
+      pStatement.setInt(1, page * PAGE_SIZE);
+      pStatement.setInt(2, PAGE_SIZE);
       ResultSet rs = pStatement.executeQuery();
             
       while (rs.next()) {
@@ -65,8 +67,10 @@ public class CaseController extends RecordController<Case> {
     Case record = new Case();
     long customerId = rs.getLong("customer");
     record.customer = customerController.readRecord(customerId);
-    long userId = rs.getLong("user");
-    record.user = userController.readRecord(userId);
+    long createdById = rs.getLong("createdBy");
+    record.createdBy = userController.readRecord(createdById);
+    long assignedToId = rs.getLong("assignedTo");
+    record.assignedTo = userController.readRecord(assignedToId);
 
     record.id = rs.getLong("rowid");
     record.summary = rs.getString("summary");
@@ -82,15 +86,15 @@ public class CaseController extends RecordController<Case> {
   protected PreparedStatement buildInsertPreparedStatement(Case record) throws SQLException {
   // public List<Contact> contacts
     String sql="INSERT INTO cases " + 
-        "(summary, description, customer, user, dateOpened, dateClosed, priority) " +
-        "VALUES (?, ?, ?, ?, ?, ?, ?);";
+        "(summary, description, customer, createdBy, assignedTo, dateOpened, dateClosed, priority) " +
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
     PreparedStatement pStatement = PopulateCommonSqlParameters(sql, record);
     return pStatement;
   }
 
   protected PreparedStatement buildUpdatePreparedStatement(Case record) throws SQLException {
     String sql="UPDATE cases SET " +
-        "summary=?, description=?, customer=?, user=?, dateOpened=?, dateClosed=?, priority=?" +
+        "summary=?, description=?, customer=?, createdBy=?, assignedTo=?, dateOpened=?, dateClosed=?, priority=?" +
         "WHERE rowid=?";
     PreparedStatement pStatement = PopulateCommonSqlParameters(sql, record);
     pStatement.setLong(8, record.id);
@@ -101,7 +105,8 @@ public class CaseController extends RecordController<Case> {
     pStatement.setString(1, record.summary);
     pStatement.setString(2, record.description);
     pStatement.setLong(3, record.customer.id);
-    pStatement.setLong(4, record.user.id);
+    pStatement.setLong(4, record.createdBy.id);
+    pStatement.setLong(4, record.assignedTo.id);
     pStatement.setString(5, record.dateOpened);
     pStatement.setString(6, record.dateClosed);
     pStatement.setString(7, record.priority == null ? null : record.priority.toString());

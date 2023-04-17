@@ -72,7 +72,8 @@ func createdb() {
     summary VARCHAR(80) NOT NULL,
     description TEXT,
     customer INTEGER NOT NULL,
-    user INTEGER NOT NULL,
+    createdBy INTEGER NOT NULL,
+    assignedTo INTEGER NOT NULL,
     dateOpened CHAR(10) NOT NULL,
     dateClosed CHAR(10),
     priority VARCHAR(32) NOT NULL,
@@ -80,7 +81,11 @@ func createdb() {
       REFERENCES customers(rowid)
       ON DELETE CASCADE
       ON UPDATE CASCADE
-    FOREIGN KEY (user)
+    FOREIGN KEY (createdBy)
+      REFERENCES users(rowid)
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
+    FOREIGN KEY (assignedTo)
       REFERENCES users(rowid)
       ON DELETE CASCADE
       ON UPDATE CASCADE
@@ -177,14 +182,14 @@ func addTestData() {
   for customerIndex := 0; customerIndex < len(caseManagement.Customers); customerIndex++ {
     customer := caseManagement.Customers[customerIndex]
 ;
-    _, err = pool.Exec(`INSERT INTO customers (firstName, secondName, sirname, gender, dateOfBirth, otherNotes, email, phoneNumber, address, city, postcode, country) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`, customer.FirstName, customer.SecondName, customer.Sirname, customer.Gender, customer.DateOfBirth, customer.OtherNotes, customer.email, customer.phoneNumber, customer.address, customer.city, customer.postcode, customer.country)
+    _, err = pool.Exec(`INSERT INTO customers (firstName, secondName, sirname, gender, dateOfBirth, otherNotes, email, phoneNumber, address, city, postcode, country) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`, customer.FirstName, customer.SecondName, customer.Sirname, customer.Gender, customer.DateOfBirth, customer.OtherNotes, customer.Email, customer.PhoneNumber, customer.Address, customer.City, customer.Postcode, customer.Country)
     if (err != nil) { logError.Fatal(err.Error()) }
   }
   log.Print("Test data created for the customers tables!")
 
   for caseIndex := 0; caseIndex < len(caseManagement.Cases); caseIndex++ {
     caseRecord := caseManagement.Cases[caseIndex]
-    _, err = pool.Exec(`INSERT INTO cases (summary, description, customer, user, dateOpened, dateClosed, priority) VALUES (?, ?, ?, ?, ?, ?, ?);`, caseRecord.Summary, caseRecord.Description, caseRecord.Customer, caseRecord.User, caseRecord.DateOpened, caseRecord.DateClosed, caseRecord.Priority)
+    _, err = pool.Exec(`INSERT INTO cases (summary, description, customer, createdBy, assignedTo, dateOpened, dateClosed, priority) VALUES (?, ?, ?, ?, ?, ?, ?, ?);`, caseRecord.Summary, caseRecord.Description, caseRecord.Customer, caseRecord.CreatedBy, caseRecord.AssignedTo, caseRecord.DateOpened, caseRecord.DateClosed, caseRecord.Priority)
     if (err != nil) { logError.Fatal(err.Error()) }
   }
   log.Print("Test data created for the cases tables!")
@@ -218,18 +223,19 @@ type Customer struct {
   Gender string
   DateOfBirth string
   OtherNotes string
-  email string;
-  phoneNumber string;
-  address string;
-  city string;
-  postcode string;
-  country string;
+  Email string;
+  PhoneNumber string;
+  Address string;
+  City string;
+  Postcode string;
+  Country string;
 }
 type Case struct {
   Summary string
   Description string
   Customer int64
-  User int64
+  CreatedBy int64
+  AssignedTo int64
   DateOpened string
   DateClosed string
   Priority string

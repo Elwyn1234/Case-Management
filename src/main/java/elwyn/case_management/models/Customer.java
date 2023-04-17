@@ -13,4 +13,9 @@ public class Customer extends Record {
   public String city;
   public String postcode;
   public String country;
+
+  public String fullNameAndId() {
+    boolean hasSecondName = (secondName != "" | secondName != null);
+    return firstName + " " + (hasSecondName ? secondName + " " : "") + sirname + " (" + id + ")";
+  }
 }

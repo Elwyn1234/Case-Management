@@ -1,14 +1,15 @@
 package elwyn.case_management.views;
 
 import java.awt.event.*;
-import java.time.Clock;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.awt.Font;
+import java.awt.Color;
+import java.awt.Dimension;
+
 import java.util.function.Consumer;
 
+import javax.swing.JComponent;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -16,15 +17,18 @@ import javax.swing.JScrollPane;
 import javax.swing.text.JTextComponent;
 import javax.swing.JLabel;
 
-import elwyn.case_management.models.Contact;
 import elwyn.case_management.models.RouterModel;
 import elwyn.case_management.models.User;
 import elwyn.case_management.models.View;
-import elwyn.case_management.controllers.ContactController;
-import elwyn.case_management.controllers.PerformanceController;
+import net.miginfocom.layout.AC;
+import net.miginfocom.layout.BoundSize;
+import net.miginfocom.layout.LC;
+import net.miginfocom.layout.UnitValue;
+import net.miginfocom.swing.MigLayout;
 import elwyn.case_management.controllers.UserController;
 
 public class LoginView extends JScrollPane {
+  protected static final int TITLE_SIZE = 30;
   UserController userController;
   Consumer<RouterModel> displayView;
   JTextComponent usernameField;
@@ -37,11 +41,23 @@ public class LoginView extends JScrollPane {
   }
 
   public void displayLogin() {
+    Dimension expectedDimension = new Dimension(250, 200);
+    LC lc = new LC();
+    lc.setWrapAfter(1);
+    MigLayout mig = new MigLayout(lc);
     JPanel panel = new JPanel();
-    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-    panel.add(new JLabel("Login"));
-    usernameField = RecordView.addTextField(panel, "Username", "", false, true);
-    passwordField = RecordView.addTextField(panel, "Password", "", false, true);
+    panel.setLayout(mig);
+    panel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1, true));
+    panel.setPreferredSize(expectedDimension);
+    panel.setMaximumSize(expectedDimension);
+    panel.setMinimumSize(expectedDimension);
+
+    JLabel title = new JLabel("Login");
+    title.setFont(new Font(getFont().getFontName(), Font.PLAIN, TITLE_SIZE));
+    JPanel usernamePanel = new JPanel();
+    JPanel passwordPanel = new JPanel();
+    usernameField = RecordView.addTextField(usernamePanel, "Username", "", false, true);
+    passwordField = RecordView.addTextField(passwordPanel, "Password", "", false, true);
 
     JButton loginButton = new JButton("Login");
     loginButton.addActionListener(new ActionListener() {
@@ -55,10 +71,26 @@ public class LoginView extends JScrollPane {
           }
         }
     });
-    panel.add(loginButton);
-    setViewportView(panel);
+    panel.add(RecordView.centrePanel(title));
+    panel.add(RecordView.centrePanel(usernamePanel));
+    panel.add(RecordView.centrePanel(passwordPanel));
+    panel.add(RecordView.centrePanel(loginButton));
+
+    setViewportView(RecordView.centrePanel(panel));
 
 
+        // Dimension expectedDimension = new Dimension(100, 100);
+        // JPanel paneltest = new JPanel();
+        // paneltest.setPreferredSize(expectedDimension);
+        // paneltest.setMaximumSize(expectedDimension);
+        // paneltest.setMinimumSize(expectedDimension);
+        // paneltest.setBackground(Color.RED); // for debug only
+
+        // Box boxtest = new Box(BoxLayout.Y_AXIS);
+        // boxtest.add(Box.createVerticalGlue());
+        // boxtest.add(paneltest);     
+        // boxtest.add(Box.createVerticalGlue());
+        // setViewportView(boxtest);
 
     // User user = new User();
     // user.id = 1;

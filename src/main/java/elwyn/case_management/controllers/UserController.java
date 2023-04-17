@@ -12,11 +12,13 @@ import elwyn.case_management.models.User;
 public class UserController extends RecordController<User> {
   protected String tableName() { return "users"; }
     
-  public List<User> readRecords() {
+  public List<User> readRecords(int page) {
     List<User> users = new ArrayList<User>();
     try {
-      String sql = "SELECT rowid, * from users";
+      String sql = "SELECT rowid, * FROM users ORDER BY name ASC LIMIT ?,?";
       PreparedStatement pStatement = conn.prepareStatement(sql);
+      pStatement.setInt(1, PAGE_SIZE * page);
+      pStatement.setInt(2, PAGE_SIZE);
       ResultSet rs = pStatement.executeQuery();
             
       while (rs.next()) {

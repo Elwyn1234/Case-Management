@@ -22,6 +22,7 @@ public class CustomerView extends RecordView<Customer> {
   JTextComponent postcode;
   JTextComponent country;
 
+  protected String pageTitle() { return "Customers"; }
   protected String tabNameOfViewRecords() { return "View Customers"; }
   protected String tabNameOfCreateRecord() { return "Create Customer"; }
   protected String tabNameOfEditRecord() { return "Edit Customer"; }
@@ -30,27 +31,32 @@ public class CustomerView extends RecordView<Customer> {
     super(controller);
   }
 
-  protected void addRecordFields(JComponent panel, Customer record, boolean editable) {
+  protected void addRecordFields(JComponent leftPanel, JComponent rightPanel, Customer record, boolean editable) {
     if (record == null) {
       record = new Customer();
     }
-    firstName = addTextField(panel, "First Name", record.firstName, false, editable);
-    secondName = addTextField(panel, "Second Name", record.secondName, true, editable);
-    sirname = addTextField(panel, "Sirname", record.sirname, true, editable);
-    dateOfBirth = addTextField(panel, "DateOfBirth", record.dateOfBirth, true, editable);
-    otherNotes = addTextField(panel, "OtherNotes", record.otherNotes, true, editable);
-    email = addTextField(panel, "Email", record.email, true, editable);
-    phoneNumber = addTextField(panel, "PhoneNumber", record.phoneNumber, true, editable);
-    address = addTextField(panel, "Address", record.address, true, editable);
-    city = addTextField(panel, "City", record.city, true, editable);
-    postcode = addTextField(panel, "Postcode", record.postcode, true, editable);
-    country = addTextField(panel, "Country", record.country, true, editable);
+    
+    if (editable) {
+      firstName = addTextField(leftPanel, "First Name", record.firstName, false, editable);
+      secondName = addTextField(leftPanel, "Second Name", record.secondName, true, editable);
+      sirname = addTextField(leftPanel, "Sirname", record.sirname, true, editable);
+    } else {
+      addTextField(leftPanel, "Name", record.fullNameAndId(), false, editable);
+    }
+    dateOfBirth = addTextField(leftPanel, "DateOfBirth", record.dateOfBirth, true, editable);
+    otherNotes = addTextField(leftPanel, "OtherNotes", record.otherNotes, true, editable);
+    email = addTextField(leftPanel, "Email", record.email, true, editable);
+    phoneNumber = addTextField(leftPanel, "PhoneNumber", record.phoneNumber, true, editable);
+    address = addTextField(leftPanel, "Address", record.address, true, editable);
+    city = addTextField(leftPanel, "City", record.city, true, editable);
+    postcode = addTextField(leftPanel, "Postcode", record.postcode, true, editable);
+    country = addTextField(leftPanel, "Country", record.country, true, editable);
 
     String genderString = record.gender == null ? null : record.gender.toString();
     if (editable)
-      genderList = addSelectList(panel, "Gender", Gender.stringValues(), genderString);
+      genderList = addSelectList(leftPanel, "Gender", Gender.stringValues(), genderString);
     else
-      addTextField(panel, "Gender", genderString, true, false);
+      addTextField(leftPanel, "Gender", genderString, true, false);
   }
     
   protected Customer getFormValues() {

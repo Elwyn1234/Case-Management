@@ -25,11 +25,13 @@ public class ContactController extends RecordController<Contact> {
     this.filter = filter;
   }
 
-  public List<Contact> readRecords() {
+  public List<Contact> readRecords(int page) {
     ArrayList<Contact> contacts = new ArrayList<Contact>();
     try {
-      String sql = "SELECT rowid, * from contacts"; // eTODO: Use tableName function
+      String sql = "SELECT rowid, * from contacts ORDER BY date DESC LIMIT ?,?"; // eTODO: Use tableName function
       PreparedStatement pStatement = conn.prepareStatement(sql);
+      pStatement.setInt(1, page * PAGE_SIZE);
+      pStatement.setInt(2, PAGE_SIZE);
       ResultSet rs = pStatement.executeQuery();
             
       while (rs.next()) {
@@ -107,7 +109,7 @@ public class ContactController extends RecordController<Contact> {
   private PreparedStatement PopulateCommonSqlParameters(String sql, Contact record) throws SQLException {
     PreparedStatement pStatement = conn.prepareStatement(sql);
     pStatement.setString(1, record.description);
-    pStatement.setString(2, record.date);
+    pStatement.setString(2, record.date.toString());
     pStatement.setString(3, record.time);
     pStatement.setString(4, record.contactMethod == null ? null : record.contactMethod.toString());
     pStatement.setLong(5, record.caseRecord.id);
@@ -118,7 +120,7 @@ public class ContactController extends RecordController<Contact> {
   public boolean isRecordValid(Contact record) {
     if (record.description.length() <= 0)
       return false;
-    if (record.date.length() <= 0)
+    if (record.date == null)
       return false;
     if (record.time.length() <= 0)
       return false;

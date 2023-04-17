@@ -18,11 +18,13 @@ public class SubscriptionController extends RecordController<Subscription> {
     this.customerController = new CustomerController();
   }
 
-  public List<Subscription> readRecords() {
+  public List<Subscription> readRecords(int page) {
     ArrayList<Subscription> subscriptions = new ArrayList<Subscription>();
     try {
-      String sql = "SELECT rowid, * from subscriptions"; // eTODO: Use tableName function
+      String sql = "SELECT rowid, * FROM subscriptions ORDER BY dateStarted DESC LIMIT ?,?"; // eTODO: Use tableName function
       PreparedStatement pStatement = conn.prepareStatement(sql);
+      pStatement.setInt(1, page * PAGE_SIZE);
+      pStatement.setInt(2, PAGE_SIZE);
       ResultSet rs = pStatement.executeQuery();
             
       while (rs.next()) {

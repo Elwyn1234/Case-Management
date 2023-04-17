@@ -12,10 +12,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JPanel;
 
 import java.awt.event.*;
-import java.time.Clock;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -158,7 +155,7 @@ public class PerformanceView extends JScrollPane {
     // List<int> solvedCaseDates = new ArrayList<Date>();
 
     CaseController caseController = new CaseController(performanceController::selectMyCases);
-    List<Case> cases = caseController.readRecords();
+    List<Case> cases = caseController.readRecords(0); // eTODO: fix: pagination
     for (int i = 0; i < cases.size(); i++) {
       Case caseRecord = cases.get(i);
       switch (caseRecord.priority) {

@@ -5,4 +5,8 @@ public class User extends Record {
   public String username;
   public String password; // eTODO: hashed?
   public Role role;
+
+  public String fullNameAndId() { 
+    return name + " (" + id + ")";
+  }
 }

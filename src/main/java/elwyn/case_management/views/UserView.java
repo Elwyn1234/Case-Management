@@ -15,6 +15,7 @@ public class UserView extends RecordView<User> {
   JList<String> roles;
   // Contacts List
 
+  protected String pageTitle() { return "Users"; } // eTODO: use these again to add titles
   protected String tabNameOfViewRecords() { return "View Users"; } // eTODO: use these again to add titles
   protected String tabNameOfCreateRecord() { return "Create User"; }
   protected String tabNameOfEditRecord() { return "Edit User"; }
@@ -23,19 +24,19 @@ public class UserView extends RecordView<User> {
     super(controller);
   }
 
-  protected void addRecordFields(JComponent panel, User record, boolean editable) {
+  protected void addRecordFields(JComponent leftPanel, JComponent rightPanel, User record, boolean editable) {
     if (record == null) {
       record = new User();
     }
-    name = addTextField(panel, "Name", record.name, false, editable); //eTODO: rename from "" to "Field"
-    username = addTextField(panel, "Username", record.username, false, editable); //eTODO: rename from "" to "Field"
-    password = addTextField(panel, "Password", record.password, false, editable); //eTODO: rename from "" to "Field"
+    name = addTextField(leftPanel, "Name", record.name, false, editable); //eTODO: rename from "" to "Field"
+    username = addTextField(leftPanel, "Username", record.username, false, editable); //eTODO: rename from "" to "Field"
+    password = addTextField(leftPanel, "Password", record.password, false, editable); //eTODO: rename from "" to "Field"
 
     String role = record.role == null ? null : record.role.toString();
     if (editable)
-      roles = addSelectList(panel, "Role", Role.stringValues(), role);
+      roles = addSelectList(leftPanel, "Role", Role.stringValues(), role);
     else
-      addTextField(panel, "Role", role, true, false);
+      addTextField(leftPanel, "Role", role, true, false);
   }
     
   protected User getFormValues() {
