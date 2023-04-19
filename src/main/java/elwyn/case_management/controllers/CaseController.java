@@ -13,8 +13,8 @@ import elwyn.case_management.models.Priority;
 import elwyn.case_management.models.User;
 
 public class CaseController extends RecordController<Case> {
-  CustomerController customerController;
-  UserController userController;
+  public CustomerController customerController;
+  public UserController userController;
   Function<List<Case>, List<Case>> filter;
   User loggedInUser;
   protected String tableName() { return "cases"; }
@@ -57,9 +57,13 @@ public class CaseController extends RecordController<Case> {
       pStatement.setLong(1, rowid);
       ResultSet rs = pStatement.executeQuery();
             
+      int count = 0;
       while (rs.next()) {
+        count++;
         caseRecord = readResultSet(rs);
       }
+      if (count == 0)
+        caseRecord = null; // No record found
     } catch (Exception e) {
       System.out.println("Error: " + e.getMessage());
       e.printStackTrace();

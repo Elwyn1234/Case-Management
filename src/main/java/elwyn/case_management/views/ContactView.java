@@ -70,7 +70,7 @@ public class ContactView extends RecordView<Contact> {
     }
   }
     
-  protected Contact getFormValues() {
+  protected Contact validateFormValues() {
     Contact record = new Contact();
     record.caseRecord = new Case();
     record.user = new User();

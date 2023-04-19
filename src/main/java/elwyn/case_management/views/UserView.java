@@ -39,7 +39,7 @@ public class UserView extends RecordView<User> {
       addTextField(leftPanel, "Role", role, true, false);
   }
     
-  protected User getFormValues() {
+  protected User validateFormValues() {
     User record = new User();
     record.name = name.getText();
     record.username = username.getText();

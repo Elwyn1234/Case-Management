@@ -7,10 +7,7 @@ import java.awt.Dimension;
 
 import java.util.function.Consumer;
 
-import javax.swing.JComponent;
 import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -20,10 +17,7 @@ import javax.swing.JLabel;
 import elwyn.case_management.models.RouterModel;
 import elwyn.case_management.models.User;
 import elwyn.case_management.models.View;
-import net.miginfocom.layout.AC;
-import net.miginfocom.layout.BoundSize;
 import net.miginfocom.layout.LC;
-import net.miginfocom.layout.UnitValue;
 import net.miginfocom.swing.MigLayout;
 import elwyn.case_management.controllers.UserController;
 

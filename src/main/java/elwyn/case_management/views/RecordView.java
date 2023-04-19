@@ -20,7 +20,6 @@ import javax.swing.border.Border;
 import javax.swing.text.JTextComponent;
 import javax.swing.JComponent;
 
-import elwyn.case_management.models.Case;
 import elwyn.case_management.models.MiscButton;
 import elwyn.case_management.models.Record;
 import net.miginfocom.layout.LC;
@@ -251,14 +250,12 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
     commitButton.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent event) {
-          T record = getFormValues();
-          record.id = recordId;
-          if (!controller.isRecordValid(record))
-          {
-            // eTODO: user feedback
+          T record = validateFormValues();
+          boolean formIsValid = record != null;
+          if (!formIsValid)
             return;
-          }
 
+          record.id = recordId;
           if (createMode)
             controller.createRecord(record);
           else
@@ -271,7 +268,7 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
 
     return centrePanel(panel);
   }
-  protected abstract T getFormValues();
+  protected abstract T validateFormValues();
   
 
 

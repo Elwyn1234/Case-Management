@@ -70,7 +70,7 @@ public class CustomerView extends RecordView<Customer> {
       addTextField(leftPanel, "Gender", genderString, true, false);
   }
     
-  protected Customer getFormValues() {
+  protected Customer validateFormValues() {
     Customer record = new Customer();
     record.country = country.getText();
     record.postcode = postcode.getText();

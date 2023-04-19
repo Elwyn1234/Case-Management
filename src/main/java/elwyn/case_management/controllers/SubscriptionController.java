@@ -45,9 +45,13 @@ public class SubscriptionController extends RecordController<Subscription> {
       pStatement.setLong(1, rowid);
       ResultSet rs = pStatement.executeQuery();
             
+      int count = 0;
       while (rs.next()) {
+        count++;
         subscription = readResultSet(rs);
       }
+      if (count == 0)
+        subscription = null; // No record found
     } catch (Exception e) {
       System.out.println("Error: " + e.getMessage());
       e.printStackTrace();

@@ -39,9 +39,13 @@ public class UserController extends RecordController<User> {
       pStatement.setString(1, username);
       ResultSet rs = pStatement.executeQuery();
             
+      int count = 0;
       while (rs.next()) {
+        count++;
         user = readResultSet(rs);
       }
+      if (count == 0)
+        user = null; // No record found
     } catch (Exception e) {
       System.out.println("Error: " + e.getMessage());
       e.printStackTrace();
@@ -57,9 +61,13 @@ public class UserController extends RecordController<User> {
       pStatement.setLong(1, rowid);
       ResultSet rs = pStatement.executeQuery();
             
+      int count = 0;
       while (rs.next()) {
+        count++;
         user = readResultSet(rs);
       }
+      if (count == 0)
+        user = null; // No record found
     } catch (Exception e) {
       System.out.println("Error: " + e.getMessage());
       e.printStackTrace();

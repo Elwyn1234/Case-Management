@@ -30,20 +30,14 @@ public class CaseView extends RecordView<Case> {
   JTextComponent description;
   JTextComponent customerId;
   JTextComponent assignedTo;
-  JTextComponent dayOpened;
-  JTextComponent monthOpened;
-  JTextComponent yearOpened;
-  JTextComponent secondOpened;
-  JTextComponent minuteOpened;
-  JTextComponent hourOpened;
-  JTextComponent dayClosed;
-  JTextComponent monthClosed;
-  JTextComponent yearClosed;
-  JTextComponent secondClosed;
-  JTextComponent minuteClosed;
-  JTextComponent hourClosed;
-  JTextComponent dateClosed;
   JList<String> priorityList;
+
+  // eTODO: make validity messages red
+  JLabel summaryValidityMessage = new JLabel();
+  JLabel customerIdValidityMessage = new JLabel();
+  JLabel assignedToValidityMessage = new JLabel();
+  JLabel priorityValidityMessage = new JLabel();
+
   CaseController caseController;
   // Contacts List
 
@@ -52,9 +46,17 @@ public class CaseView extends RecordView<Case> {
   protected String tabNameOfCreateRecord() { return "Create Case"; }
   protected String tabNameOfEditRecord() { return "Edit Case"; }
 
+
+
   public CaseView(CaseController controller) {
     super(controller, new MiscButton<Case>(controller::closeRecord, controller::shouldShowButton, "Close"));
     this.controller = controller;
+    this.caseController = controller;
+
+    this.summaryValidityMessage.setVisible(false);
+    this.customerIdValidityMessage.setVisible(false);
+    this.assignedToValidityMessage.setVisible(false);
+    this.priorityValidityMessage.setVisible(false);
   }
 
   protected void addRecordManagementFields(JComponent leftPanel, JComponent rightPanel, Case record) {
@@ -66,17 +68,14 @@ public class CaseView extends RecordView<Case> {
     String priorityString = record.priority == null ? null : record.priority.toString();
 
     summary = addTextField(leftPanel, "Summary", record.summary, false, true);
+    leftPanel.add(summaryValidityMessage);
     description = addTextArea(leftPanel, "Description", record.description, false, true);
     this.customerId = addTextField(leftPanel, "Customer ID", customerId, false, true); // eTODO: can we embed CustomerView here
+    leftPanel.add(customerIdValidityMessage);
     this.assignedTo = addTextField(leftPanel, "Assignee", assignedTo, false, true);
-    // eTODO: Autofill all date time fields
-    // dayClosed = addTextField(leftPanel, "Day Closed", Integer.toString(record.dateClosed.getDate()), false, true);
-    // monthClosed = addTextField(leftPanel, "Month Closed", Integer.toString(record.dateClosed.getMonth()), false, true);
-    // yearClosed = addTextField(leftPanel, "Year Closed", Integer.toString(record.dateClosed.getYear()), false, true);
-    // secondClosed = addTextField(leftPanel, "Second Closed", Integer.toString(record.dateClosed.getSeconds()), false, true);
-    // minuteClosed = addTextField(leftPanel, "Minute Closed", Integer.toString(record.dateClosed.getMinutes()), false, true);
-    // hourClosed = addTextField(leftPanel, "Hour Closed", Integer.toString(record.dateClosed.getHours()), false, true);
+    leftPanel.add(assignedToValidityMessage);
     priorityList = addSelectList(leftPanel, "Priority", Priority.stringValues(), priorityString);
+    leftPanel.add(priorityValidityMessage);
   }
 
   protected void addRecordFields(JComponent leftPanel, JComponent rightPanel, Case record, boolean editable) {
@@ -184,17 +183,72 @@ public class CaseView extends RecordView<Case> {
     leftPanel.add(descriptionLabel, "span 2");
     leftPanel.add(descriptionArea, "span 2");
   }
-    
-  protected Case getFormValues() {
+
+  protected Case validateFormValues() {
+    summaryValidityMessage.setText("");
+    summaryValidityMessage.setVisible(false);
+    customerIdValidityMessage.setText("");
+    customerIdValidityMessage.setVisible(false);
+    assignedToValidityMessage.setText("");
+    assignedToValidityMessage.setVisible(false);
+    priorityValidityMessage.setText("");
+    priorityValidityMessage.setVisible(false);
+
+    boolean formIsValid = true;
     Case record = new Case();
     record.customer = new Customer();
     record.assignedTo = new User();
     record.summary = summary.getText();
+    if (record.summary.isBlank()) {
+      summaryValidityMessage.setText("Summary is required");
+      summaryValidityMessage.setVisible(true);
+      formIsValid = false;
+    }
+    if (record.summary.length() > 80) {
+      summaryValidityMessage.setText("Summary must be less than 80 characters");
+      summaryValidityMessage.setVisible(true);
+      formIsValid = false;
+    }
     record.description = description.getText();
-    record.customer.id = Long.parseLong(customerId.getText()); // eTODO: handle exception
-    record.assignedTo.id = Long.parseLong(assignedTo.getText()); // eTODO: handle exception
+    
+    try {
+      record.customer.id = Long.parseLong(customerId.getText()); // eTODO: handle exception
+    } catch (Exception e) {
+      customerIdValidityMessage.setText("Customer ID must be a valid Customer ID");
+      customerIdValidityMessage.setVisible(true);
+      formIsValid = false;
+    }
+    Customer customer = caseController.customerController.readRecord(record.customer.id);
+    if (customer == null) {
+      customerIdValidityMessage.setText("Customer ID must be a valid Customer ID");
+      customerIdValidityMessage.setVisible(true);
+      formIsValid = false;
+    }
+    if (!assignedTo.getText().isBlank()) {
+      try {
+        record.assignedTo.id = Long.parseLong(assignedTo.getText()); // eTODO: handle exception
+      } catch (Exception e) {
+        assignedToValidityMessage.setText("Assignee must be a valid User ID");
+        assignedToValidityMessage.setVisible(true);
+        formIsValid = false;
+      }
+    }
+    User user = caseController.userController.readRecord(record.assignedTo.id);
+    if (user == null) {
+      assignedToValidityMessage.setText("Assignee must be a valid User ID");
+      assignedToValidityMessage.setVisible(true);
+      formIsValid = false;
+    }
+    if (priorityList.isSelectionEmpty()) {
+      priorityValidityMessage.setText("Priority is required");
+      priorityValidityMessage.setVisible(true);
+      formIsValid = false;
+    }
     record.priority = Priority.parseSelectedPriority(priorityList.getSelectedValue()); //eTODO: rename parseSelectedX mthods
-    return record;
+    if (formIsValid)
+      return record;
+    else
+      return null;
   }
 }
 

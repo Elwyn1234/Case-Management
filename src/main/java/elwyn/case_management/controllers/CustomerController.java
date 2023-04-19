@@ -40,9 +40,13 @@ public class CustomerController extends RecordController<Customer> {
       pStatement.setLong(1, rowid);
       ResultSet rs = pStatement.executeQuery();
             
+      int count = 0;
       while (rs.next()) {
+        count++;
         customer = readResultSet(rs);
       }
+      if (count == 0)
+        customer = null; // No record found
     } catch (Exception e) {
       System.out.println("Error: " + e.getMessage());
       e.printStackTrace();

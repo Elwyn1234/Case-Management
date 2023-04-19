@@ -59,7 +59,7 @@ public class SubscriptionView extends RecordView<Subscription> {
     days = addTextField(leftPanel, "Days", Long.toString(record.days), false, editable); // eTODO: generate how many days till the subscription runs out
   } // eTODO: generate the subscriptions status. has it ended
     
-  protected Subscription getFormValues() {
+  protected Subscription validateFormValues() {
     Subscription record = new Subscription();
     record.customer = new Customer();
     record.customer.id = Long.parseLong(customerId.getText()); // eTODO: handle exception
