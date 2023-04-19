@@ -5,7 +5,6 @@ import java.util.Date;
 public class Contact extends Record {
   public String description;
   public Date date;
-  public String time;
   public ContactMethod contactMethod;
   public Case caseRecord;
   public User user;

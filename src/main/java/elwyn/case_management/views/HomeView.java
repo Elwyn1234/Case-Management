@@ -34,7 +34,7 @@ public class HomeView extends JTabbedPane {
   }
 
   public void displayHome() {
-    CaseController caseController = new CaseController(homeController::selectMyCases);
+    CaseController caseController = new CaseController(homeController::selectMyCases, homeController.user);
     ContactController contactController = new ContactController(homeController::selectMyContacts);
     CaseView caseView = new CaseView(caseController);
     ContactView contactView = new ContactView(contactController);
@@ -77,7 +77,7 @@ public class HomeView extends JTabbedPane {
 
     addTab("Contacts", new ContactView(new ContactController(null)));
         
-    addTab("Cases", new CaseView(new CaseController(null)));
+    addTab("Cases", new CaseView(new CaseController(null, homeController.user)));
 
     addTab("Subscriptions", new SubscriptionView(new SubscriptionController()));
 

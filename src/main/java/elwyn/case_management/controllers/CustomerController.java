@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import elwyn.case_management.models.Customer;
@@ -56,7 +57,10 @@ public class CustomerController extends RecordController<Customer> {
     customer.secondName = rs.getString("secondName");
     customer.sirname = rs.getString("sirname");
     customer.gender = Gender.parseSelectedGender(rs.getString("gender"));
-    customer.dateOfBirth = rs.getString("dateOfBirth");
+    int day = rs.getInt("dayOfBirth");
+    int month = rs.getInt("monthOfBirth");
+    int year = rs.getInt("yearOfBirth");
+    customer.dateOfBirth = new Date(year, month, day);
     customer.otherNotes = rs.getString("otherNotes");
     customer.email = rs.getString("email");
     customer.phoneNumber = rs.getString("phoneNumber");
@@ -71,18 +75,18 @@ public class CustomerController extends RecordController<Customer> {
 
   protected PreparedStatement buildInsertPreparedStatement(Customer record) throws SQLException {
     String sql="INSERT INTO customers " + 
-        "(firstName, secondName, sirname, dateOfBirth, otherNotes, email, phoneNumber, address, city, postcode, country, gender) " +
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        "(firstName, secondName, sirname, dayOfBirth, monthOfBirth, yearOfBirth, otherNotes, email, phoneNumber, address, city, postcode, country, gender) " +
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
     PreparedStatement pStatement = PopulateCommonSqlParameters(sql, record);
     return pStatement;
   }
 
   protected PreparedStatement buildUpdatePreparedStatement(Customer record) throws SQLException {
     String sql="UPDATE customers SET " +
-        "firstName=?, secondName=?, sirname=?, dateOfBirth=?, otherNotes=?, email=?, phoneNumber=?, address=?, city=?, postcode=?, country=?, gender=?" +
+        "firstName=?, secondName=?, sirname=?, dayOfBirth=?, monthOfBirth=?, yearOfBirth=?, otherNotes=?, email=?, phoneNumber=?, address=?, city=?, postcode=?, country=?, gender=?" +
         "WHERE rowid=?";
     PreparedStatement pStatement = PopulateCommonSqlParameters(sql, record);
-    pStatement.setLong(13, record.id);
+    pStatement.setLong(15, record.id);
     return pStatement;
   }
   private PreparedStatement PopulateCommonSqlParameters(String sql, Customer record) throws SQLException {
@@ -90,15 +94,17 @@ public class CustomerController extends RecordController<Customer> {
     pStatement.setString(1, record.firstName);
     pStatement.setString(2, record.secondName);
     pStatement.setString(3, record.sirname);
-    pStatement.setString(4, record.dateOfBirth);
-    pStatement.setString(5, record.otherNotes);
-    pStatement.setString(6, record.email);
-    pStatement.setString(7, record.phoneNumber);
-    pStatement.setString(8, record.address);
-    pStatement.setString(9, record.city);
-    pStatement.setString(10, record.postcode);
-    pStatement.setString(11, record.country);
-    pStatement.setString(12, record.gender == null ? null : record.gender.toString());
+    pStatement.setInt(4, record.dateOfBirth.getDate());
+    pStatement.setInt(5, record.dateOfBirth.getMonth());
+    pStatement.setInt(6, record.dateOfBirth.getYear());
+    pStatement.setString(7, record.otherNotes);
+    pStatement.setString(8, record.email);
+    pStatement.setString(9, record.phoneNumber);
+    pStatement.setString(10, record.address);
+    pStatement.setString(11, record.city);
+    pStatement.setString(12, record.postcode);
+    pStatement.setString(13, record.country);
+    pStatement.setString(14, record.gender == null ? null : record.gender.toString());
     return pStatement;
   }
     

@@ -21,7 +21,7 @@ public class UserView extends RecordView<User> {
   protected String tabNameOfEditRecord() { return "Edit User"; }
 
   public UserView(RecordController<User> controller) {
-    super(controller);
+    super(controller, null);
   }
 
   protected void addRecordFields(JComponent leftPanel, JComponent rightPanel, User record, boolean editable) {

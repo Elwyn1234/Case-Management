@@ -56,7 +56,9 @@ func createdb() {
     secondName VARCHAR(32),
     sirname VARCHAR(32),
     gender VARCHAR(32),
-    dateOfBirth CHAR(10),
+    dayOfBirth INTEGER,
+    monthOfBirth INTEGER,
+    yearOfBirth INTEGER,
     otherNotes TEXT,
     email VARCHAR(32),
     phoneNumber VARCHAR(32) NOT NULL,
@@ -73,10 +75,21 @@ func createdb() {
     description TEXT,
     customer INTEGER NOT NULL,
     createdBy INTEGER NOT NULL,
-    assignedTo INTEGER NOT NULL,
-    dateOpened CHAR(10) NOT NULL,
-    dateClosed CHAR(10),
+    assignedTo INTEGER,
     priority VARCHAR(32) NOT NULL,
+
+    dayOpened INTEGER NOT NULL,
+    monthOpened INTEGER NOT NULL,
+    yearOpened INTEGER NOT NULL,
+    hourOpened INTEGER NOT NULL,
+    minuteOpened INTEGER NOT NULL,
+    secondOpened INTEGER NOT NULL,
+    dayClosed INTEGER,
+    monthClosed INTEGER,
+    yearClosed INTEGER,
+    hourClosed INTEGER,
+    minuteClosed INTEGER,
+    secondClosed INTEGER,
     FOREIGN KEY (customer)
       REFERENCES customers(rowid)
       ON DELETE CASCADE
@@ -93,14 +106,18 @@ func createdb() {
   if (err != nil) { logError.Fatal(err.Error()) }
   log.Print("customers table created!")
 
-  // eTODO: we probably dont want to rely on rowid as per the rowid docs
   _, err = pool.Exec(`CREATE TABLE contacts (
     description TEXT NOT NULL,
-    date CHAR(10) NOT NULL,
-    time CHAR(5) NOT NULL,
     contactMethod VARCHAR(10) NOT NULL,
     caseId INTEGER,
     user INTEGER NOT NULL,
+
+    day INTEGER NOT NULL,
+    month INTEGER NOT NULL,
+    year INTEGER NOT NULL,
+    hour INTEGER NOT NULL,
+    minute INTEGER NOT NULL,
+    second INTEGER NOT NULL,
     FOREIGN KEY (caseId)
       REFERENCES cases(rowid)
       ON DELETE CASCADE
@@ -182,21 +199,111 @@ func addTestData() {
   for customerIndex := 0; customerIndex < len(caseManagement.Customers); customerIndex++ {
     customer := caseManagement.Customers[customerIndex]
 ;
-    _, err = pool.Exec(`INSERT INTO customers (firstName, secondName, sirname, gender, dateOfBirth, otherNotes, email, phoneNumber, address, city, postcode, country) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`, customer.FirstName, customer.SecondName, customer.Sirname, customer.Gender, customer.DateOfBirth, customer.OtherNotes, customer.Email, customer.PhoneNumber, customer.Address, customer.City, customer.Postcode, customer.Country)
+    _, err = pool.Exec(`
+        INSERT INTO customers (
+        firstName,
+        secondName,
+        sirname,
+        gender,
+        dayOfBirth,
+        monthOfBirth,
+        yearOfBirth,
+        otherNotes,
+        email,
+        phoneNumber,
+        address,
+        city,
+        postcode,
+        country)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+        customer.FirstName,
+        customer.SecondName,
+        customer.Sirname,
+        customer.Gender,
+        customer.DayOfBirth,
+        customer.MonthOfBirth,
+        customer.YearOfBirth,
+        customer.OtherNotes,
+        customer.Email,
+        customer.PhoneNumber,
+        customer.Address,
+        customer.City,
+        customer.Postcode,
+        customer.Country)
     if (err != nil) { logError.Fatal(err.Error()) }
   }
   log.Print("Test data created for the customers tables!")
 
   for caseIndex := 0; caseIndex < len(caseManagement.Cases); caseIndex++ {
     caseRecord := caseManagement.Cases[caseIndex]
-    _, err = pool.Exec(`INSERT INTO cases (summary, description, customer, createdBy, assignedTo, dateOpened, dateClosed, priority) VALUES (?, ?, ?, ?, ?, ?, ?, ?);`, caseRecord.Summary, caseRecord.Description, caseRecord.Customer, caseRecord.CreatedBy, caseRecord.AssignedTo, caseRecord.DateOpened, caseRecord.DateClosed, caseRecord.Priority)
+    _, err = pool.Exec(`
+        INSERT INTO cases (
+        summary,
+        description,
+        customer,
+        createdBy,
+        assignedTo,
+        dayOpened,
+        monthOpened,
+        yearOpened,
+        secondOpened,
+        minuteOpened,
+        hourOpened,
+        dayClosed,
+        monthClosed,
+        yearClosed,
+        secondClosed,
+        minuteClosed,
+        hourClosed,
+        priority)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+        caseRecord.Summary,
+        caseRecord.Description,
+        caseRecord.Customer,
+        caseRecord.CreatedBy,
+        caseRecord.AssignedTo,
+        caseRecord.DayOpened,
+        caseRecord.MonthOpened,
+        caseRecord.YearOpened,
+        caseRecord.SecondOpened,
+        caseRecord.MinuteOpened,
+        caseRecord.HourOpened,
+        caseRecord.DayClosed,
+        caseRecord.MonthClosed,
+        caseRecord.YearClosed,
+        caseRecord.SecondClosed,
+        caseRecord.MinuteClosed,
+        caseRecord.HourClosed,
+        caseRecord.Priority)
     if (err != nil) { logError.Fatal(err.Error()) }
   }
   log.Print("Test data created for the cases tables!")
 
   for contactIndex := 0; contactIndex < len(caseManagement.Contacts); contactIndex++ {
     contact := caseManagement.Contacts[contactIndex]
-    _, err = pool.Exec(`INSERT INTO contacts (description, date, time, contactMethod, caseId, user) VALUES (?, ?, ?, ?, ?, ?);`, contact.Description, contact.Date, contact.Time, contact.ContactMethod, contact.Case, contact.User)
+    _, err = pool.Exec(`
+        INSERT INTO contacts (
+        description,
+        day,
+        month,
+        year,
+        second,
+        minute,
+        hour,
+        contactMethod,
+        caseId,
+        user)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+        contact.Description,
+        contact.Day,
+        contact.Month,
+        contact.Year,
+        contact.Second,
+        contact.Minute,
+        contact.Hour,
+        contact.ContactMethod,
+        contact.Case,
+        contact.User)
     if (err != nil) { logError.Fatal(err.Error()) }
   }
   log.Print("Test data created for the contacts tables!")
@@ -221,7 +328,9 @@ type Customer struct {
   SecondName string
   Sirname string
   Gender string
-  DateOfBirth string
+  DayOfBirth int32
+  MonthOfBirth int32
+  YearOfBirth int32
   OtherNotes string
   Email string;
   PhoneNumber string;
@@ -236,14 +345,28 @@ type Case struct {
   Customer int64
   CreatedBy int64
   AssignedTo int64
-  DateOpened string
-  DateClosed string
+  DayOpened int32
+  MonthOpened int32
+  YearOpened int32
+  SecondOpened int32
+  MinuteOpened int32
+  HourOpened int32
+  DayClosed int32
+  MonthClosed int32
+  YearClosed int32
+  SecondClosed int32
+  MinuteClosed int32
+  HourClosed int32
   Priority string
 }
 type Contact struct {
   Description string
-  Date string
-  Time string
+  Day int32
+  Month int32
+  Year int32
+  Second int32
+  Minute int32
+  Hour int32
   ContactMethod string
   Case int64
   User int64

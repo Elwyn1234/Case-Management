@@ -2,6 +2,9 @@ package elwyn.case_management.views;
 
 import javax.swing.JList;
 import javax.swing.text.JTextComponent;
+
+import java.util.Date;
+
 import javax.swing.JComponent;
 
 import elwyn.case_management.controllers.RecordController;
@@ -13,7 +16,9 @@ public class CustomerView extends RecordView<Customer> {
   JTextComponent secondName;
   JTextComponent sirname;
   JList<String> genderList;
-  JTextComponent dateOfBirth;
+  JTextComponent dayOfBirth;
+  JTextComponent monthOfBirth;
+  JTextComponent yearOfBirth;
   JTextComponent otherNotes;
   JTextComponent email;
   JTextComponent phoneNumber;
@@ -28,7 +33,7 @@ public class CustomerView extends RecordView<Customer> {
   protected String tabNameOfEditRecord() { return "Edit Customer"; }
 
   public CustomerView(RecordController<Customer> controller) {
-    super(controller);
+    super(controller, null);
   }
 
   protected void addRecordFields(JComponent leftPanel, JComponent rightPanel, Customer record, boolean editable) {
@@ -43,7 +48,13 @@ public class CustomerView extends RecordView<Customer> {
     } else {
       addTextField(leftPanel, "Name", record.fullNameAndId(), false, editable);
     }
-    dateOfBirth = addTextField(leftPanel, "DateOfBirth", record.dateOfBirth, true, editable);
+    if (editable) {
+      dayOfBirth = addTextField(leftPanel, "DateOfBirth", Integer.toString(record.dateOfBirth.getDate()), true, editable);
+      monthOfBirth = addTextField(leftPanel, "DateOfBirth", Integer.toString(record.dateOfBirth.getMonth()), true, editable);
+      yearOfBirth = addTextField(leftPanel, "DateOfBirth", Integer.toString(record.dateOfBirth.getYear()), true, editable);
+    } else {
+      addTextField(leftPanel, "DateOfBirth", record.dateOfBirth.toString(), true, editable);
+    }
     otherNotes = addTextField(leftPanel, "OtherNotes", record.otherNotes, true, editable);
     email = addTextField(leftPanel, "Email", record.email, true, editable);
     phoneNumber = addTextField(leftPanel, "PhoneNumber", record.phoneNumber, true, editable);
@@ -68,7 +79,10 @@ public class CustomerView extends RecordView<Customer> {
     record.phoneNumber = phoneNumber.getText();
     record.email = email.getText();
     record.otherNotes = otherNotes.getText();
-    record.dateOfBirth = dateOfBirth.getText();
+    int day = Integer.parseInt(dayOfBirth.getText());
+    int month = Integer.parseInt(monthOfBirth.getText());
+    int year = Integer.parseInt(yearOfBirth.getText());
+    record.dateOfBirth = new Date(year, month, day);
     record.sirname = sirname.getText();
     record.secondName = secondName.getText();
     record.firstName = firstName.getText();

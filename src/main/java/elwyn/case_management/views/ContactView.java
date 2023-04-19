@@ -17,7 +17,6 @@ import elwyn.case_management.models.ContactMethod;
 
 public class ContactView extends RecordView<Contact> {
   JTextComponent description;
-  JTextComponent date;
   JTextComponent time;
   JList<String> contactMethods;
   JTextComponent caseId;
@@ -30,7 +29,7 @@ public class ContactView extends RecordView<Contact> {
   protected String tabNameOfEditRecord() { return "Edit Contact"; }
 
   public ContactView(RecordController<Contact> controller) {
-    super(controller);
+    super(controller, null);
   }
 
   protected void addRecordFields(JComponent leftPanel, JComponent rightPanel, Contact record, boolean editable) {
@@ -38,8 +37,7 @@ public class ContactView extends RecordView<Contact> {
       record = new Contact();
     }
     description = addTextArea(leftPanel, "Description", record.description, false, editable);
-    date = addTextField(leftPanel, "Date", record.date.toString(), false, editable);
-    time = addTextField(leftPanel, "Time", record.time, false, editable);
+    addTextField(leftPanel, "Date", record.date.toString(), false, editable);
     String contactMethodString = record.contactMethod == null ? null : record.contactMethod.toString();
     if (editable)
       contactMethods = addSelectList(leftPanel, "Contact Method", ContactMethod.stringValues(), contactMethodString);
@@ -77,14 +75,6 @@ public class ContactView extends RecordView<Contact> {
     record.caseRecord = new Case();
     record.user = new User();
     record.description = description.getText();
-    DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
-    try {
-      record.date = df.parse(date.getText());
-    } catch (Exception e) {
-      System.out.println(e.getMessage());
-      e.printStackTrace();
-    }
-    record.time = time.getText();
     record.caseRecord.id = Long.parseLong(caseId.getText()); // eTODO: handle exception
     record.user.id = Long.parseLong(userId.getText()); // eTODO: handle exception
     record.contactMethod = ContactMethod.parseSelectedContactMethod(contactMethods.getSelectedValue()); //eTODO: rename parseSelectedX mthods

@@ -15,9 +15,11 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.text.JTextComponent;
 
+import elwyn.case_management.controllers.CaseController;
 import elwyn.case_management.controllers.RecordController;
 import elwyn.case_management.models.Case;
 import elwyn.case_management.models.Customer;
+import elwyn.case_management.models.MiscButton;
 import elwyn.case_management.models.Priority;
 import elwyn.case_management.models.User;
 import net.miginfocom.layout.LC;
@@ -27,10 +29,22 @@ public class CaseView extends RecordView<Case> {
   JTextComponent summary;
   JTextComponent description;
   JTextComponent customerId;
-  JTextComponent userId;
-  JTextComponent dateOpened;
+  JTextComponent assignedTo;
+  JTextComponent dayOpened;
+  JTextComponent monthOpened;
+  JTextComponent yearOpened;
+  JTextComponent secondOpened;
+  JTextComponent minuteOpened;
+  JTextComponent hourOpened;
+  JTextComponent dayClosed;
+  JTextComponent monthClosed;
+  JTextComponent yearClosed;
+  JTextComponent secondClosed;
+  JTextComponent minuteClosed;
+  JTextComponent hourClosed;
   JTextComponent dateClosed;
   JList<String> priorityList;
+  CaseController caseController;
   // Contacts List
 
   protected String pageTitle() { return "Cases"; } // eTODO: use these again to add titles
@@ -38,8 +52,9 @@ public class CaseView extends RecordView<Case> {
   protected String tabNameOfCreateRecord() { return "Create Case"; }
   protected String tabNameOfEditRecord() { return "Edit Case"; }
 
-  public CaseView(RecordController<Case> controller) {
-    super(controller);
+  public CaseView(CaseController controller) {
+    super(controller, new MiscButton<Case>(controller::closeRecord, controller::shouldShowButton, "Close"));
+    this.controller = controller;
   }
 
   protected void addRecordManagementFields(JComponent leftPanel, JComponent rightPanel, Case record) {
@@ -47,15 +62,20 @@ public class CaseView extends RecordView<Case> {
       record = new Case();
     }
     String customerId = record.customer == null ? "" : Long.toString(record.customer.id);
-    String userId = record.user == null ? "" : Long.toString(record.user.id);
+    String assignedTo = record.assignedTo == null ? "" : Long.toString(record.assignedTo.id);
     String priorityString = record.priority == null ? null : record.priority.toString();
 
-    summary = addTextField(leftPanel, "Summary", record.summary, false, true); //eTODO: rename from "" to "Field"
+    summary = addTextField(leftPanel, "Summary", record.summary, false, true);
     description = addTextArea(leftPanel, "Description", record.description, false, true);
     this.customerId = addTextField(leftPanel, "Customer ID", customerId, false, true); // eTODO: can we embed CustomerView here
-    this.userId = addTextField(leftPanel, "User ID", userId, false, true); // eTODO: can we embed CustomerView here
-    dateOpened = addTextField(leftPanel, "Date Opened", record.dateOpened, false, true);
-    dateClosed = addTextField(leftPanel, "Date Closed", record.dateClosed, false, true);
+    this.assignedTo = addTextField(leftPanel, "Assignee", assignedTo, false, true);
+    // eTODO: Autofill all date time fields
+    // dayClosed = addTextField(leftPanel, "Day Closed", Integer.toString(record.dateClosed.getDate()), false, true);
+    // monthClosed = addTextField(leftPanel, "Month Closed", Integer.toString(record.dateClosed.getMonth()), false, true);
+    // yearClosed = addTextField(leftPanel, "Year Closed", Integer.toString(record.dateClosed.getYear()), false, true);
+    // secondClosed = addTextField(leftPanel, "Second Closed", Integer.toString(record.dateClosed.getSeconds()), false, true);
+    // minuteClosed = addTextField(leftPanel, "Minute Closed", Integer.toString(record.dateClosed.getMinutes()), false, true);
+    // hourClosed = addTextField(leftPanel, "Hour Closed", Integer.toString(record.dateClosed.getHours()), false, true);
     priorityList = addSelectList(leftPanel, "Priority", Priority.stringValues(), priorityString);
   }
 
@@ -168,13 +188,11 @@ public class CaseView extends RecordView<Case> {
   protected Case getFormValues() {
     Case record = new Case();
     record.customer = new Customer();
-    record.user = new User();
+    record.assignedTo = new User();
     record.summary = summary.getText();
     record.description = description.getText();
     record.customer.id = Long.parseLong(customerId.getText()); // eTODO: handle exception
-    record.user.id = Long.parseLong(userId.getText()); // eTODO: handle exception
-    record.dateOpened = dateOpened.getText();
-    record.dateClosed = dateClosed.getText();
+    record.assignedTo.id = Long.parseLong(assignedTo.getText()); // eTODO: handle exception
     record.priority = Priority.parseSelectedPriority(priorityList.getSelectedValue()); //eTODO: rename parseSelectedX mthods
     return record;
   }

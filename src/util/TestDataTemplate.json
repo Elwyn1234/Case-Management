@@ -19,7 +19,11 @@
       "lastName": "last1",
       "sirname": "sirname1",
       "gender": "male1",
-      "dateOfBirth": "19-09-1991",
+      "dateOfBirth": {
+        "day": 1,
+        "month": 1,
+        "year": 2001
+      },
       "otherNotes": "Other Notes 1",
       "email": "email1",
       "phoneNumber": "phoneNumber1",
@@ -34,7 +38,11 @@
       "lastName": "last2",
       "sirname": "sirname2",
       "gender": "female2",
-      "dateOfBirth": "19-09-1992",
+      "dateOfBirth":{
+        "day": 2,
+        "month": 2,
+        "year": 2002
+      },
       "otherNotes": "Other Notes 2",
       "email": "email2",
       "phoneNumber": "phoneNumber2",
@@ -52,8 +60,26 @@
       "customer": 1,
       "createdBy": 1,
       "assignedTo": 1,
-      "dateOpened": "19-09-1981",
-      "dateClosed": "19-09-1991",
+      "dateOpened": {
+        "day": 1,
+        "month": 1,
+        "year": 2001
+      },
+      "timeOpened": {
+        "second": 1,
+        "minute": 1,
+        "hour": 1
+      },
+      "dateClosed": {
+        "day": 1,
+        "month": 1,
+        "year": 2001
+      }, 
+      "timeClosed": {
+        "second": 1,
+        "minute": 1,
+        "hour": 1
+      },
       "priority": "High"
     },
     {
@@ -62,54 +88,30 @@
       "customer": 2,
       "createdBy": 1,
       "assignedTo": 1,
-      "dateOpened": "19-09-1982",
-      "dateClosed": "19-09-1992",
+      "dateOpened": {
+        "day": 2,
+        "month": 2,
+        "year": 2002
+      },
+      "timeOpened": {
+        "second": 2,
+        "minute": 2,
+        "hour": 2
+      },
+      "dateClosed":{
+        "day": 2,
+        "month": 2,
+        "year": 2002
+      }, 
+      "timeClosed": {
+        "second": 2,
+        "minute": 2,
+        "hour": 2
+      },
       "priority": "Urgent"
     }
   ],
-  "contacts": [
-    {
-      "description": "description1",
-      "date": "13-05-2023",
-      "time": "time1",
-      "contactMethod": "Phone",
-      "case": 1,
-      "user": 1
-    },
-    {
-      "description": "description1",
-      "date": "13-04-2023",
-      "time": "time1",
-      "contactMethod": "Phone",
-      "case": 1,
-      "user": 1
-    },
-    {
-      "description": "description1",
-      "date": "14-04-2023",
-      "time": "time1",
-      "contactMethod": "Phone",
-      "case": 1,
-      "user": 1
-    },
-    {
-      "description": "description1",
-      "date": "14-04-2023",
-      "time": "time1",
-      "contactMethod": "Phone",
-      "case": 1,
-      "user": 1
-    },
-
-    {
-      "description": "description2",
-      "date": "14-04-2023",
-      "time": "time2",
-      "contactMethod": "Phone",
-      "case": 2,
-      "user": 2
-    }
-  ],
+  "contacts": [],
   "subscriptions": [
     {
       "customer": 1,

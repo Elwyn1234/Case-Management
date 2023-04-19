@@ -55,9 +55,11 @@ def main():
 
     obj["contacts"] = []
     for i in range(CONTACT_NUM):
-        month = str(random.randint(1, 12))
-        day = str(random.randint(1, 28))
-        date = day + "-" + month + "-2023"
+        day = random.randint(1, 28)
+        month = random.randint(1, 12)
+        year = 2023
+        if (month > 4 and day > 15) or month > 5:
+            year = 2022
         contactMethod = "";
         x = random.randint(1, 4)
         if x == 1:
@@ -71,9 +73,19 @@ def main():
     
         obj["contacts"].append({
             "description": funcParams["loremIpsumArray"][i],
-            "date": date,
+            "date": {
+                "day": day,
+                "month": month,
+                "year": year,
+            },
             "contactMethod": contactMethod,
-            "user": 1
+            "case": 1,
+            "user": 1,
+            "time": {
+                "second": random.randint(0, 59),
+                "minute": random.randint(0, 59),
+                "hour": random.randint(0, 23),
+            }
         })
     
     outFile = open("testData.json", "w")

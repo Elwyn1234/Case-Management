@@ -14,7 +14,7 @@ public class PerformanceController {
 
   public PerformanceController(User user) {
     this.user = user;
-    caseController = new CaseController(this::selectMyCases);
+    caseController = new CaseController(this::selectMyCases, null);
     contactController = new ContactController(this::selectMyContacts);
   }
   

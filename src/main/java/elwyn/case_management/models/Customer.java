@@ -1,11 +1,13 @@
 package elwyn.case_management.models;
 
+import java.util.Date;
+
 public class Customer extends Record {
   public String firstName;
   public String secondName;
   public String sirname;
   public Gender gender;
-  public String dateOfBirth;
+  public Date dateOfBirth;
   public String otherNotes;
   public String email;
   public String phoneNumber;

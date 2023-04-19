@@ -21,7 +21,7 @@ public class SubscriptionView extends RecordView<Subscription> {
   protected String tabNameOfEditRecord() { return "Edit Subscriptions"; }
 
   public SubscriptionView(RecordController<Subscription> controller) {
-    super(controller);
+    super(controller, null);
   }
 
   protected void addRecordFields(JComponent leftPanel, JComponent rightPanel, Subscription record, boolean editable) {

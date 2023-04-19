@@ -20,6 +20,8 @@ import javax.swing.border.Border;
 import javax.swing.text.JTextComponent;
 import javax.swing.JComponent;
 
+import elwyn.case_management.models.Case;
+import elwyn.case_management.models.MiscButton;
 import elwyn.case_management.models.Record;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
@@ -30,6 +32,7 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
   protected static final int TOP_MARGIN = 30;
   protected static final int LABEL_MARGIN = 10;
   RecordController<T> controller;
+  MiscButton<T> miscButtonParams;
   int page = 0;
   JTextField pageJumpField;
 
@@ -38,9 +41,10 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
   protected abstract String tabNameOfCreateRecord();
   protected abstract String tabNameOfEditRecord();
     
-  public RecordView(RecordController<T> controller) {
+  public RecordView(RecordController<T> controller, MiscButton<T> miscButtonParams) {
     super();
     this.controller = controller;
+    this.miscButtonParams = miscButtonParams;
     initComponents();
   }
     
@@ -183,10 +187,27 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
             setViewportView(displayRecordListing());
           }
       });
+
+      JButton miscButton = null;
+      if (miscButtonParams != null && miscButtonParams.shouldShowButton.apply(record)) {
+        miscButton = new JButton(miscButtonParams.buttonText);
+        miscButton.setPreferredSize(new Dimension(80, 30));
+        miscButton.addActionListener(new ActionListener() {
+            long recordId = record.id;
+            @Override
+            public void actionPerformed(ActionEvent event) {
+              miscButtonParams.buttonPressed.accept(recordId); // eTODO: This is going to cause jumping
+              setViewportView(displayRecordListing());
+            }
+        });
+      }
       JPanel buttons = new JPanel();
       buttons.add(editButton);
       buttons.add(Box.createHorizontalStrut(15));
       buttons.add(deleteButton);
+      buttons.add(Box.createHorizontalStrut(15));
+      if (miscButton != null)
+        buttons.add(miscButton);
       leftFields.add(Box.createVerticalStrut(10));
       leftFields.add(buttons);
       rowPanel.add(leftFields);

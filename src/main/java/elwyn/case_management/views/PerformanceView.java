@@ -44,7 +44,7 @@ public class PerformanceView extends JScrollPane {
       return false;
     if (left.getMonth() != right.getMonth())
       return false;
-    if (left.getDay() != right.getDay())
+    if (left.getDate() != right.getDate())
       return false;
     return true;
   }
@@ -62,7 +62,7 @@ public class PerformanceView extends JScrollPane {
     if (left.getMonth() > right.getMonth())
       return false;
 
-    if (left.getDay() < right.getDay())
+    if (left.getDate() < right.getDate())
       return true;
     return false;
   }
@@ -154,7 +154,7 @@ public class PerformanceView extends JScrollPane {
     // List<Date> solvedCaseDates = new ArrayList<Date>();
     // List<int> solvedCaseDates = new ArrayList<Date>();
 
-    CaseController caseController = new CaseController(performanceController::selectMyCases);
+    CaseController caseController = new CaseController(performanceController::selectMyCases, null);
     List<Case> cases = caseController.readRecords(0); // eTODO: fix: pagination
     for (int i = 0; i < cases.size(); i++) {
       Case caseRecord = cases.get(i);
