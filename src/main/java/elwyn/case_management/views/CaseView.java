@@ -1,7 +1,7 @@
 package elwyn.case_management.views;
 
-import java.awt.FlowLayout;
 import java.awt.Insets;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import javax.swing.JList;
@@ -16,13 +16,11 @@ import javax.swing.JLabel;
 import javax.swing.text.JTextComponent;
 
 import elwyn.case_management.controllers.CaseController;
-import elwyn.case_management.controllers.RecordController;
 import elwyn.case_management.models.Case;
 import elwyn.case_management.models.Customer;
 import elwyn.case_management.models.MiscButton;
 import elwyn.case_management.models.Priority;
 import elwyn.case_management.models.User;
-import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 
 public class CaseView extends RecordView<Case> {
@@ -53,10 +51,14 @@ public class CaseView extends RecordView<Case> {
     this.controller = controller;
     this.caseController = controller;
 
-    this.summaryValidityMessage.setVisible(false);
-    this.customerIdValidityMessage.setVisible(false);
-    this.assignedToValidityMessage.setVisible(false);
-    this.priorityValidityMessage.setVisible(false);
+    summaryValidityMessage.setVisible(false);
+    customerIdValidityMessage.setVisible(false);
+    assignedToValidityMessage.setVisible(false);
+    priorityValidityMessage.setVisible(false);
+    summaryValidityMessage.setForeground(Color.RED);
+    customerIdValidityMessage.setForeground(Color.RED);
+    assignedToValidityMessage.setForeground(Color.RED);
+    priorityValidityMessage.setForeground(Color.RED);
   }
 
   protected void addRecordManagementFields(JComponent leftPanel, JComponent rightPanel, Case record) {
@@ -107,13 +109,15 @@ public class CaseView extends RecordView<Case> {
     creatorBox.add(Box.createHorizontalStrut(LABEL_MARGIN));
     creatorBox.add(creatorValue);
 
-    JLabel assigneeLabel = new JLabel("Assignee");
-    JLabel assigneeValue = new JLabel(record.assignedTo.fullNameAndId());
-    assigneeValue.setFont(new Font(getFont().getFontName(), Font.PLAIN, 14));
     Box assigneeBox = new Box(BoxLayout.X_AXIS);
-    assigneeBox.add(assigneeLabel);
-    assigneeBox.add(Box.createHorizontalStrut(LABEL_MARGIN));
-    assigneeBox.add(assigneeValue);
+    if (record.assignedTo != null) {
+      JLabel assigneeLabel = new JLabel("Assignee");
+      JLabel assigneeValue = new JLabel(record.assignedTo.fullNameAndId());
+      assigneeValue.setFont(new Font(getFont().getFontName(), Font.PLAIN, 14));
+      assigneeBox.add(assigneeLabel);
+      assigneeBox.add(Box.createHorizontalStrut(LABEL_MARGIN));
+      assigneeBox.add(assigneeValue);
+    } // eTODO: we should null check everything here in case something else in the future becomes optional
 
     JLabel statusLabel = new JLabel("Status");
     JLabel statusValue = new JLabel(record.getStatus());
@@ -196,8 +200,8 @@ public class CaseView extends RecordView<Case> {
 
     boolean formIsValid = true;
     Case record = new Case();
-    record.customer = new Customer();
-    record.assignedTo = new User();
+
+    // Summary
     record.summary = summary.getText();
     if (record.summary.isBlank()) {
       summaryValidityMessage.setText("Summary is required");
@@ -209,8 +213,12 @@ public class CaseView extends RecordView<Case> {
       summaryValidityMessage.setVisible(true);
       formIsValid = false;
     }
+
+    // Description
     record.description = description.getText();
     
+    // Customer
+    record.customer = new Customer();
     try {
       record.customer.id = Long.parseLong(customerId.getText()); // eTODO: handle exception
     } catch (Exception e) {
@@ -224,6 +232,9 @@ public class CaseView extends RecordView<Case> {
       customerIdValidityMessage.setVisible(true);
       formIsValid = false;
     }
+
+    // Assignee
+    record.assignedTo = new User();
     if (!assignedTo.getText().isBlank()) {
       try {
         record.assignedTo.id = Long.parseLong(assignedTo.getText()); // eTODO: handle exception
@@ -232,13 +243,15 @@ public class CaseView extends RecordView<Case> {
         assignedToValidityMessage.setVisible(true);
         formIsValid = false;
       }
+      User user = caseController.userController.readRecord(record.assignedTo.id);
+      if (user == null) {
+        assignedToValidityMessage.setText("Assignee must be a valid User ID");
+        assignedToValidityMessage.setVisible(true);
+        formIsValid = false;
+      }
     }
-    User user = caseController.userController.readRecord(record.assignedTo.id);
-    if (user == null) {
-      assignedToValidityMessage.setText("Assignee must be a valid User ID");
-      assignedToValidityMessage.setVisible(true);
-      formIsValid = false;
-    }
+
+    // Priority
     if (priorityList.isSelectionEmpty()) {
       priorityValidityMessage.setText("Priority is required");
       priorityValidityMessage.setVisible(true);

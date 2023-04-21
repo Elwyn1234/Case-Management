@@ -34,8 +34,8 @@ public class HomeView extends JTabbedPane {
   }
 
   public void displayHome() {
-    CaseController caseController = new CaseController(homeController::selectMyCases, homeController.user);
-    ContactController contactController = new ContactController(homeController::selectMyContacts);
+    CaseController caseController = new CaseController(homeController.user::selectMyCases, homeController.user);
+    ContactController contactController = new ContactController(homeController.user::selectMyContacts);
     CaseView caseView = new CaseView(caseController);
     ContactView contactView = new ContactView(contactController);
     JPanel panel = new JPanel();

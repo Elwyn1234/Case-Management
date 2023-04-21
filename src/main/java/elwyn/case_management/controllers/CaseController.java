@@ -206,13 +206,4 @@ public class CaseController extends RecordController<Case> {
     else
       return true;
   }
-
-  public static List<Case> selectMyCases(List<Case> cases) {
-    List<Case> filteredCases = new ArrayList<Case>();
-    for (Case caseRecord : cases) {
-      if (caseRecord.assignedTo.id == 1)
-        filteredCases.add(caseRecord);
-    }
-    return filteredCases;
-  }
 }
