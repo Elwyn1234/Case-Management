@@ -30,7 +30,6 @@ public class CaseView extends RecordView<Case> {
   JTextComponent assignedTo;
   JList<String> priorityList;
 
-  // eTODO: make validity messages red
   JLabel summaryValidityMessage = new JLabel();
   JLabel customerIdValidityMessage = new JLabel();
   JLabel assignedToValidityMessage = new JLabel();
@@ -209,7 +208,7 @@ public class CaseView extends RecordView<Case> {
       formIsValid = false;
     }
     if (record.summary.length() > 80) {
-      summaryValidityMessage.setText("Summary must be less than 80 characters");
+      summaryValidityMessage.setText("Summary must be no more than 80 characters");
       summaryValidityMessage.setVisible(true);
       formIsValid = false;
     }
