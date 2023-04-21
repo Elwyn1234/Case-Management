@@ -32,7 +32,7 @@ public class Router {
         displayedComponent = new HomeView(new HomeController(router.user), this::displayView); // eTODO: shall we add a Router class that handles which view has ownership
         break;
       case LOGIN:
-        displayedComponent = new LoginView(new UserController(), this::displayView);
+        displayedComponent = new LoginView(new UserController(null), this::displayView);
         break;
     }
     frame.add(displayedComponent);

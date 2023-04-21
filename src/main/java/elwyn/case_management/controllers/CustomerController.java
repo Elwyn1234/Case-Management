@@ -9,9 +9,14 @@ import java.util.List;
 
 import elwyn.case_management.models.Customer;
 import elwyn.case_management.models.Gender;
+import elwyn.case_management.models.User;
 
 public class CustomerController extends RecordController<Customer> {
   protected String tableName() { return "customers"; }
+
+  public CustomerController(User loggedInUser) {
+    super(loggedInUser);
+  }
 
   public List<Customer> readRecords(int page) {
     ArrayList<Customer> customers = new ArrayList<Customer>();

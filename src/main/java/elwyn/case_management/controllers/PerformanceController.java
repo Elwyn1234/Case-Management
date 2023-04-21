@@ -9,7 +9,7 @@ public class PerformanceController {
 
   public PerformanceController(User user) {
     this.user = user;
-    caseController = new CaseController(user::selectMyCases, null);
-    contactController = new ContactController(user::selectMyContacts);
+    caseController = new CaseController(user, user::selectMyCases);
+    contactController = new ContactController(user, user::selectMyContacts);
   }
 }

@@ -16,15 +16,13 @@ public class CaseController extends RecordController<Case> {
   public CustomerController customerController;
   public UserController userController;
   Function<List<Case>, List<Case>> filter;
-  User loggedInUser;
   protected String tableName() { return "cases"; }
 
-  public CaseController(Function<List<Case>, List<Case>> filter, User loggedInUser) {
-    super();
-    this.customerController = new CustomerController();
-    this.userController = new UserController();
+  public CaseController(User loggedInUser, Function<List<Case>, List<Case>> filter) {
+    super(loggedInUser);
+    this.customerController = new CustomerController(loggedInUser);
+    this.userController = new UserController(loggedInUser);
     this.filter = filter;
-    this.loggedInUser = loggedInUser;
   }
 
   public List<Case> readRecords(int page) {

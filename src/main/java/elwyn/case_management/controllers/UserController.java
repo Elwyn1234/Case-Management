@@ -12,6 +12,10 @@ import elwyn.case_management.models.User;
 public class UserController extends RecordController<User> {
   protected String tableName() { return "users"; }
     
+  public UserController(User loggedInUser) {
+    super(loggedInUser);
+  }
+
   public List<User> readRecords(int page) {
     List<User> users = new ArrayList<User>();
     try {

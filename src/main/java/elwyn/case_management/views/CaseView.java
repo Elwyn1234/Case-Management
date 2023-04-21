@@ -257,6 +257,7 @@ public class CaseView extends RecordView<Case> {
       formIsValid = false;
     }
     record.priority = Priority.parseSelectedPriority(priorityList.getSelectedValue()); //eTODO: rename parseSelectedX mthods
+
     if (formIsValid)
       return record;
     else

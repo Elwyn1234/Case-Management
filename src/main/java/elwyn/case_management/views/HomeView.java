@@ -34,8 +34,8 @@ public class HomeView extends JTabbedPane {
   }
 
   public void displayHome() {
-    CaseController caseController = new CaseController(homeController.user::selectMyCases, homeController.user);
-    ContactController contactController = new ContactController(homeController.user::selectMyContacts);
+    CaseController caseController = new CaseController(homeController.user, homeController.user::selectMyCases);
+    ContactController contactController = new ContactController(homeController.user, homeController.user::selectMyContacts);
     CaseView caseView = new CaseView(caseController);
     ContactView contactView = new ContactView(contactController);
     JPanel panel = new JPanel();
@@ -73,13 +73,13 @@ public class HomeView extends JTabbedPane {
 
     addTab("Home", home);
 
-    addTab("Customers", new CustomerView(new CustomerController()));
+    addTab("Customers", new CustomerView(new CustomerController(homeController.user)));
 
-    addTab("Contacts", new ContactView(new ContactController(null)));
+    addTab("Contacts", new ContactView(new ContactController(homeController.user, null)));
         
-    addTab("Cases", new CaseView(new CaseController(null, homeController.user)));
+    addTab("Cases", new CaseView(new CaseController(homeController.user, null)));
 
-    addTab("Subscriptions", new SubscriptionView(new SubscriptionController()));
+    addTab("Subscriptions", new SubscriptionView(new SubscriptionController(homeController.user)));
 
     PerformanceController performanceController = new PerformanceController(homeController.user);
     addTab("Team's Performance", new PerformanceView(performanceController));
@@ -87,7 +87,7 @@ public class HomeView extends JTabbedPane {
     // addTab("My Performance", performancePanel);
 
     // if (homeController.user.role == Role.ADMIN)
-      addTab("Users", new UserView(new UserController()));
+      addTab("Users", new UserView(new UserController(homeController.user)));
   }
 }
 

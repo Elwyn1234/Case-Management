@@ -8,15 +8,19 @@ import java.sql.SQLException;
 import java.util.List;
 
 import elwyn.case_management.models.Record;
+import elwyn.case_management.models.User;
 
 public abstract class RecordController <T extends Record> {
   public List<T> records; // eTODO: is this ever getting set / used
   Connection conn;
   static final int PAGE_SIZE = 20;
+  public User loggedInUser;
 
   protected abstract String tableName();
 
-  public RecordController() {
+  public RecordController(User loggedInUser) {
+    this.loggedInUser = loggedInUser;
+
     try { // eTODO: dependency injection
       Class.forName("org.sqlite.JDBC");
       conn = DriverManager.getConnection("jdbc:sqlite:assets/caseManagement.db");

@@ -8,14 +8,15 @@ import java.util.List;
 
 import elwyn.case_management.models.Subscription;
 import elwyn.case_management.models.SubscriptionType;
+import elwyn.case_management.models.User;
 
 public class SubscriptionController extends RecordController<Subscription> {
   CustomerController customerController;
   protected String tableName() { return "subscriptions"; }
 
-  public SubscriptionController() {
-    super();
-    this.customerController = new CustomerController();
+  public SubscriptionController(User loggedInUser) {
+    super(loggedInUser);
+    this.customerController = new CustomerController(loggedInUser);
   }
 
   public List<Subscription> readRecords(int page) {
