@@ -222,16 +222,17 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
   public JComponent displayRecordManagementPanel(T record) {
     boolean createMode = record == null;
 
-    Dimension expectedDimension = new Dimension(1000, 1000);
     LC lc = new LC();
     lc.setWrapAfter(1);
     MigLayout mig = new MigLayout(lc);
     JComponent panel = new JPanel();
     panel.setBorder(BorderFactory.createLineBorder(Color.black));
     panel.setLayout(mig);
-    panel.setPreferredSize(expectedDimension);
-    panel.setMaximumSize(expectedDimension);
-    panel.setMinimumSize(expectedDimension);
+    // eTODO: sizing \/
+    // Dimension expectedDimension = new Dimension(1000, 1000);
+    // panel.setPreferredSize(expectedDimension);
+    // panel.setMaximumSize(expectedDimension);
+    // panel.setMinimumSize(expectedDimension);
 
     JButton backButton = new JButton("Back");
     backButton.addActionListener(new ActionListener() {
