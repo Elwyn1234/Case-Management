@@ -3,15 +3,21 @@ package elwyn.case_management.views;
 import java.util.Date;
 
 import java.awt.Color;
+import java.awt.Font;
 
 import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.text.JTextComponent;
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
 import elwyn.case_management.controllers.RecordController;
 import elwyn.case_management.models.Customer;
 import elwyn.case_management.models.Gender;
+import net.miginfocom.layout.LC;
+import net.miginfocom.swing.MigLayout;
 
 public class CustomerView extends RecordView<Customer> {
   JTextComponent firstName;
@@ -315,5 +321,33 @@ public class CustomerView extends RecordView<Customer> {
       return record;
     else
       return null;
+  }
+  
+  public static JPanel createCustomerSummaryBox(Customer customer, String fontName, boolean leftAlign) {
+    JPanel panel = new JPanel();
+    panel.setLayout(new MigLayout("wrap 1"));
+    panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+    if (customer == null) 
+      return panel;
+
+    String openedForText = customer.fullNameAndId();
+
+    JLabel customerSubsectionLabel = new JLabel("Customer (" + customer.id + ")");
+    JLabel customerNameLabel = new JLabel(openedForText, SwingConstants.RIGHT);
+    JLabel customerEmailLabel = new JLabel(customer.email);
+    JLabel customerPhoneNumberLabel = new JLabel(customer.phoneNumber);
+
+    customerNameLabel.setFont(new Font(fontName, Font.PLAIN, 14));
+    customerEmailLabel.setFont(new Font(fontName, Font.PLAIN, 14));
+    customerPhoneNumberLabel.setFont(new Font(fontName, Font.PLAIN, 14));
+
+    String s = "align right";
+    if (leftAlign)
+      s = "align left";
+    panel.add(customerSubsectionLabel, s);
+    panel.add(customerNameLabel, s);
+    panel.add(customerEmailLabel, s);
+    panel.add(customerPhoneNumberLabel, s);
+    return panel;
   }
 }

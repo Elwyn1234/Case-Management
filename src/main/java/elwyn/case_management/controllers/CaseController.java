@@ -142,7 +142,7 @@ public class CaseController extends RecordController<Case> {
         "priority=? " +
         "WHERE rowid=?";
     PreparedStatement pStatement = PopulateCommonSqlParameters(sql, record);
-    pStatement.setLong(7, record.id);
+    pStatement.setLong(6, record.id);
     return pStatement;
   }
 

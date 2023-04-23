@@ -2,13 +2,13 @@ package elwyn.case_management.views;
 
 import java.awt.Insets;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Dimension;
+
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
@@ -89,90 +89,41 @@ public class CaseView extends RecordView<Case> {
       return;
     }
 
+    String font = getFont().getFontName();
     MigLayout mig = new MigLayout("wrap 2");
     leftPanel.setLayout(mig);
 
-    JLabel titleLabel = new JLabel(record.summary, SwingConstants.CENTER);
-    titleLabel.setFont(new Font(getFont().getFontName(), Font.PLAIN, TITLE_SIZE));
+    JTextArea title = RecordView.createTextArea(record.summary);
+    title.setPreferredSize(new Dimension(400, 50));
+    title.setFont(new Font(font, Font.PLAIN, TITLE_SIZE));
 
-    JComponent leftInnerPanel = new JPanel();
-    JComponent rightInnerPanel = new JPanel();
-    leftInnerPanel.setLayout(new BoxLayout(leftInnerPanel, BoxLayout.Y_AXIS));
-    rightInnerPanel.setLayout(new BoxLayout(rightInnerPanel, BoxLayout.Y_AXIS));
-
-
-    JLabel creatorLabel = new JLabel("Creator");
-    JLabel creatorValue = new JLabel(record.createdBy.fullNameAndId());
-    creatorValue.setFont(new Font(getFont().getFontName(), Font.PLAIN, 14));
     Box creatorBox = new Box(BoxLayout.X_AXIS);
-    creatorBox.add(creatorLabel);
-    creatorBox.add(Box.createHorizontalStrut(LABEL_MARGIN));
-    creatorBox.add(creatorValue);
+    if (record.createdBy != null)
+      creatorBox = RecordView.createLabelledFieldInline("Creator", record.createdBy.fullNameAndId(), font);
 
+    // eTODO: we should null check everything here in case something else in the future becomes optional
     Box assigneeBox = new Box(BoxLayout.X_AXIS);
-    if (record.assignedTo != null) {
-      JLabel label = new JLabel("Assignee");
-      JLabel value = new JLabel(record.assignedTo.fullNameAndId());
-      value.setFont(new Font(getFont().getFontName(), Font.PLAIN, 14));
-      assigneeBox.add(label);
-      assigneeBox.add(Box.createHorizontalStrut(LABEL_MARGIN));
-      assigneeBox.add(value);
-    } // eTODO: we should null check everything here in case something else in the future becomes optional
+    if (record.assignedTo != null)
+      assigneeBox = RecordView.createLabelledFieldInline("Assignee", record.assignedTo.fullNameAndId(), font);
 
     Box dateOpenedBox = new Box(BoxLayout.X_AXIS);
-    if (record.dateOpened != null) {
-      JLabel label = new JLabel("Opened");
-      JLabel value = new JLabel(record.dateOpened.toString());
-      value.setFont(new Font(getFont().getFontName(), Font.PLAIN, 14));
-      dateOpenedBox.add(label);
-      dateOpenedBox.add(Box.createHorizontalStrut(LABEL_MARGIN));
-      dateOpenedBox.add(value);
-    }
+    if (record.dateOpened != null)
+      dateOpenedBox = RecordView.createLabelledFieldInline("Opened", record.dateOpened.toString(), font);
 
     Box dateClosedBox = new Box(BoxLayout.X_AXIS);
-    if (record.dateClosed != null) {
-      JLabel label = new JLabel("Closed");
-      JLabel value = new JLabel(record.dateClosed.toString());
-      value.setFont(new Font(getFont().getFontName(), Font.PLAIN, 14));
-      dateClosedBox.add(label);
-      dateClosedBox.add(Box.createHorizontalStrut(LABEL_MARGIN));
-      dateClosedBox.add(value);
-    }
+    if (record.dateClosed != null)
+      dateClosedBox = RecordView.createLabelledFieldInline("Closed", record.dateClosed.toString(), font);
 
-    JLabel statusLabel = new JLabel("Status");
-    JLabel statusValue = new JLabel(record.getStatus());
-    statusValue.setFont(new Font(getFont().getFontName(), Font.PLAIN, 14));
     Box statusBox = new Box(BoxLayout.X_AXIS);
-    statusBox.add(statusLabel);
-    statusBox.add(Box.createHorizontalStrut(LABEL_MARGIN));
-    statusBox.add(statusValue);
+    statusBox = RecordView.createLabelledFieldInline("Status", record.getStatus(), font);
 
     JLabel priorityLabel = new JLabel("Priority");
-    JLabel priorityValue = new JLabel(record.priority.toString());
-    priorityValue.setFont(new Font(getFont().getFontName(), Font.PLAIN, 15));
-    if (record.priority == Priority.URGENT)
-      priorityValue.setForeground(Color.RED);
-    if (record.priority == Priority.HIGH)
-      priorityValue.setForeground(new Color(0x00F59342));
-    if (record.priority == Priority.MEDIUM)
-      priorityValue.setForeground(new Color(0x00B6C902));
-    if (record.priority == Priority.LOW)
-      priorityValue.setForeground(new Color(0x00008800));
     Box priorityBox = new Box(BoxLayout.X_AXIS);
     priorityBox.add(priorityLabel);
     priorityBox.add(Box.createHorizontalStrut(LABEL_MARGIN));
-    priorityBox.add(priorityValue);
+    priorityBox.add(CaseView.createPriorityLabel(record.priority, font));
 
-
-
-    JLabel customerSubsectionLabel = new JLabel("Customer");
-    String openedForText = record.customer.fullNameAndId();
-    JLabel openedForLabel = new JLabel(openedForText, SwingConstants.RIGHT);
-    openedForLabel.setFont(new Font(getFont().getFontName(), Font.PLAIN, 14));
-    JLabel customerEmailLabel = new JLabel(record.customer.email);
-    customerEmailLabel.setFont(new Font(getFont().getFontName(), Font.PLAIN, 14));
-    JLabel customerPhoneNumberLabel = new JLabel(record.customer.phoneNumber);
-    customerPhoneNumberLabel.setFont(new Font(getFont().getFontName(), Font.PLAIN, 14));
+    JPanel customerBox = CustomerView.createCustomerSummaryBox(record.customer, font, true);
     // eTODO: button \/
     // JButton commitButton = new JButton("View Customer Details");
     // commitButton.addActionListener(new ActionListener() {
@@ -184,38 +135,17 @@ public class CaseView extends RecordView<Case> {
     // });
     // panel.add(commitButton);
 
-    JLabel descriptionLabel = new JLabel("Description");
-    descriptionLabel.setBorder(new EmptyBorder(new Insets(TOP_MARGIN, 0, 0, 0)));
-    JTextArea descriptionArea = new JTextArea(record.description);
-    descriptionArea.setPreferredSize(new Dimension(500, 120));
-    descriptionArea.setEditable(false);
-    descriptionArea.setWrapStyleWord(true);
-    descriptionArea.setLineWrap(true);
-    descriptionArea.setMargin(new Insets(15, 0, 0, 0));
+    Box descriptionBox = RecordView.createLabelledTextArea("Description", record.description, new Insets(TOP_MARGIN, 0, 0, 0));
 
-
-    // leftInnerPanel.add(customerSubsectionLabel);
-    // leftInnerPanel.add(openedForLabel);
-    // leftInnerPanel.add(customerEmailLabel);
-    // leftInnerPanel.add(customerPhoneNumberLabel);
-    // leftInnerPanel.add(creatorBox);
-    // leftInnerPanel.add(assigneeBox);
-    // rightInnerPanel.add(statusBox);
-    // rightInnerPanel.add(priorityBox);
-
-    leftPanel.add(titleLabel, "span 2");
-    leftPanel.add(customerSubsectionLabel);
-    leftPanel.add(statusBox, "align right");
-    leftPanel.add(openedForLabel);
-    leftPanel.add(priorityBox, "align right");
-    leftPanel.add(customerEmailLabel, "span 2");
-    leftPanel.add(customerPhoneNumberLabel, "span 2");
-    leftPanel.add(creatorBox, "span 2");
-    leftPanel.add(assigneeBox, "span 2");
-    leftPanel.add(dateOpenedBox, "span 2");
-    leftPanel.add(dateClosedBox, "span 2");
-    leftPanel.add(descriptionLabel, "span 2");
-    leftPanel.add(descriptionArea, "span 2");
+    leftPanel.add(title, "span 2");
+    leftPanel.add(customerBox, "cell 0 1 1 4");
+    leftPanel.add(statusBox, "cell 1 1, align right");
+    leftPanel.add(priorityBox, "cell 1 2, align right");
+    leftPanel.add(creatorBox, "cell 0 5");
+    leftPanel.add(assigneeBox, "cell 0 6");
+    leftPanel.add(dateOpenedBox, "cell 0 7");
+    leftPanel.add(dateClosedBox, "wrap, cell 0 8");
+    leftPanel.add(descriptionBox, "span");
   }
 
   protected Case validateFormValues() {
@@ -293,6 +223,42 @@ public class CaseView extends RecordView<Case> {
       return record;
     else
       return null;
+  }
+
+  public static JPanel createCaseSummaryBox(Case record, String fontName) {
+    JPanel panel = new JPanel(new MigLayout("wrap 1"));
+    panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+    if (record == null) 
+      return panel;
+
+    JTextArea summaryArea = RecordView.createTextArea(record.summary);
+    summaryArea.setPreferredSize(new Dimension(200, 50));
+
+    JLabel caseSubsectionLabel = new JLabel("Case (" + record.id + ")");
+    JLabel caseStatusLabel = new JLabel(record.getStatus());
+
+    summaryArea.setFont(new Font(fontName, Font.PLAIN, 14));
+    caseStatusLabel.setFont(new Font(fontName, Font.PLAIN, 14));
+
+    panel.add(caseSubsectionLabel);
+    panel.add(summaryArea);
+    panel.add(createPriorityLabel(record.priority, fontName));
+    panel.add(caseStatusLabel);
+    return panel;
+  }
+
+  public static JLabel createPriorityLabel(Priority priority, String fontName) {
+    JLabel label = new JLabel(priority.toString());
+    label.setFont(new Font(fontName, Font.PLAIN, 15));
+    if (priority == Priority.URGENT)
+      label.setForeground(Color.RED);
+    if (priority == Priority.HIGH)
+      label.setForeground(new Color(0x00F59342));
+    if (priority == Priority.MEDIUM)
+      label.setForeground(new Color(0x00B6C902));
+    if (priority == Priority.LOW)
+      label.setForeground(new Color(0x00008800));
+    return label;
   }
 }
 

@@ -1,8 +1,13 @@
 package elwyn.case_management.views;
 
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
 
 import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.text.JTextComponent;
@@ -11,8 +16,9 @@ import elwyn.case_management.controllers.CaseController;
 import elwyn.case_management.controllers.RecordController;
 import elwyn.case_management.controllers.UserController;
 import elwyn.case_management.models.Case;
-import elwyn.case_management.models.Customer;
 import elwyn.case_management.models.User;
+import net.miginfocom.layout.LC;
+import net.miginfocom.swing.MigLayout;
 import elwyn.case_management.models.Contact;
 import elwyn.case_management.models.ContactMethod;
 
@@ -54,7 +60,8 @@ public class ContactView extends RecordView<Contact> {
     contactMethods = addSelectList(leftPanel, "Contact Method", ContactMethod.stringValues(), contactMethodString);
     leftPanel.add(contactMethodsValidityMessage);
 
-    this.caseId = addTextField(leftPanel, "Case ID", "", true, true);
+    String caseId = record.caseRecord == null ? "" : Long.toString(record.caseRecord.id);
+    this.caseId = addTextField(leftPanel, "Case ID", caseId, true, true);
     leftPanel.add(caseIdValidityMessage);
 
     this.userId = addTextField(leftPanel, "User ID", Long.toString(controller.loggedInUser.id), true, true); // eTODO: can we embed CustomerView here
@@ -70,33 +77,39 @@ public class ContactView extends RecordView<Contact> {
       return;
     }
 
-    description = addTextArea(leftPanel, "Description", record.description, false, editable);
+    MigLayout mig = new MigLayout("wrap 2");
+    leftPanel.setLayout(mig);
+    String font = getFont().getFontName();
 
-    addTextField(leftPanel, "Date", record.date.toString(), false, editable);
+    JTextComponent title = RecordView.createTextArea(record.description);
+    title.setPreferredSize(new Dimension(400, 50));
+    title.setFont(new Font(font, Font.PLAIN, 18));
 
-    String contactMethodString = record.contactMethod == null ? null : record.contactMethod.toString();
-    addTextField(leftPanel, "Contact Method", contactMethodString, false, false);
+    Box dateBox = new Box(BoxLayout.X_AXIS);
+    if (record.date != null)
+      dateBox = RecordView.createLabelledFieldInline("Date", record.date.toString(), font);
 
-    String caseId = record.caseRecord == null ? "" : Long.toString(record.caseRecord.id);
-    this.caseId = addTextField(leftPanel, "Case ID", caseId, true, editable); // eTODO: can we embed CaseView here
+    Box contactMethodBox = new Box(BoxLayout.X_AXIS);
+    if (record.contactMethod != null)
+      contactMethodBox = RecordView.createLabelledFieldInline("Contact Method", record.contactMethod.toString(), font);
+
+    Box userBox = new Box(BoxLayout.X_AXIS);
+    if (record.user != null)
+      userBox = RecordView.createLabelledFieldInline("User", record.user.fullNameAndId(), font);
+
+    JPanel caseBox = new JPanel();
+    JPanel customerBox = new JPanel();
     if (record.caseRecord != null) {
-      addTextField(leftPanel, "Case Summary", record.caseRecord.summary, false, editable);
-      if (record.caseRecord.priority != null)
-        addTextField(leftPanel, "Case Priority", record.caseRecord.priority.toString(), false, editable); // eTODO: make this show
-  
-      Customer customer = record.caseRecord.customer;
-      if (customer != null) { // eTODO: Add checks like this (especially important to deal with cases or customers that are deleted)
-        boolean hasSecondName = (customer.secondName != "" | customer.secondName != null);
-        String fullName = customer.firstName + " " + (hasSecondName ? customer.secondName + " " : "") + customer.sirname;
-        addTextField(leftPanel, "Customer Name", fullName, true, editable);
-        addTextField(leftPanel, "Customer Email", customer.email, false, editable);
-        addTextField(leftPanel, "Customer Phone Number", customer.phoneNumber, false, editable);
-      }
+      caseBox = CaseView.createCaseSummaryBox(record.caseRecord, font);
+      customerBox = CustomerView.createCustomerSummaryBox(record.caseRecord.customer, font, false);
     }
 
-    String userId = record.user == null ? "" : Long.toString(record.user.id);
-    this.userId = addTextField(leftPanel, "User ID", userId, true, editable); // eTODO: can we embed CustomerView here
-    addTextField(leftPanel, "User's Name", record.user.name, false, editable);
+    leftPanel.add(title, "span, aligny top");
+    leftPanel.add(caseBox, "aligny top");
+    leftPanel.add(customerBox, "align right, aligny top");
+    leftPanel.add(dateBox, "span, aligny top");
+    leftPanel.add(contactMethodBox, "span, aligny top");
+    leftPanel.add(userBox, "span, aligny top");
   }
     
   protected Contact validateFormValues() {

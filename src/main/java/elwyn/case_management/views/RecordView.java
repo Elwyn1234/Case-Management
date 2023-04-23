@@ -1,10 +1,12 @@
 package elwyn.case_management.views;
 
 import java.awt.Color;
+import java.awt.Insets;
 import java.awt.Font;
 import java.awt.Dimension;
 import java.awt.event.*;
 import java.awt.FlowLayout;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -17,6 +19,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import javax.swing.text.JTextComponent;
 import javax.swing.JComponent;
 
@@ -207,7 +210,6 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
       buttons.add(Box.createHorizontalStrut(15));
       if (miscButton != null)
         buttons.add(miscButton);
-      leftFields.add(Box.createVerticalStrut(10));
       leftFields.add(buttons);
       rowPanel.add(leftFields);
 
@@ -289,6 +291,7 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
   public static JTextComponent addTextArea(JComponent panel, String labelText, String string, boolean hasTopMargin, boolean editable) {
     JTextArea textComponent = new JTextArea(string);
     textComponent.setPreferredSize(new Dimension(400, 120));
+    textComponent.setWrapStyleWord(true);
     textComponent.setLineWrap(true);
     return addTextComponent(panel, labelText, textComponent, hasTopMargin, editable);
   }
@@ -297,6 +300,43 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
     JTextComponent textComponent = new JTextField(string);
     textComponent.setPreferredSize(new Dimension(100, 25));
     return addTextComponent(panel, labelText, textComponent, hasTopMargin, editable);
+  }
+
+  public static Box createLabelledTextArea(String label, String value, Insets insets) {
+    JLabel descriptionLabel = new JLabel();
+    if (label != null)
+      descriptionLabel = new JLabel(label);
+    JTextArea descriptionArea = new JTextArea(value);
+    descriptionArea.setPreferredSize(new Dimension(400, 120));
+    descriptionArea.setEditable(false);
+    descriptionArea.setWrapStyleWord(true);
+    descriptionArea.setLineWrap(true);
+
+    Box box = new Box(BoxLayout.Y_AXIS);
+    box.setBorder(new EmptyBorder(insets));
+    box.add(descriptionLabel);
+    box.add(descriptionArea);
+    return box;
+  }
+
+  public static JTextArea createTextArea(String value) {
+    JTextArea title = new JTextArea(value);
+    title.setEditable(false);
+    title.setWrapStyleWord(true);
+    title.setLineWrap(true);
+    title.setOpaque(false);
+    return title;
+  }
+
+  public static Box createLabelledFieldInline(String label, String value, String fontName) {
+    Box box = new Box(BoxLayout.X_AXIS);
+    JLabel a = new JLabel(label);
+    JLabel b = new JLabel(value);
+    b.setFont(new Font(fontName, Font.PLAIN, 14));
+    box.add(a);
+    box.add(Box.createHorizontalStrut(LABEL_MARGIN));
+    box.add(b);
+    return box;
   }
 
   public static JList<String> addSelectList(JComponent panel, String labelText, String[] strings, String defaultSelection) {
