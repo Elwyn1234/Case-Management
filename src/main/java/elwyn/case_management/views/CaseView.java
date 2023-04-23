@@ -102,7 +102,7 @@ public class CaseView extends RecordView<Case> {
 
 
     JLabel creatorLabel = new JLabel("Creator");
-    JLabel creatorValue = new JLabel(record.createdBy.fullNameAndId() + " on " + record.dateOpened);
+    JLabel creatorValue = new JLabel(record.createdBy.fullNameAndId());
     creatorValue.setFont(new Font(getFont().getFontName(), Font.PLAIN, 14));
     Box creatorBox = new Box(BoxLayout.X_AXIS);
     creatorBox.add(creatorLabel);
@@ -111,13 +111,33 @@ public class CaseView extends RecordView<Case> {
 
     Box assigneeBox = new Box(BoxLayout.X_AXIS);
     if (record.assignedTo != null) {
-      JLabel assigneeLabel = new JLabel("Assignee");
-      JLabel assigneeValue = new JLabel(record.assignedTo.fullNameAndId());
-      assigneeValue.setFont(new Font(getFont().getFontName(), Font.PLAIN, 14));
-      assigneeBox.add(assigneeLabel);
+      JLabel label = new JLabel("Assignee");
+      JLabel value = new JLabel(record.assignedTo.fullNameAndId());
+      value.setFont(new Font(getFont().getFontName(), Font.PLAIN, 14));
+      assigneeBox.add(label);
       assigneeBox.add(Box.createHorizontalStrut(LABEL_MARGIN));
-      assigneeBox.add(assigneeValue);
+      assigneeBox.add(value);
     } // eTODO: we should null check everything here in case something else in the future becomes optional
+
+    Box dateOpenedBox = new Box(BoxLayout.X_AXIS);
+    if (record.dateOpened != null) {
+      JLabel label = new JLabel("Opened");
+      JLabel value = new JLabel(record.dateOpened.toString());
+      value.setFont(new Font(getFont().getFontName(), Font.PLAIN, 14));
+      dateOpenedBox.add(label);
+      dateOpenedBox.add(Box.createHorizontalStrut(LABEL_MARGIN));
+      dateOpenedBox.add(value);
+    }
+
+    Box dateClosedBox = new Box(BoxLayout.X_AXIS);
+    if (record.dateClosed != null) {
+      JLabel label = new JLabel("Closed");
+      JLabel value = new JLabel(record.dateClosed.toString());
+      value.setFont(new Font(getFont().getFontName(), Font.PLAIN, 14));
+      dateClosedBox.add(label);
+      dateClosedBox.add(Box.createHorizontalStrut(LABEL_MARGIN));
+      dateClosedBox.add(value);
+    }
 
     JLabel statusLabel = new JLabel("Status");
     JLabel statusValue = new JLabel(record.getStatus());
@@ -192,6 +212,8 @@ public class CaseView extends RecordView<Case> {
     leftPanel.add(customerPhoneNumberLabel, "span 2");
     leftPanel.add(creatorBox, "span 2");
     leftPanel.add(assigneeBox, "span 2");
+    leftPanel.add(dateOpenedBox, "span 2");
+    leftPanel.add(dateClosedBox, "span 2");
     leftPanel.add(descriptionLabel, "span 2");
     leftPanel.add(descriptionArea, "span 2");
   }

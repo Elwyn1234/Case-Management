@@ -15,9 +15,6 @@ public class Case extends Record {
 
   public String getStatus() {
     String status = dateClosed == null ? "Open" : "Closed";
-    if (status.equals("Closed")) {
-      status += " (" + dateClosed + ")";
-    }
     return status;
   }
 }
