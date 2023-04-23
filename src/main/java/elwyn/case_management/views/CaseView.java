@@ -50,10 +50,6 @@ public class CaseView extends RecordView<Case> {
     this.controller = controller;
     this.caseController = controller;
 
-    summaryValidityMessage.setVisible(false);
-    customerIdValidityMessage.setVisible(false);
-    assignedToValidityMessage.setVisible(false);
-    priorityValidityMessage.setVisible(false);
     summaryValidityMessage.setForeground(Color.RED);
     customerIdValidityMessage.setForeground(Color.RED);
     assignedToValidityMessage.setForeground(Color.RED);
@@ -64,6 +60,11 @@ public class CaseView extends RecordView<Case> {
     if (record == null) {
       record = new Case();
     }
+    summaryValidityMessage.setVisible(false);
+    customerIdValidityMessage.setVisible(false);
+    assignedToValidityMessage.setVisible(false);
+    priorityValidityMessage.setVisible(false);
+
     String customerId = record.customer == null ? "" : Long.toString(record.customer.id);
     String assignedTo = record.assignedTo == null ? "" : Long.toString(record.assignedTo.id);
     String priorityString = record.priority == null ? null : record.priority.toString();
@@ -128,7 +129,15 @@ public class CaseView extends RecordView<Case> {
 
     JLabel priorityLabel = new JLabel("Priority");
     JLabel priorityValue = new JLabel(record.priority.toString());
-    priorityValue.setFont(new Font(getFont().getFontName(), Font.PLAIN, 14));
+    priorityValue.setFont(new Font(getFont().getFontName(), Font.PLAIN, 15));
+    if (record.priority == Priority.URGENT)
+      priorityValue.setForeground(Color.RED);
+    if (record.priority == Priority.HIGH)
+      priorityValue.setForeground(new Color(0x00F59342));
+    if (record.priority == Priority.MEDIUM)
+      priorityValue.setForeground(new Color(0x00B6C902));
+    if (record.priority == Priority.LOW)
+      priorityValue.setForeground(new Color(0x00008800));
     Box priorityBox = new Box(BoxLayout.X_AXIS);
     priorityBox.add(priorityLabel);
     priorityBox.add(Box.createHorizontalStrut(LABEL_MARGIN));

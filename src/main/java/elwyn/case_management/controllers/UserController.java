@@ -89,22 +89,6 @@ public class UserController extends RecordController<User> {
     return user;
   }
 
-  public boolean isRecordValid(User user) {
-    if (user.name.length() <= 0) {
-      return false;
-    }
-    if (user.username.length() <= 0) { // eTODO: Check username is unique
-      return false;
-    }
-    if (user.password.length() <= 0) {
-      return false; // eTODO: password validation
-    }
-    if (user.role == null) {
-      return false;
-    }
-    return true;
-  }
-
   public boolean areCredentialsValid(String username, String password) {
     User user = readRecord(username);
     if (user.username == null)

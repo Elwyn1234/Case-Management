@@ -60,7 +60,7 @@ func createdb() {
     monthOfBirth INTEGER,
     yearOfBirth INTEGER,
     otherNotes TEXT,
-    email VARCHAR(32),
+    email VARCHAR(128),
     phoneNumber VARCHAR(32) NOT NULL,
     address VARCHAR(32),
     city VARCHAR(32),
@@ -130,14 +130,54 @@ func createdb() {
   if (err != nil) { logError.Fatal(err.Error()) }
   log.Print("contacts table created!")
 
-  // eTODO: we probably dont want to rely on rowid as per the rowid docs
   _, err = pool.Exec(`CREATE TABLE subscriptions (
+    name VARCHAR(32) NOT NULL,
+    description TEXT,
+    frequency VARCHAR(10) NOT NULL,
+    price INTEGER NOT NULL
+  );`)
+  if (err != nil) { logError.Fatal(err.Error()) }
+  log.Print("subscriptions table created!")
+
+  _, err = pool.Exec(`CREATE TABLE subscriptionToCustomer (
     customer INTEGER NOT NULL,
-    subscriptionType VARCHAR(32) NOT NULL,
-    dateStarted CHAR(10) NOT NULL,
-    days INTEGER NOT NULL,
+    subscription INTEGER NOT NULL,
+    dayStarted INTEGER NOT NULL,
+    monthStarted INTEGER NOT NULL,
+    yearStarted INTEGER NOT NULL,
+    hourStarted INTEGER NOT NULL,
+    minuteStarted INTEGER NOT NULL,
+    secondStarted INTEGER NOT NULL,
+    dayEnded INTEGER,
+    monthEnded INTEGER,
+    yearEnded INTEGER,
+    hourEnded INTEGER,
+    minuteEnded INTEGER,
+    secondEnded INTEGER,
     FOREIGN KEY (customer)
       REFERENCES customers(rowid)
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
+    FOREIGN KEY (subscription)
+      REFERENCES subscriptions(rowid)
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
+  );`)
+  if (err != nil) { logError.Fatal(err.Error()) }
+  log.Print("subscriptionToCustomer table created!")
+
+  _, err = pool.Exec(`CREATE TABLE bills (
+    subsctiptionToCustomer INTEGER NOT NULL,
+    paid INTEGER NOT NULL,
+
+    dayPaid INTEGER NOT NULL,
+    monthPaid INTEGER NOT NULL,
+    yearPaid INTEGER NOT NULL,
+    hourPaid INTEGER NOT NULL,
+    minutePaid INTEGER NOT NULL,
+    secondPaid INTEGER NOT NULL,
+    FOREIGN KEY (subsctiptionToCustomer)
+      REFERENCES subsctiptionToCustomer(rowid)
       ON DELETE CASCADE
       ON UPDATE CASCADE
   );`)
@@ -310,7 +350,17 @@ func addTestData() {
 
   for subscriptionIndex := 0; subscriptionIndex < len(caseManagement.Subscriptions); subscriptionIndex++ {
     subscription := caseManagement.Subscriptions[subscriptionIndex]
-    _, err = pool.Exec(`INSERT INTO subscriptions (customer, subscriptionType, dateStarted, days) VALUES (?, ?, ?, ?);`, subscription.Customer, subscription.SubscriptionType, subscription.DateStarted, subscription.Days)
+    _, err = pool.Exec(`
+        INSERT INTO subscriptions (
+        name,
+        description,
+        frequency,
+        price)
+        VALUES (?, ?, ?, ?);`,
+        subscription.Name,
+        subscription.Description,
+        subscription.Frequency,
+        subscription.Price)
     if (err != nil) { logError.Fatal(err.Error()) }
   }
   log.Print("Test data created for the subscriptions tables!")
@@ -372,10 +422,38 @@ type Contact struct {
   User int64
 }
 type Subscription struct {
+  Name string
+  Description string
+  Frequency string
+  Price int
+}
+type SubscriptionToCustomer struct {
+  Subscription int64
   Customer int64
-  SubscriptionType string
-  DateStarted string
-  Days int
+
+  DayStarted int32
+  MonthStarted int32
+  YearStarted int32
+  SecondStarted int32
+  MinuteStarted int32
+  HourStarted int32
+
+  DayEnded int32
+  MonthEnded int32
+  YearEnded int32
+  SecondEnded int32
+  MinuteEnded int32
+  HourEnded int32
+}
+type Bill struct {
+  SubscriptionToCustomer int64
+  paid int32
+  DayPaid int32
+  MonthPaid int32
+  YearPaid int32
+  SecondPaid int32
+  MinutePaid int32
+  HourPaid int32
 }
 type CaseManagement struct {
   Users []User

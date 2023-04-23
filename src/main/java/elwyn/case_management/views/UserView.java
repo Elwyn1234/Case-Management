@@ -30,12 +30,6 @@ public class UserView extends RecordView<User> {
 
   public UserView(RecordController<User> controller) {
     super(controller, null);
-
-    nameValidityMessage.setVisible(false);
-    usernameValidityMessage.setVisible(false);
-    passwordValidityMessage.setVisible(false);
-    rolesValidityMessage.setVisible(false);
-
     nameValidityMessage.setForeground(Color.RED);
     usernameValidityMessage.setForeground(Color.RED);
     passwordValidityMessage.setForeground(Color.RED);
@@ -43,6 +37,12 @@ public class UserView extends RecordView<User> {
   }
 
   protected void addRecordManagementFields(JComponent leftPanel, JComponent rightPanel, User record) {
+
+    nameValidityMessage.setVisible(false);
+    usernameValidityMessage.setVisible(false);
+    passwordValidityMessage.setVisible(false);
+    rolesValidityMessage.setVisible(false);
+
     name = addTextField(leftPanel, "Name", record.name, false, true);
     leftPanel.add(nameValidityMessage);
     username = addTextField(leftPanel, "Username", record.username, false, true);

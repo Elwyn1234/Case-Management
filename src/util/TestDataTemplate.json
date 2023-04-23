@@ -114,16 +114,16 @@
   "contacts": [],
   "subscriptions": [
     {
-      "customer": 1,
-      "subscriptionType": "Personal",
-      "dateStarted": "date1",
-      "days": 1
+      "name": "name1",
+      "description": "description1",
+      "frequency": "Monthly",
+      "price": 1
     },
     {
-      "customer": 2,
-      "subscriptionType": "Enterprise",
-      "dateStarted": "date2",
-      "days": 2
+      "name": "name1",
+      "description": "description2",
+      "frequency": "Annually",
+      "price": 2
     }
   ]
 }

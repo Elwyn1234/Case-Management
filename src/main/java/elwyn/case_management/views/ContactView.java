@@ -35,10 +35,6 @@ public class ContactView extends RecordView<Contact> {
   public ContactView(RecordController<Contact> controller) {
     super(controller, null);
 
-    descriptionValidityMessage.setVisible(false);
-    contactMethodsValidityMessage.setVisible(false);
-    caseIdValidityMessage.setVisible(false);
-    userIdValidityMessage.setVisible(false);
     descriptionValidityMessage.setForeground(Color.RED);
     contactMethodsValidityMessage.setForeground(Color.RED);
     caseIdValidityMessage.setForeground(Color.RED);
@@ -46,6 +42,11 @@ public class ContactView extends RecordView<Contact> {
   }
 
   protected void addRecordManagementFields(JComponent leftPanel, JComponent rightPanel, Contact record) {
+    descriptionValidityMessage.setVisible(false);
+    contactMethodsValidityMessage.setVisible(false);
+    caseIdValidityMessage.setVisible(false);
+    userIdValidityMessage.setVisible(false);
+
     description = addTextArea(leftPanel, "Description", record.description, false, true);
     leftPanel.add(descriptionValidityMessage);
 

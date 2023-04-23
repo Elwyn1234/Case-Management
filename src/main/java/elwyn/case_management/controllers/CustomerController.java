@@ -116,12 +116,4 @@ public class CustomerController extends RecordController<Customer> {
     pStatement.setString(14, record.gender == null ? null : record.gender.toString());
     return pStatement;
   }
-    
-  public boolean isRecordValid(Customer record) {
-    if (record.firstName.length() <= 0)
-      return false;
-    if (record.phoneNumber.length() <= 0)
-      return false;
-    return true;
-  }
 }

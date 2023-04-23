@@ -6,8 +6,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import elwyn.case_management.models.Frequency;
 import elwyn.case_management.models.Subscription;
-import elwyn.case_management.models.SubscriptionType;
 import elwyn.case_management.models.User;
 
 public class SubscriptionController extends RecordController<Subscription> {
@@ -22,7 +22,7 @@ public class SubscriptionController extends RecordController<Subscription> {
   public List<Subscription> readRecords(int page) {
     ArrayList<Subscription> subscriptions = new ArrayList<Subscription>();
     try {
-      String sql = "SELECT rowid, * FROM subscriptions ORDER BY dateStarted DESC LIMIT ?,?"; // eTODO: Use tableName function
+      String sql = "SELECT rowid, * FROM subscriptions LIMIT ?,?";
       PreparedStatement pStatement = conn.prepareStatement(sql);
       pStatement.setInt(1, page * PAGE_SIZE);
       pStatement.setInt(2, PAGE_SIZE);
@@ -62,13 +62,11 @@ public class SubscriptionController extends RecordController<Subscription> {
 
   public Subscription readResultSet(ResultSet rs) throws SQLException {
     Subscription record = new Subscription();
-    long customerId = rs.getLong("customer");
-    record.customer = customerController.readRecord(customerId);
-
     record.id = rs.getLong("rowid");
-    record.subscriptionType = SubscriptionType.parseSelectedSubscriptionType(rs.getString("subscriptionType"));
-    record.dateStarted = rs.getString("dateStarted");
-    record.days = rs.getInt("days");
+    record.name = rs.getString("name");
+    record.description = rs.getString("description");
+    record.frequency = Frequency.parseSelectedFrequency(rs.getString("frequency"));
+    record.price = rs.getInt("price");
     return record;
   }
 
@@ -76,7 +74,7 @@ public class SubscriptionController extends RecordController<Subscription> {
 
   protected PreparedStatement buildInsertPreparedStatement(Subscription record) throws SQLException {
     String sql="INSERT INTO subscriptions " + 
-        "(customer, subscriptionType, dateStarted, days) " +
+        "(name, description, frequency, price) " +
         "VALUES (?, ?, ?, ?);";
     PreparedStatement pStatement = PopulateCommonSqlParameters(sql, record);
     return pStatement;
@@ -84,7 +82,7 @@ public class SubscriptionController extends RecordController<Subscription> {
 
   protected PreparedStatement buildUpdatePreparedStatement(Subscription record) throws SQLException {
     String sql="UPDATE subscriptions SET " +
-        "customer=?, subscriptionType=?, dateStarted=?, days=?" +
+        "name=?, description=?, frequency=?, price=?" +
         "WHERE rowid=?";
     PreparedStatement pStatement = PopulateCommonSqlParameters(sql, record);
     pStatement.setLong(5, record.id);
@@ -92,23 +90,11 @@ public class SubscriptionController extends RecordController<Subscription> {
   }
   private PreparedStatement PopulateCommonSqlParameters(String sql, Subscription record) throws SQLException {
     PreparedStatement pStatement = conn.prepareStatement(sql);
-    pStatement.setLong(1, record.customer.id);
-    pStatement.setString(2, record.subscriptionType == null ? null : record.subscriptionType.toString());
-    pStatement.setString(3, record.dateStarted);
-    pStatement.setInt(4, record.days);
+    pStatement.setString(1, record.name);
+    pStatement.setString(2, record.description);
+    pStatement.setString(3, record.frequency.toString());
+    pStatement.setInt(4, record.price);
     return pStatement;
-  }
-    
-  public boolean isRecordValid(Subscription record) {
-    if (record.customer == null)
-      return false;
-    if (record.subscriptionType == null)
-      return false;
-    if (record.dateStarted.length() <= 0)
-      return false;
-    if (record.days == 0) // eTODO: how to know if days has been set
-      return false;
-    return true;
   }
 }
 

@@ -188,16 +188,6 @@ public class CaseController extends RecordController<Case> {
     return !record.getStatus().startsWith("Closed");
   }
 
-  public boolean isRecordValid(Case record) {
-    if (record.summary.length() <= 0)
-      return false;
-    if (record.customer == null)
-      return false;
-    if (record.priority == null)
-      return false;
-    return true;
-  }
-
   public static boolean caseClosed(Case record) {
     if (record.dateClosed == null)
       return false;

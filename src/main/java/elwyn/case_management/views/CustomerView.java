@@ -52,37 +52,38 @@ public class CustomerView extends RecordView<Customer> {
   public CustomerView(RecordController<Customer> controller) {
     super(controller, null);
 
-    firstNameValidityMessage.setVisible(false);
     firstNameValidityMessage.setForeground(Color.RED);
-    secondNameValidityMessage.setVisible(false);
     secondNameValidityMessage.setForeground(Color.RED);
-    sirnameValidityMessage.setVisible(false);
     sirnameValidityMessage.setForeground(Color.RED);
-    dayOfBirthValidityMessage.setVisible(false);
     dayOfBirthValidityMessage.setForeground(Color.RED);
-    monthOfBirthValidityMessage.setVisible(false);
     monthOfBirthValidityMessage.setForeground(Color.RED);
-    yearOfBirthValidityMessage.setVisible(false);
     yearOfBirthValidityMessage.setForeground(Color.RED);
-    dateOfBirthValidityMessage.setVisible(false);
     dateOfBirthValidityMessage.setForeground(Color.RED);
-    otherNotesValidityMessage.setVisible(false);
     otherNotesValidityMessage.setForeground(Color.RED);
-    emailValidityMessage.setVisible(false);
     emailValidityMessage.setForeground(Color.RED);
-    phoneNumberValidityMessage.setVisible(false);
     phoneNumberValidityMessage.setForeground(Color.RED);
-    addressValidityMessage.setVisible(false);
     addressValidityMessage.setForeground(Color.RED);
-    cityValidityMessage.setVisible(false);
     cityValidityMessage.setForeground(Color.RED);
-    postcodeValidityMessage.setVisible(false);
     postcodeValidityMessage.setForeground(Color.RED);
-    countryValidityMessage.setVisible(false);
     countryValidityMessage.setForeground(Color.RED);
   }
 
   protected void addRecordManagementFields(JComponent leftPanel, JComponent rightPanel, Customer record) {
+    firstNameValidityMessage.setVisible(false);
+    secondNameValidityMessage.setVisible(false);
+    sirnameValidityMessage.setVisible(false);
+    dayOfBirthValidityMessage.setVisible(false);
+    monthOfBirthValidityMessage.setVisible(false);
+    yearOfBirthValidityMessage.setVisible(false);
+    dateOfBirthValidityMessage.setVisible(false);
+    otherNotesValidityMessage.setVisible(false);
+    emailValidityMessage.setVisible(false);
+    phoneNumberValidityMessage.setVisible(false);
+    addressValidityMessage.setVisible(false);
+    cityValidityMessage.setVisible(false);
+    postcodeValidityMessage.setVisible(false);
+    countryValidityMessage.setVisible(false);
+
     firstName = addTextField(leftPanel, "First Name", record.firstName, false, true);
     leftPanel.add(firstNameValidityMessage);
     secondName = addTextField(leftPanel, "Second Name", record.secondName, true, true);

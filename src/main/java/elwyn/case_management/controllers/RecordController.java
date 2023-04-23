@@ -80,8 +80,6 @@ public abstract class RecordController <T extends Record> {
 
   //*********** Utilities ***********//
 
-  public abstract boolean isRecordValid(T record);
-
   private void createOrUpdateRecord(T record, boolean createMode) {
     try {
       PreparedStatement pStatement = createMode ? buildInsertPreparedStatement(record) : buildUpdatePreparedStatement(record);

@@ -133,18 +133,6 @@ public class ContactController extends RecordController<Contact> {
     return pStatement;
   }
     
-  public boolean isRecordValid(Contact record) {
-    if (record.description.length() <= 0)
-      return false;
-    if (record.contactMethod == null)
-      return false;
-    if (record.caseRecord == null)
-      return false;
-    if (record.user == null)
-      return false;
-    return true;
-  }
-
   public static List<Contact> selectMyContacts(List<Contact> contacts) {
     List<Contact> filteredContacts = new ArrayList<Contact>();
     for (Contact contactRecord : contacts) {
