@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import elwyn.case_management.models.Role;
 import elwyn.case_management.models.User;
 
@@ -93,9 +95,9 @@ public class UserController extends RecordController<User> {
     User user = readRecord(username);
     if (user.username == null)
       return false;
-    if (!password.equals(user.password))
-      return false;
-    return true;
+    if (BCrypt.checkpw(password, user.password))
+      return true;
+    return false;
   }
 
   protected PreparedStatement buildInsertPreparedStatement(User record) throws SQLException {
@@ -110,10 +112,11 @@ public class UserController extends RecordController<User> {
     return pStatement;
   }
   private PreparedStatement PopulateCommonSqlParameters(String sql, User record) throws SQLException {
+    String hashed = BCrypt.hashpw(record.password, BCrypt.gensalt());
     PreparedStatement pStatement = conn.prepareStatement(sql);
     pStatement.setString(1, record.name);
     pStatement.setString(2, record.username);
-    pStatement.setString(3, record.password); // eTODO: hashing
+    pStatement.setString(3, hashed); // eTODO: hashing
     pStatement.setString(4, record.role.toString());
     return pStatement;
   }

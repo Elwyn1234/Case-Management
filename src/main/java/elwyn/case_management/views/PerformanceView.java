@@ -9,6 +9,7 @@ import org.knowm.xchart.XYSeries.XYSeriesRenderStyle;
 import org.knowm.xchart.style.Styler.ChartTheme;
 
 import javax.swing.JScrollPane;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import java.awt.event.*;
@@ -97,125 +98,19 @@ public class PerformanceView extends JScrollPane {
 
   public void display() {
     ContactController contactController = new ContactController(performanceController.user, performanceController.user::selectMyContacts);
-    int phoneCount = 0;
-    int emailCount = 0;
-    int postCount = 0;
-    int otherCount = 0;
-    List<Date> contactDates = new ArrayList<Date>();
-    List<Integer> contactCounts = new ArrayList<Integer>();
+    CaseController caseController = new CaseController(performanceController.user, performanceController.user::selectMyCases);
 
     List<Contact> contacts = contactController.readRecords(performanceController.user.id);
-
-    // quickSort(contacts, 0, contacts.size());
-    contacts.sort(new Comparator<Contact>() {
-      public int compare(Contact o1, Contact o2) {
-        int o1Value = o1.date.getYear() * 12 + o1.date.getMonth() * 31 + o1.date.getDate();
-        int o2Value = o2.date.getYear() * 12 + o2.date.getMonth() * 31 + o2.date.getDate();
-        return o1Value - o2Value;
-      }
-    });
-
-    Date lastDate = contacts.get(0).date;
-    contactDates.add(lastDate);
-    contactCounts.add(1);
-
-    for (int i = 1; i < contacts.size(); i++) {
-      if (dateEquals(lastDate, contacts.get(i).date)) {
-        int countsIndex = contactCounts.size() - 1;
-        int count = contactCounts.get(countsIndex);
-        contactCounts.set(countsIndex, ++count);
-        continue;
-      }
-      lastDate = contacts.get(i).date;
-      contactDates.add(lastDate);
-      contactCounts.add(1);
-    }
-
-    for (Contact contact : contacts) {
-      switch (contact.contactMethod) {
-        case PHONE:
-          phoneCount++;
-          break;
-        case EMAIL:
-          emailCount++;
-          break;
-        case POST:
-          postCount++;
-          break;
-        case OTHER:
-          otherCount++;
-          break;
-      }
-    }
-    int lowCount = 0;
-    int mediumCount = 0;
-    int highCount = 0;
-    int urgentCount = 0;
-    // List<Date> solvedCaseDates = new ArrayList<Date>();
-    // List<int> solvedCaseDates = new ArrayList<Date>();
-
-    CaseController caseController = new CaseController(performanceController.user, performanceController.user::selectMyCases);
     List<Case> cases = caseController.readRecords(0); // eTODO: fix: pagination
-    for (int i = 0; i < cases.size(); i++) {
-      Case caseRecord = cases.get(i);
-      switch (caseRecord.priority) {
-        case LOW:
-          lowCount++;
-          break;
-        case MEDIUM:
-          mediumCount++;
-          break;
-        case HIGH:
-          highCount++;
-          break;
-        case URGENT:
-          urgentCount++;
-          break;
-      }
-      // boolean caseClosed = !caseRecord.dateClosed.equals("") && caseRecord.dateClosed != null;
-      // if (caseClosed) {
-      //   SimpleDateFormat df = new SimpleDateFormat("dd-mm-yyyy");
-      //   solvedCaseDates.add(i, df.parse(caseRecord.dateClosed));
-      // }
-    }
-
-    PieChart contactMethodChart = new PieChartBuilder().width(300).height(300).title("Contact Method Breakdown").theme(ChartTheme.GGPlot2).build();
-    contactMethodChart.getStyler().setLegendVisible(false);
-
-    contactMethodChart.addSeries("Phone", phoneCount);
-    contactMethodChart.addSeries("Email", emailCount);
-    contactMethodChart.addSeries("Post", postCount);
-    contactMethodChart.addSeries("Other", otherCount);
-    JPanel contactMethodChartPanel = new XChartPanel<PieChart>(contactMethodChart);
-
-
-
-    PieChart priorityChart = new PieChartBuilder().width(300).height(300).title("Case Priority Breakdown").theme(ChartTheme.GGPlot2).build();
-    priorityChart.getStyler().setLegendVisible(false);
-
-    priorityChart.addSeries(Priority.LOW.toString(), lowCount);
-    priorityChart.addSeries(Priority.MEDIUM.toString(), mediumCount);
-    priorityChart.addSeries(Priority.HIGH.toString(), highCount);
-    priorityChart.addSeries(Priority.URGENT.toString(), urgentCount);
-    JPanel priorityChartPanel = new XChartPanel<PieChart>(priorityChart);
-
-
-
-    XYChart contactsHandledChart = new XYChartBuilder().width(500).height(300).title("Contacts Handled").theme(ChartTheme.GGPlot2).build();
-    contactsHandledChart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Scatter);
-    contactsHandledChart.getStyler().setLegendVisible(false);
-    contactsHandledChart.addSeries("Contacts Handled", contactDates, contactCounts);
-    JPanel contactsHandledPanel = new XChartPanel<XYChart>(contactsHandledChart);
-
-
 
     JPanel panel = new JPanel();
-    panel.add(contactMethodChartPanel);
-    panel.add(priorityChartPanel);
-    panel.add(contactsHandledPanel);
+    panel.add(createContactMethodChart(contacts));
+    panel.add(createPriorityChart(cases));
+    panel.add(createContactsHandledChart(contacts));
+
+
 
     setViewportView(panel);
-
     addComponentListener(new ComponentListener() { // This must be done to handle databases changes that could happen in other tabs
         @Override
         public void componentShown(ComponentEvent e) {
@@ -239,6 +134,126 @@ public class PerformanceView extends JScrollPane {
     // customers handled - week, month, total - XYChart
     // vip customers handled - week, month, total - Text Field
     // subscriptions?
+  }
+
+  public JComponent createContactMethodChart(List<Contact> contacts) {
+    int phoneCount = 0;
+    int emailCount = 0;
+    int postCount = 0;
+    int otherCount = 0;
+    for (Contact contact : contacts) {
+      switch (contact.contactMethod) {
+        case PHONE:
+          phoneCount++;
+          break;
+        case EMAIL:
+          emailCount++;
+          break;
+        case POST:
+          postCount++;
+          break;
+        case OTHER:
+          otherCount++;
+          break;
+      }
+    }
+
+    PieChart contactMethodChart = new PieChartBuilder().width(300).height(300).title("Contact Method Breakdown").theme(ChartTheme.GGPlot2).build();
+    contactMethodChart.getStyler().setLegendVisible(false);
+
+    contactMethodChart.addSeries("Phone", phoneCount);
+    contactMethodChart.addSeries("Email", emailCount);
+    contactMethodChart.addSeries("Post", postCount);
+    contactMethodChart.addSeries("Other", otherCount);
+    JPanel contactMethodChartPanel = new XChartPanel<PieChart>(contactMethodChart);
+
+    return contactMethodChartPanel;
+  }
+
+  public JComponent createPriorityChart(List<Case> cases) {
+    int lowCount = 0;
+    int mediumCount = 0;
+    int highCount = 0;
+    int urgentCount = 0;
+    // List<Date> solvedCaseDates = new ArrayList<Date>();
+    // List<int> solvedCaseDates = new ArrayList<Date>();
+    for (int i = 0; i < cases.size(); i++) {
+      Case caseRecord = cases.get(i);
+      switch (caseRecord.priority) {
+        case LOW:
+          lowCount++;
+          break;
+        case MEDIUM:
+          mediumCount++;
+          break;
+        case HIGH:
+          highCount++;
+          break;
+        case URGENT:
+          urgentCount++;
+          break;
+      }
+      // boolean caseClosed = !caseRecord.dateClosed.equals("") && caseRecord.dateClosed != null;
+      // if (caseClosed) {
+      //   SimpleDateFormat df = new SimpleDateFormat("dd-mm-yyyy");
+      //   solvedCaseDates.add(i, df.parse(caseRecord.dateClosed));
+      // }
+    }
+
+
+
+    PieChart priorityChart = new PieChartBuilder().width(300).height(300).title("Case Priority Breakdown").theme(ChartTheme.GGPlot2).build();
+    priorityChart.getStyler().setLegendVisible(false);
+
+    priorityChart.addSeries(Priority.LOW.toString(), lowCount);
+    priorityChart.addSeries(Priority.MEDIUM.toString(), mediumCount);
+    priorityChart.addSeries(Priority.HIGH.toString(), highCount);
+    priorityChart.addSeries(Priority.URGENT.toString(), urgentCount);
+    return new XChartPanel<PieChart>(priorityChart);
+  }
+
+  public JComponent createContactsHandledChart(List<Contact> contacts) {
+    List<Date> contactDates = new ArrayList<Date>();
+    List<Integer> contactCounts = new ArrayList<Integer>();
+
+    if (contacts.size() > 0) {
+      // quickSort(contacts, 0, contacts.size());
+      contacts.sort(new Comparator<Contact>() {
+        public int compare(Contact o1, Contact o2) {
+          int o1Value = o1.date.getYear() * 12 + o1.date.getMonth() * 31 + o1.date.getDate();
+          int o2Value = o2.date.getYear() * 12 + o2.date.getMonth() * 31 + o2.date.getDate();
+          return o1Value - o2Value;
+        }
+      });
+
+      Date lastDate = contacts.get(0).date;
+      contactDates.add(lastDate);
+      contactCounts.add(1);
+
+      for (int i = 1; i < contacts.size(); i++) {
+        if (dateEquals(lastDate, contacts.get(i).date)) {
+          int countsIndex = contactCounts.size() - 1;
+          int count = contactCounts.get(countsIndex);
+          contactCounts.set(countsIndex, ++count);
+          continue;
+        }
+        lastDate = contacts.get(i).date;
+        contactDates.add(lastDate);
+        contactCounts.add(1);
+      }
+    }
+    else { // The user has not handled any contacts, show an empty graph. XChart requires the arrays to not be empty
+      contactDates.add(new Date());
+      contactCounts.add(0);
+    }
+
+
+
+    XYChart contactsHandledChart = new XYChartBuilder().width(500).height(300).title("Contacts Handled").theme(ChartTheme.GGPlot2).build();
+    contactsHandledChart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Scatter);
+    contactsHandledChart.getStyler().setLegendVisible(false);
+    contactsHandledChart.addSeries("Contacts Handled", contactDates, contactCounts);
+    return new XChartPanel<XYChart>(contactsHandledChart);
   }
 }
 

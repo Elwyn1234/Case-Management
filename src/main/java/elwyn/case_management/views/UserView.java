@@ -37,7 +37,6 @@ public class UserView extends RecordView<User> {
   }
 
   protected void addRecordManagementFields(JComponent leftPanel, JComponent rightPanel, User record) {
-
     nameValidityMessage.setVisible(false);
     usernameValidityMessage.setVisible(false);
     passwordValidityMessage.setVisible(false);
@@ -67,7 +66,6 @@ public class UserView extends RecordView<User> {
     //eTODO: rename from "" to "Field"
     name = addTextField(leftPanel, "Name", record.name, false, editable);
     username = addTextField(leftPanel, "Username", record.username, false, editable);
-    password = addTextField(leftPanel, "Password", record.password, false, editable);
 
     String role = record.role == null ? null : record.role.toString();
     addTextField(leftPanel, "Role", role, true, false);
