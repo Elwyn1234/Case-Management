@@ -4,10 +4,12 @@ import java.util.Date;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Insets;
 
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 import javax.swing.text.JTextComponent;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -17,10 +19,14 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 
 import elwyn.case_management.controllers.RecordController;
+import elwyn.case_management.controllers.SubscriptionController;
+import elwyn.case_management.controllers.SubscriptionToCustomerController;
 import elwyn.case_management.models.Customer;
 import elwyn.case_management.models.Gender;
 import elwyn.case_management.models.MiscButton;
 import elwyn.case_management.models.SubscribeActionListener;
+import elwyn.case_management.models.Subscription;
+import elwyn.case_management.models.SubscriptionToCustomer;
 import elwyn.case_management.models.UnsubscribeActionListener;
 import net.miginfocom.swing.MigLayout;
 
@@ -54,7 +60,7 @@ public class CustomerView extends RecordView<Customer> {
   JLabel cityValidityMessage = new JLabel();
   JLabel postcodeValidityMessage = new JLabel();
   JLabel countryValidityMessage = new JLabel();
-
+  
   protected String pageTitle() { return "Customers"; }
   protected String tabNameOfViewRecords() { return "View Customers"; }
   protected String tabNameOfCreateRecord() { return "Create Customer"; }
@@ -62,7 +68,6 @@ public class CustomerView extends RecordView<Customer> {
 
   public CustomerView(RecordController<Customer> controller) {
     super(controller);
-
     miscButtonParams = new MiscButton<Customer>(this::subscriptionManagementPanel, CustomerView::shouldShowButton, "Subscriptions");
 
     firstNameValidityMessage.setForeground(Color.RED);
@@ -152,13 +157,15 @@ public class CustomerView extends RecordView<Customer> {
     title.setPreferredSize(new Dimension(300, 50));
     title.setFont(new Font(font, Font.PLAIN, 18));
 
-    Box emailBox = new Box(BoxLayout.X_AXIS);
+    JLabel emailLabel = new JLabel();
     if (record.email != null)
-      emailBox = RecordView.createLabelledFieldInline("Email", record.email, font);
+      emailLabel = new JLabel(record.email);
+    emailLabel.setFont(new Font(font, Font.PLAIN, 14));
 
-    Box phoneNumberBox = new Box(BoxLayout.X_AXIS);
+    JLabel phoneNumberLabel = new JLabel();
     if (record.phoneNumber != null)
-      phoneNumberBox = RecordView.createLabelledFieldInline("Phone Number", record.phoneNumber, font);
+      phoneNumberLabel = new JLabel(record.phoneNumber);
+    phoneNumberLabel.setFont(new Font(font, Font.PLAIN, 14));
 
     Box dateOfBirthBox = new Box(BoxLayout.X_AXIS);
     if (record.dateOfBirth != null)
@@ -168,17 +175,32 @@ public class CustomerView extends RecordView<Customer> {
     if (record.gender != null)
       genderBox = RecordView.createLabelledFieldInline("Gender", record.gender.toString(), font);
     
-    // addTextField(leftPanel, "OtherNotes", record.otherNotes, true, editable);
-    // addTextField(leftPanel, "Address", record.address, true, editable);
-    // addTextField(leftPanel, "City", record.city, true, editable);
-    // addTextField(leftPanel, "Postcode", record.postcode, true, editable);
-    // addTextField(leftPanel, "Country", record.country, true, editable);
+    Box locationBox = new Box(BoxLayout.X_AXIS);
+    if (record.fullAddress() != null && !record.fullAddress().equals(""))
+      locationBox = RecordView.createLabelledFieldInline("Location", record.fullAddress(), font);
+
+    Box otherNotesBox = RecordView.createLabelledTextArea("Notes", record.otherNotes, new Insets(TOP_MARGIN, 0, 0, 0));
+    
+    JLabel activeSubscriptionsLabel = new JLabel("Active Subscriptions");
+    activeSubscriptionsLabel.setFont(new Font(font, Font.BOLD, 15));
+    activeSubscriptionsLabel.setBorder(new EmptyBorder(new Insets(TOP_MARGIN, 0, 0, 0)));
+
+    SubscriptionToCustomerController subToCustController = new SubscriptionToCustomerController(controller.loggedInUser, record.id);
+    SubscriptionController subscriptionController = new SubscriptionController(controller.loggedInUser);
 
     leftPanel.add(title, "span, aligny top");
-    leftPanel.add(emailBox, "span, aligny top");
-    leftPanel.add(phoneNumberBox, "span, aligny top");
+    leftPanel.add(emailLabel, "span, aligny top");
+    leftPanel.add(phoneNumberLabel, "span, aligny top");
     leftPanel.add(dateOfBirthBox, "span, aligny top");
     leftPanel.add(genderBox, "span, aligny top");
+    leftPanel.add(locationBox, "span, aligny top");
+    leftPanel.add(otherNotesBox, "span, aligny top");
+
+    leftPanel.add(activeSubscriptionsLabel, "span, aligny top");
+    for (SubscriptionToCustomer subToCust : subToCustController.readRecords(0)) {
+      Subscription subscription = subscriptionController.readRecord(subToCust.subscription);
+      leftPanel.add(createSubscriptionSummaryBox(subToCust, subscription), "span, aligny top");
+    }
   }
 
   public JComponent subscriptionManagementPanel(Long rowid) {
@@ -404,5 +426,31 @@ public class CustomerView extends RecordView<Customer> {
     panel.add(customerEmailLabel, s);
     panel.add(customerPhoneNumberLabel, s);
     return panel;
+  }
+
+  public JComponent createSubscriptionSummaryBox(SubscriptionToCustomer subToCust, Subscription subscription) {
+    Box box = new Box(BoxLayout.Y_AXIS);
+
+    String font = getFont().getFontName();
+
+    JLabel subscriptionName = new JLabel();
+    if (subscription.name != null && !subscription.name.isBlank())
+      subscriptionName = new JLabel(subscription.name);
+    subscriptionName.setFont(new Font(font, Font.BOLD, 14));
+
+    JLabel price = new JLabel();
+    if (subscription.frequency != null)
+      price = new JLabel(subscription.pricePerPeriod());
+    price.setFont(new Font(font, Font.PLAIN, 14));
+
+    JLabel sinceWhen = new JLabel();
+    if (subToCust.dateStarted != null)
+      sinceWhen = new JLabel(subToCust.dateStarted.toString());
+    sinceWhen.setFont(new Font(font, Font.PLAIN, 14));
+
+    box.add(subscriptionName);
+    box.add(price);
+    box.add(sinceWhen);
+    return box;
   }
 }

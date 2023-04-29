@@ -87,7 +87,7 @@ public class ContactView extends RecordView<Contact> {
     JLabel dateLabel = new JLabel();
     if (record.date != null)
       dateLabel = new JLabel(record.date.toString());
-      dateLabel.setFont(new Font(font, Font.PLAIN, 14));
+    dateLabel.setFont(new Font(font, Font.PLAIN, 14));
 
     Box contactMethodBox = new Box(BoxLayout.X_AXIS);
     if (record.contactMethod != null)

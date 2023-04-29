@@ -90,8 +90,7 @@ public class SubscriptionView extends RecordView<Subscription> {
     descriptionArea.setLineWrap(true);
     descriptionArea.setMargin(new Insets(15, 0, 0, 0));
 
-    String price = "£" + Integer.toString(record.price) + " " + record.frequency.toString();
-    JLabel priceLabel = new JLabel(price, SwingConstants.CENTER);
+    JLabel priceLabel = new JLabel(record.pricePerPeriod(), SwingConstants.CENTER);
     priceLabel.setFont(new Font(getFont().getFontName(), Font.PLAIN, TITLE_SIZE));
 
     leftPanel.add(titleLabel, "align center");

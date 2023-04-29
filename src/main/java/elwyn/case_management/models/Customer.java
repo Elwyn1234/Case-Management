@@ -17,7 +17,20 @@ public class Customer extends Record {
   public String country;
 
   public String fullNameAndId() {
-    boolean hasSecondName = (secondName != "" | secondName != null);
+    boolean hasSecondName = (secondName != null && !secondName.equals(""));
     return firstName + " " + (hasSecondName ? secondName + " " : "") + sirname + " (" + id + ")";
+  }
+
+  public String fullAddress() {
+    boolean hasAddress = (address != null && !address.equals(""));
+    boolean hasCity = (city != null && !city.equals(""));
+    boolean hasPostcode = (postcode != null && !postcode.equals(""));
+    boolean hasCountry = (country != null && !country.equals(""));
+    String fullAddress = "";
+    if (hasAddress) fullAddress += address + " ";
+    if (hasCity) fullAddress += city + " ";
+    if (hasPostcode) fullAddress += postcode + " ";
+    if (hasCountry) fullAddress += country + " ";
+    return fullAddress;
   }
 }
