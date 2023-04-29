@@ -35,7 +35,7 @@ public class SubscriptionView extends RecordView<Subscription> {
   protected String tabNameOfEditRecord() { return "Edit Subscriptions"; }
 
   public SubscriptionView(RecordController<Subscription> controller) {
-    super(controller, null);
+    super(controller);
 
     nameValidityMessage.setForeground(Color.RED);
     descriptionValidityMessage.setForeground(Color.RED);

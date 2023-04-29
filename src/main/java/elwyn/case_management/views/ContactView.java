@@ -17,7 +17,6 @@ import elwyn.case_management.controllers.RecordController;
 import elwyn.case_management.controllers.UserController;
 import elwyn.case_management.models.Case;
 import elwyn.case_management.models.User;
-import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 import elwyn.case_management.models.Contact;
 import elwyn.case_management.models.ContactMethod;
@@ -39,7 +38,7 @@ public class ContactView extends RecordView<Contact> {
   protected String tabNameOfEditRecord() { return "Edit Contact"; }
 
   public ContactView(RecordController<Contact> controller) {
-    super(controller, null);
+    super(controller);
 
     descriptionValidityMessage.setForeground(Color.RED);
     contactMethodsValidityMessage.setForeground(Color.RED);
@@ -85,9 +84,10 @@ public class ContactView extends RecordView<Contact> {
     title.setPreferredSize(new Dimension(400, 50));
     title.setFont(new Font(font, Font.PLAIN, 18));
 
-    Box dateBox = new Box(BoxLayout.X_AXIS);
+    JLabel dateLabel = new JLabel();
     if (record.date != null)
-      dateBox = RecordView.createLabelledFieldInline("Date", record.date.toString(), font);
+      dateLabel = new JLabel(record.date.toString());
+      dateLabel.setFont(new Font(font, Font.PLAIN, 14));
 
     Box contactMethodBox = new Box(BoxLayout.X_AXIS);
     if (record.contactMethod != null)
@@ -107,7 +107,7 @@ public class ContactView extends RecordView<Contact> {
     leftPanel.add(title, "span, aligny top");
     leftPanel.add(caseBox, "aligny top");
     leftPanel.add(customerBox, "align right, aligny top");
-    leftPanel.add(dateBox, "span, aligny top");
+    leftPanel.add(dateLabel, "span, aligny top");
     leftPanel.add(contactMethodBox, "span, aligny top");
     leftPanel.add(userBox, "span, aligny top");
   }

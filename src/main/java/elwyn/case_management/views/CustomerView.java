@@ -1,8 +1,8 @@
 package elwyn.case_management.views;
 
 import java.util.Date;
-
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 
 import javax.swing.JList;
@@ -10,13 +10,18 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.text.JTextComponent;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
 import elwyn.case_management.controllers.RecordController;
 import elwyn.case_management.models.Customer;
 import elwyn.case_management.models.Gender;
-import net.miginfocom.layout.LC;
+import elwyn.case_management.models.MiscButton;
+import elwyn.case_management.models.SubscribeActionListener;
+import elwyn.case_management.models.UnsubscribeActionListener;
 import net.miginfocom.swing.MigLayout;
 
 public class CustomerView extends RecordView<Customer> {
@@ -56,7 +61,9 @@ public class CustomerView extends RecordView<Customer> {
   protected String tabNameOfEditRecord() { return "Edit Customer"; }
 
   public CustomerView(RecordController<Customer> controller) {
-    super(controller, null);
+    super(controller);
+
+    miscButtonParams = new MiscButton<Customer>(this::subscriptionManagementPanel, CustomerView::shouldShowButton, "Subscriptions");
 
     firstNameValidityMessage.setForeground(Color.RED);
     secondNameValidityMessage.setForeground(Color.RED);
@@ -136,18 +143,66 @@ public class CustomerView extends RecordView<Customer> {
       addRecordManagementFields(leftPanel, rightPanel, record);
       return;
     }
+
+    MigLayout mig = new MigLayout("wrap 2");
+    leftPanel.setLayout(mig);
+    String font = getFont().getFontName();
+
+    JTextComponent title = RecordView.createTextArea(record.fullNameAndId());
+    title.setPreferredSize(new Dimension(300, 50));
+    title.setFont(new Font(font, Font.PLAIN, 18));
+
+    Box emailBox = new Box(BoxLayout.X_AXIS);
+    if (record.email != null)
+      emailBox = RecordView.createLabelledFieldInline("Email", record.email, font);
+
+    Box phoneNumberBox = new Box(BoxLayout.X_AXIS);
+    if (record.phoneNumber != null)
+      phoneNumberBox = RecordView.createLabelledFieldInline("Phone Number", record.phoneNumber, font);
+
+    Box dateOfBirthBox = new Box(BoxLayout.X_AXIS);
+    if (record.dateOfBirth != null)
+      dateOfBirthBox = RecordView.createLabelledFieldInline("Date of Birth", record.dateOfBirth.toString(), font);
+
+    Box genderBox = new Box(BoxLayout.X_AXIS);
+    if (record.gender != null)
+      genderBox = RecordView.createLabelledFieldInline("Gender", record.gender.toString(), font);
     
-    addTextField(leftPanel, "Name", record.fullNameAndId(), false, editable);
-    addTextField(leftPanel, "DateOfBirth", record.dateOfBirth.toString(), true, editable);
-    addTextField(leftPanel, "OtherNotes", record.otherNotes, true, editable);
-    addTextField(leftPanel, "Email", record.email, true, editable);
-    addTextField(leftPanel, "PhoneNumber", record.phoneNumber, true, editable);
-    addTextField(leftPanel, "Address", record.address, true, editable);
-    addTextField(leftPanel, "City", record.city, true, editable);
-    addTextField(leftPanel, "Postcode", record.postcode, true, editable);
-    addTextField(leftPanel, "Country", record.country, true, editable);
-    String gender = record.gender == null ? "" : record.gender.toString();
-    addTextField(leftPanel, "Gender", gender, true, false);
+    // addTextField(leftPanel, "OtherNotes", record.otherNotes, true, editable);
+    // addTextField(leftPanel, "Address", record.address, true, editable);
+    // addTextField(leftPanel, "City", record.city, true, editable);
+    // addTextField(leftPanel, "Postcode", record.postcode, true, editable);
+    // addTextField(leftPanel, "Country", record.country, true, editable);
+
+    leftPanel.add(title, "span, aligny top");
+    leftPanel.add(emailBox, "span, aligny top");
+    leftPanel.add(phoneNumberBox, "span, aligny top");
+    leftPanel.add(dateOfBirthBox, "span, aligny top");
+    leftPanel.add(genderBox, "span, aligny top");
+  }
+
+  public JComponent subscriptionManagementPanel(Long rowid) {
+    MigLayout mig = new MigLayout("wrap 1");
+    Dimension expectedDimension = new Dimension(500, 630);
+    JPanel panel = new JPanel();
+    panel.setLayout(mig);
+    panel.setPreferredSize(expectedDimension);
+    panel.setMaximumSize(expectedDimension);
+    panel.setMinimumSize(expectedDimension);
+
+    JButton subscribeButton = new JButton("Subscribe");
+    subscribeButton.addActionListener(new SubscribeActionListener(panel, rowid, this));
+    panel.add(subscribeButton);
+
+    JButton unsubscribeButton = new JButton("Unsubscribe");
+    unsubscribeButton.addActionListener(new UnsubscribeActionListener(panel, rowid, this));
+    panel.add(unsubscribeButton);
+
+    return panel;
+  }
+
+  public static Boolean shouldShowButton(Customer user) {
+    return true;
   }
     
   protected Customer validateFormValues() {

@@ -29,7 +29,7 @@ public class UserView extends RecordView<User> {
   protected String tabNameOfEditRecord() { return "Edit User"; }
 
   public UserView(RecordController<User> controller) {
-    super(controller, null);
+    super(controller);
     nameValidityMessage.setForeground(Color.RED);
     usernameValidityMessage.setForeground(Color.RED);
     passwordValidityMessage.setForeground(Color.RED);

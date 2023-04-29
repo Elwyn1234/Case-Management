@@ -46,9 +46,10 @@ public class CaseView extends RecordView<Case> {
 
 
   public CaseView(CaseController controller) {
-    super(controller, new MiscButton<Case>(controller::closeRecord, controller::shouldShowButton, "Close"));
+    super(controller);
     this.controller = controller;
     this.caseController = controller;
+    miscButtonParams = new MiscButton<Case>(controller::closeRecord, controller::shouldShowButton, "Close");
 
     summaryValidityMessage.setForeground(Color.RED);
     customerIdValidityMessage.setForeground(Color.RED);

@@ -104,7 +104,7 @@ func createdb() {
       ON UPDATE CASCADE
   );`)
   if (err != nil) { logError.Fatal(err.Error()) }
-  log.Print("customers table created!")
+  log.Print("cases table created!")
 
   _, err = pool.Exec(`CREATE TABLE contacts (
     description TEXT NOT NULL,
@@ -205,12 +205,12 @@ func createdb() {
 func addTestData() {
   pool := openDatabase()
   
-  testdata, err := os.ReadFile("./testdata.json")
+  testData, err := os.ReadFile("./testData.json")
   if (err != nil) {
-    logError.Fatal("Failed to read file testdata.json")
+    logError.Fatal("Failed to read file testData.json")
   }
   var caseManagement CaseManagement
-  err = json.Unmarshal(testdata, &caseManagement)
+  err = json.Unmarshal(testData, &caseManagement)
   if (err != nil) {
     logError.Fatal(err)
   }
@@ -219,20 +219,6 @@ func addTestData() {
     user := caseManagement.Users[userIndex]
     _, err = pool.Exec(`INSERT INTO users (username, password, name, role) VALUES (?, ?, ?, ?);`, user.Username, user.Password, user.Name, user.Role)
     if (err != nil) { logError.Fatal(err.Error()) }
-
-    // for ownedIndex := 0; ownedIndex < len(user.OwnedModelCars); ownedIndex++ {
-    //   car := user.OwnedModelCars[ownedIndex]
-
-    //   var modelCarId int;
-    //   result := pool.QueryRow(`SELECT rowid FROM modelCars WHERE name=?;`, car.ModelCarName)
-    //   err = result.Scan(&modelCarId)
-    //   if (err != nil) { logError.Fatal(err.Error()) }
-    //   log.Print("ModelCarId: ", modelCarId)
-
-    //   _, err = pool.Exec(`INSERT INTO ownedModelCars (modelCarId, username, dateCollected) VALUES (?, ?, ?);`, modelCarId, user.Username, car.DateCollected)
-    //   if (err != nil) { logError.Fatal(err.Error()) }
-    // }
-    // }
   }
   log.Print("Test data created for the users tables!")
 

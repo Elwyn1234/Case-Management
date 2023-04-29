@@ -15,7 +15,7 @@ def main():
         "threads": [],
     }
     
-    CONTACT_NUM = 110
+    CONTACT_NUM = 11
     def requestLoremIpsum(dict):
         response = requests.get("https://loripsum.net/api/1/short/plaintext", verify=False)
         dict["loremIpsumArray"].append(response.text)

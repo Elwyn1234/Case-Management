@@ -38,6 +38,8 @@ public class HomeView extends JTabbedPane {
     ContactController contactController = new ContactController(homeController.user, homeController.user::selectMyContacts);
     CaseView caseView = new CaseView(caseController);
     ContactView contactView = new ContactView(contactController);
+    caseView.setViewportView(caseView.displayRecordListing());
+    caseView.setViewportView(caseView.displayRecordListing());
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
@@ -73,13 +75,21 @@ public class HomeView extends JTabbedPane {
 
     addTab("Home", home);
 
-    addTab("Customers", new CustomerView(new CustomerController(homeController.user)));
+    CustomerView customerView = new CustomerView(new CustomerController(homeController.user));
+    customerView.setViewportView(customerView.displayRecordListing());
+    addTab("Customers", customerView);
 
-    addTab("Contacts", new ContactView(new ContactController(homeController.user, null)));
-        
-    addTab("Cases", new CaseView(new CaseController(homeController.user, null)));
+    ContactView tabContactView = new ContactView(new ContactController(homeController.user, null));
+    tabContactView.setViewportView(tabContactView.displayRecordListing());
+    addTab("Contacts", tabContactView);
 
-    addTab("Subscriptions", new SubscriptionView(new SubscriptionController(homeController.user)));
+    CaseView tabCaseView = new CaseView(new CaseController(homeController.user, null));
+    tabCaseView.setViewportView(tabCaseView.displayRecordListing());
+    addTab("Cases", tabCaseView);
+
+    SubscriptionView subscriptionView = new SubscriptionView(new SubscriptionController(homeController.user));
+    subscriptionView.setViewportView(subscriptionView.displayRecordListing());
+    addTab("Subscriptions", subscriptionView);
 
     PerformanceController performanceController = new PerformanceController(homeController.user);
     addTab("Team's Performance", new PerformanceView(performanceController));
@@ -87,7 +97,9 @@ public class HomeView extends JTabbedPane {
     // addTab("My Performance", performancePanel);
 
     // if (homeController.user.role == Role.ADMIN)
-      addTab("Users", new UserView(new UserController(homeController.user)));
+    UserView userView = new UserView(new UserController(homeController.user));
+    userView.setViewportView(userView.displayRecordListing());
+    addTab("Users", userView);
   }
 }
 

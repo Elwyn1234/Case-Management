@@ -33,8 +33,8 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
   protected static final int TITLE_SIZE = 30;
   protected static final int TOP_MARGIN = 30;
   protected static final int LABEL_MARGIN = 10;
-  RecordController<T> controller;
-  MiscButton<T> miscButtonParams;
+  protected RecordController<T> controller;
+  protected MiscButton<T> miscButtonParams;
   int page = 0;
   JTextField pageJumpField;
 
@@ -43,18 +43,13 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
   protected abstract String tabNameOfCreateRecord();
   protected abstract String tabNameOfEditRecord();
     
-  public RecordView(RecordController<T> controller, MiscButton<T> miscButtonParams) {
+  public RecordView(RecordController<T> controller) {
     super();
     this.controller = controller;
-    this.miscButtonParams = miscButtonParams;
-    initComponents();
   }
     
   //*********** Component Initialisation ***********//
 
-  void initComponents() {
-    setViewportView(displayRecordListing());
-  }
   protected abstract void addRecordFields(JComponent leftPanel, JComponent rightPanel, T record, boolean editable);
   
   public JComponent displayRecordListing() {
@@ -185,7 +180,7 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
           long recordId = record.id;
           @Override
           public void actionPerformed(ActionEvent event) {
-            controller.deleteRecord(recordId); // eTODO: This is going to cause jumping
+            controller.deleteRecord(recordId);
             setViewportView(displayRecordListing());
           }
       });
@@ -198,8 +193,12 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
             long recordId = record.id;
             @Override
             public void actionPerformed(ActionEvent event) {
-              miscButtonParams.buttonPressed.accept(recordId); // eTODO: This is going to cause jumping
-              setViewportView(displayRecordListing());
+              JComponent newDisplay = miscButtonParams.buttonPressed.apply(recordId);
+              if (newDisplay == null) {
+                setViewportView(displayRecordListing());
+              } else  {
+                setViewportView(newDisplay);
+              }
             }
         });
       }

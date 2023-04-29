@@ -30,6 +30,7 @@ public abstract class RecordController <T extends Record> {
     } catch (Exception ex) {
       // eTODO: log
       // Logger.getLogger(UserManagementView.class.getName()).log(Level.SEVERE, null, ex);
+      System.out.println("ERROR: Your Database probably cant be found");
     }
   }
 

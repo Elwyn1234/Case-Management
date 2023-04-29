@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
 
+import javax.swing.JComponent;
+
 import elwyn.case_management.models.Case;
 import elwyn.case_management.models.Priority;
 import elwyn.case_management.models.User;
@@ -156,7 +158,7 @@ public class CaseController extends RecordController<Case> {
     return pStatement;
   }
    
-  public void closeRecord(Long rowid) {
+  public JComponent closeRecord(Long rowid) {
     String sql="UPDATE cases SET " +
         "dayClosed=?, " +
         "monthClosed=?, " +
@@ -180,6 +182,7 @@ public class CaseController extends RecordController<Case> {
       System.out.println("Error: " + e.getMessage());
       e.printStackTrace();
     }
+    return null;
   }
 
   //*********** Component Initialisation ***********//
