@@ -8,6 +8,7 @@ import javax.swing.JList;
 import javax.swing.text.JTextComponent;
 
 import elwyn.case_management.controllers.RecordController;
+import elwyn.case_management.controllers.UserController;
 import elwyn.case_management.models.Role;
 import elwyn.case_management.models.User;
 
@@ -22,6 +23,7 @@ public class UserView extends RecordView<User> {
   JLabel usernameValidityMessage = new JLabel();
   JLabel passwordValidityMessage = new JLabel();
   JLabel rolesValidityMessage = new JLabel();
+  Boolean editing = false;
 
   protected String pageTitle() { return "Users"; } // eTODO: use these again to add titles
   protected String tabNameOfViewRecords() { return "View Users"; } // eTODO: use these again to add titles
@@ -46,7 +48,10 @@ public class UserView extends RecordView<User> {
     leftPanel.add(nameValidityMessage);
     username = addTextField(leftPanel, "Username", record.username, false, true);
     leftPanel.add(usernameValidityMessage);
-    password = addTextField(leftPanel, "Password", record.password, false, true);
+    String passwordLabel = "Password";
+    if (editing)
+      passwordLabel = "Password - leave empty to keep old password";
+    password = addTextField(leftPanel, passwordLabel, "", false, true);
     leftPanel.add(passwordValidityMessage);
 
     String role = record.role == null ? null : record.role.toString();
@@ -56,12 +61,16 @@ public class UserView extends RecordView<User> {
 
   protected void addRecordFields(JComponent leftPanel, JComponent rightPanel, User record, boolean editable) {
     if (record == null) {
+      editing = false;
       record = new User();
+    } else {
+      editing = true;
     }
     if (editable) {
       addRecordManagementFields(leftPanel, rightPanel, record);
       return;
     }
+    editing = false;
 
     //eTODO: rename from "" to "Field"
     name = addTextField(leftPanel, "Name", record.name, false, editable);
@@ -70,7 +79,7 @@ public class UserView extends RecordView<User> {
     String role = record.role == null ? null : record.role.toString();
     addTextField(leftPanel, "Role", role, true, false);
   }
-    
+
   protected User validateFormValues() {
     nameValidityMessage.setText("");
     nameValidityMessage.setVisible(false);
@@ -81,6 +90,7 @@ public class UserView extends RecordView<User> {
     rolesValidityMessage.setText("");
     rolesValidityMessage.setVisible(false);
 
+    UserController userController = new UserController(null);
     boolean formIsValid = true;
     User record = new User();
 
@@ -109,10 +119,16 @@ public class UserView extends RecordView<User> {
       usernameValidityMessage.setVisible(true);
       formIsValid = false;
     }
+    User existingUser = userController.readRecord(record.username);
+    if (!editing && record.username.equals(existingUser.username)) { // eTODO: fix
+      usernameValidityMessage.setText("Username is taken");
+      usernameValidityMessage.setVisible(true);
+      formIsValid = false;
+    }
 
     // Password
     record.password = password.getText();
-    if (record.password.isBlank()) {
+    if (record.password.isBlank() && !editing) {
       passwordValidityMessage.setText("Password is required");
       passwordValidityMessage.setVisible(true);
       formIsValid = false;

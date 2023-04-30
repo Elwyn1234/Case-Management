@@ -28,13 +28,18 @@ public class LoginView extends JScrollPane {
   JTextComponent usernameField;
   JTextComponent passwordField;
 
+  JLabel credentialsValidityMessage = new JLabel();
+
   public LoginView(UserController userController, Consumer<RouterModel> displayView) {
     this.userController = userController;
     this.displayView = displayView;
+    credentialsValidityMessage.setForeground(Color.RED);
     displayLogin();
   }
 
   public void displayLogin() {
+    credentialsValidityMessage.setVisible(false);
+
     Dimension expectedDimension = new Dimension(250, 200);
     LC lc = new LC();
     lc.setWrapAfter(1);
@@ -57,17 +62,23 @@ public class LoginView extends JScrollPane {
     loginButton.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent event) {
+          credentialsValidityMessage.setText("");
+          credentialsValidityMessage.setVisible(false);
           String username = usernameField.getText();
           String password = passwordField.getText();
           if (userController.areCredentialsValid(username, password)) {
             User user = userController.readRecord(username);
-            displayView.accept(new RouterModel(View.HOME, user)); // eTODO: shall we add a Router class that handles which view has ownership
+            displayView.accept(new RouterModel(View.HOME, user));
+          } else {
+            credentialsValidityMessage.setText("Credentials are invalid");
+            credentialsValidityMessage.setVisible(true);
           }
         }
     });
     panel.add(RecordView.centrePanel(title));
     panel.add(RecordView.centrePanel(usernamePanel));
     panel.add(RecordView.centrePanel(passwordPanel));
+    panel.add(credentialsValidityMessage);
     panel.add(RecordView.centrePanel(loginButton));
 
     setViewportView(RecordView.centrePanel(panel));

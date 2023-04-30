@@ -33,69 +33,6 @@ public class PerformanceView extends JScrollPane {
     display();
   }
 
-  public static int dateValue(Date date) {
-    int yearValue = date.getYear() * 12;
-    int monthValue = date.getMonth() * 31;
-    int dayValue = date.getDate();
-    return yearValue + monthValue + dayValue;
-  }
-
-  public static boolean dateEquals(Date left, Date right) {
-    if (left.getYear() != right.getYear())
-      return false;
-    if (left.getMonth() != right.getMonth())
-      return false;
-    if (left.getDate() != right.getDate())
-      return false;
-    return true;
-  }
- // eTODO: https://stackoverflow.com/questions/9474121/i-want-to-get-year-month-day-etc-from-java-date-to-compare-with-gregorian-cal
- // eTODO: Change the comparison functions to give each date a single value. makes debugging easier too (eg. a year has a value of 12)
-
-  public static boolean dateLessThan(Date left, Date right) {
-    if (left.getYear() < right.getYear())
-      return true;
-    if (left.getYear() > right.getYear())
-      return false;
-
-    if (left.getMonth() < right.getMonth())
-      return true;
-    if (left.getMonth() > right.getMonth())
-      return false;
-
-    if (left.getDate() < right.getDate())
-      return true;
-    return false;
-  }
-
-  public static void swap(List<Contact> contacts, int i, int j) {
-    Contact tmp = contacts.get(j);
-    contacts.set(j, contacts.get(i));
-    contacts.set(i, tmp);
-  }
-
-  public static int partition(List<Contact> contacts, int left, int right) {
-    Contact pivot = contacts.get(left);
-    int leftWall = left;
-
-    for (int i = leftWall + 1; i < contacts.size(); i++) {
-      if (dateValue(contacts.get(i).date) < dateValue(pivot.date)) {
-        leftWall++;
-        swap(contacts, leftWall, i);
-      }
-    }
-    swap(contacts, left, leftWall);
-    return leftWall;
-  }
-
-  public static void quickSort(List<Contact> contacts, int left, int right) {
-    if (left < right) {
-      int pivotLocation = partition(contacts, left, right);
-      quickSort(contacts, left, pivotLocation - 1);
-      quickSort(contacts, pivotLocation + 1, right);
-    }
-  }
-
   public void display() {
     ContactController contactController = new ContactController(performanceController.user, performanceController.user::selectMyContacts);
     CaseController caseController = new CaseController(performanceController.user, performanceController.user::selectMyCases);
@@ -255,5 +192,71 @@ public class PerformanceView extends JScrollPane {
     contactsHandledChart.addSeries("Contacts Handled", contactDates, contactCounts);
     return new XChartPanel<XYChart>(contactsHandledChart);
   }
-}
 
+
+
+  //*********** Utilities ***********//
+
+  public static int dateValue(Date date) {
+    int yearValue = date.getYear() * 12;
+    int monthValue = date.getMonth() * 31;
+    int dayValue = date.getDate();
+    return yearValue + monthValue + dayValue;
+  }
+
+  public static boolean dateEquals(Date left, Date right) {
+    if (left.getYear() != right.getYear())
+      return false;
+    if (left.getMonth() != right.getMonth())
+      return false;
+    if (left.getDate() != right.getDate())
+      return false;
+    return true;
+  }
+ // eTODO: https://stackoverflow.com/questions/9474121/i-want-to-get-year-month-day-etc-from-java-date-to-compare-with-gregorian-cal
+ // eTODO: Change the comparison functions to give each date a single value. makes debugging easier too (eg. a year has a value of 12)
+
+  public static boolean dateLessThan(Date left, Date right) {
+    if (left.getYear() < right.getYear())
+      return true;
+    if (left.getYear() > right.getYear())
+      return false;
+
+    if (left.getMonth() < right.getMonth())
+      return true;
+    if (left.getMonth() > right.getMonth())
+      return false;
+
+    if (left.getDate() < right.getDate())
+      return true;
+    return false;
+  }
+
+  public static void swap(List<Contact> contacts, int i, int j) {
+    Contact tmp = contacts.get(j);
+    contacts.set(j, contacts.get(i));
+    contacts.set(i, tmp);
+  }
+
+  public static int partition(List<Contact> contacts, int left, int right) {
+    Contact pivot = contacts.get(left);
+    int leftWall = left;
+
+    for (int i = leftWall + 1; i < contacts.size(); i++) {
+      if (dateValue(contacts.get(i).date) < dateValue(pivot.date)) {
+        leftWall++;
+        swap(contacts, leftWall, i);
+      }
+    }
+    swap(contacts, left, leftWall);
+    return leftWall;
+  }
+
+  public static void quickSort(List<Contact> contacts, int left, int right) {
+    if (left < right) {
+      int pivotLocation = partition(contacts, left, right);
+      quickSort(contacts, left, pivotLocation - 1);
+      quickSort(contacts, pivotLocation + 1, right);
+    }
+  }
+}

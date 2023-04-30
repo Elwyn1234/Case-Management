@@ -20,7 +20,7 @@ public class SubscribeActionListener implements ActionListener {
   CustomerView customerView;
   Long customerId;
 
-  SubscriptionToCustomerController subToCustController = new SubscriptionToCustomerController(null, 0);
+  SubscriptionToCustomerController subToCustController;
   SubscriptionController subscriptionController = new SubscriptionController(null);
 
   JList<String> subscriptionNames;
@@ -30,6 +30,7 @@ public class SubscribeActionListener implements ActionListener {
   public SubscribeActionListener(JPanel panel, Long customerId, CustomerView customerView) {
     this.customerView = customerView;
     this.customerId = customerId;
+    subToCustController = new SubscriptionToCustomerController(null, customerId);
 
     List<Subscription> subscriptions = subscriptionController.readRecords(0);
 
@@ -50,6 +51,7 @@ public class SubscribeActionListener implements ActionListener {
     subscriptionNamesValidityMessage.setVisible(false);
     subscriptionNamesValidityMessage.setText("");
   }
+
   @Override
   public void actionPerformed(ActionEvent event) {
     subscriptionNamesValidityMessage.setVisible(false);

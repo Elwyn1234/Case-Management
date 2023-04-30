@@ -93,7 +93,9 @@ public class UserController extends RecordController<User> {
 
   public boolean areCredentialsValid(String username, String password) {
     User user = readRecord(username);
-    if (user.username == null)
+    if (user == null)
+      return false;
+    if (user.username == null || !user.username.equals(username))
       return false;
     if (BCrypt.checkpw(password, user.password))
       return true;
@@ -101,23 +103,26 @@ public class UserController extends RecordController<User> {
   }
 
   protected PreparedStatement buildInsertPreparedStatement(User record) throws SQLException {
-    String sql = "INSERT INTO users (name, username, password, role) VALUES (?, ?, ?, ?);";
+    String sql = "INSERT INTO users (name, username, role, password) VALUES (?, ?, ?, ?);";
     PreparedStatement pStatement = PopulateCommonSqlParameters(sql, record);
+    String hashed = BCrypt.hashpw(record.password, BCrypt.gensalt());
+    pStatement.setString(4, hashed);
     return pStatement;
   }
   protected PreparedStatement buildUpdatePreparedStatement(User record) throws SQLException {
-    String sql = "UPDATE users SET name=?, username=?, password=?, role=? where rowid=?;";
+    String sql = "UPDATE users SET name=?, username=?, role=?, password=IIF(?='', password, ?) where rowid=?;";
     PreparedStatement pStatement = PopulateCommonSqlParameters(sql, record);
-    pStatement.setLong(5, record.id);
+    String hashed = BCrypt.hashpw(record.password, BCrypt.gensalt());
+    pStatement.setString(4, record.password);
+    pStatement.setString(5, hashed);
+    pStatement.setLong(6, record.id);
     return pStatement;
   }
   private PreparedStatement PopulateCommonSqlParameters(String sql, User record) throws SQLException {
-    String hashed = BCrypt.hashpw(record.password, BCrypt.gensalt());
     PreparedStatement pStatement = conn.prepareStatement(sql);
     pStatement.setString(1, record.name);
     pStatement.setString(2, record.username);
-    pStatement.setString(3, hashed); // eTODO: hashing
-    pStatement.setString(4, record.role.toString());
+    pStatement.setString(3, record.role.toString());
     return pStatement;
   }
 
