@@ -63,7 +63,8 @@ public class UserView extends RecordView<User> {
     roles = addSelectList(leftPanel, "Role", Role.stringValues(), role);
     leftPanel.add(rolesValidityMessage);
 
-    teamLead = addTextField(leftPanel, "Team Lead", Long.toString(record.teamLead), false, true);
+    String teamLeadString = record.teamLead == null ? "" : Long.toString(record.teamLead);
+    teamLead = addTextField(leftPanel, "Team Lead", teamLeadString, false, true);
     leftPanel.add(teamLeadValidityMessage);
   }
 
@@ -88,7 +89,8 @@ public class UserView extends RecordView<User> {
     String role = record.role == null ? null : record.role.toString();
     addTextField(leftPanel, "Role", role, true, false);
 
-    addTextField(leftPanel, "Team Lead", Long.toString(record.teamLead), false, editable);
+    String teamLeadString = record.teamLead == null ? "" : Long.toString(record.teamLead);
+    addTextField(leftPanel, "Team Lead", teamLeadString, false, editable);
   }
 
   protected User validateFormValues() {
@@ -161,18 +163,20 @@ public class UserView extends RecordView<User> {
     record.role = Role.parseSelectedRole(roles.getSelectedValue());
 
     // Team Lead
-    try {
-      record.teamLead = Long.parseLong(teamLead.getText()); // eTODO: handle exception
-    } catch (Exception e) {
-      teamLeadValidityMessage.setText("Team Lead must be a valid User ID");
-      teamLeadValidityMessage.setVisible(true);
-      formIsValid = false;
-    }
-    User user = userController.readRecord(record.teamLead);
-    if (user == null) {
-      teamLeadValidityMessage.setText("Team Lead must be a valid User ID");
-      teamLeadValidityMessage.setVisible(true);
-      formIsValid = false;
+    if (!teamLead.getText().isBlank()) {
+      try {
+        record.teamLead = Long.parseLong(teamLead.getText()); // eTODO: handle exception
+      } catch (Exception e) {
+        teamLeadValidityMessage.setText("Team Lead must be a valid User ID");
+        teamLeadValidityMessage.setVisible(true);
+        formIsValid = false;
+      }
+      User user = userController.readRecord(record.teamLead);
+      if (user == null) {
+        teamLeadValidityMessage.setText("Team Lead must be a valid User ID");
+        teamLeadValidityMessage.setVisible(true);
+        formIsValid = false;
+      }
     }
 
     if (formIsValid)

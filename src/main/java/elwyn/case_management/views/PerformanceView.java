@@ -9,9 +9,14 @@ import org.knowm.xchart.XYSeries.XYSeriesRenderStyle;
 import org.knowm.xchart.style.Styler.ChartTheme;
 
 import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import java.awt.Font;
+import java.awt.Insets;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -25,6 +30,7 @@ import elwyn.case_management.models.Case;
 import elwyn.case_management.models.Contact;
 import elwyn.case_management.models.Priority;
 import elwyn.case_management.models.User;
+import net.miginfocom.swing.MigLayout;
 
 public class PerformanceView extends JScrollPane {
   PerformanceController performanceController;
@@ -42,10 +48,19 @@ public class PerformanceView extends JScrollPane {
     List<Contact> contacts = contactController.readRecords(performanceController.user.id);
     List<Case> cases = caseController.readRecords(0); // eTODO: fix: pagination
 
+    MigLayout mig = new MigLayout("wrap 3, alignx center");
     JPanel panel = new JPanel();
-    panel.add(createContactMethodChart(contacts));
-    panel.add(createPriorityChart(cases));
-    panel.add(createContactsHandledChart(contacts));
+    panel.setLayout(mig);
+    panel.setAlignmentX(CENTER_ALIGNMENT);
+    for (User user : users) {
+      JLabel titleLabel = new JLabel(user.name, SwingConstants.CENTER);
+      titleLabel.setFont(new Font(getFont().getFontName(), Font.PLAIN, 30));
+      titleLabel.setBorder(new EmptyBorder(new Insets(30, 0, 0, 0)));
+      panel.add(titleLabel, "span, alignx center");
+      panel.add(createContactMethodChart(contacts), "alignx center");
+      panel.add(createPriorityChart(cases), "alignx center");
+      panel.add(createContactsHandledChart(contacts), "alignx center");
+    }
 
 
 

@@ -46,7 +46,7 @@ func createdb() {
     password VARCHAR(32) NOT NULL,
     name VARCHAR(32) NOT NULL,
     role VARCHAR(32) NOT NULL,
-    teamLead INTEGER NOT NULL,
+    teamLead INTEGER,
     PRIMARY KEY (username)
     FOREIGN KEY (teamLead)
       REFERENCES users(rowid)

@@ -3,6 +3,7 @@ package elwyn.case_management.controllers;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -131,7 +132,7 @@ public class UserController extends RecordController<User> {
     return pStatement;
   }
   protected PreparedStatement buildUpdatePreparedStatement(User record) throws SQLException {
-    String sql = "UPDATE users SET name=?, username=?, teamLead=?, role=?, password=IIF(?='', password, ?) where rowid=?;";
+    String sql = "UPDATE users SET name=?, username=?, role=?, teamLead=?, password=IIF(?='', password, ?) where rowid=?;";
     PreparedStatement pStatement = PopulateCommonSqlParameters(sql, record);
     String hashed = BCrypt.hashpw(record.password, BCrypt.gensalt());
     pStatement.setString(5, record.password);
@@ -144,7 +145,10 @@ public class UserController extends RecordController<User> {
     pStatement.setString(1, record.name);
     pStatement.setString(2, record.username);
     pStatement.setString(3, record.role.toString());
-    pStatement.setLong(4, record.teamLead);
+    if (record.teamLead == null)
+      pStatement.setNull(4, Types.INTEGER);
+    else
+      pStatement.setLong(4, record.teamLead);
     return pStatement;
   }
 
