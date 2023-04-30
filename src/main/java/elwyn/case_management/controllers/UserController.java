@@ -14,9 +14,11 @@ import elwyn.case_management.models.User;
 
 public class UserController extends RecordController<User> {
   protected String tableName() { return "users"; }
+  protected String recordName() { return "User"; }
+  protected Boolean logMe() { return true; }
     
   public UserController(User loggedInUser) {
-    super(loggedInUser);
+    super(loggedInUser, new LogController(loggedInUser));
   }
 
   public List<User> readRecords(int page) {

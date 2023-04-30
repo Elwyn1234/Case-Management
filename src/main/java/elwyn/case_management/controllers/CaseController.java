@@ -11,7 +11,9 @@ import java.util.function.Function;
 import javax.swing.JComponent;
 
 import elwyn.case_management.models.Case;
+import elwyn.case_management.models.Log;
 import elwyn.case_management.models.Priority;
+import elwyn.case_management.models.Severity;
 import elwyn.case_management.models.User;
 
 public class CaseController extends RecordController<Case> {
@@ -19,9 +21,11 @@ public class CaseController extends RecordController<Case> {
   public UserController userController;
   Function<List<Case>, List<Case>> filter;
   protected String tableName() { return "cases"; }
+  protected String recordName() { return "Case"; }
+  protected Boolean logMe() { return true; }
 
   public CaseController(User loggedInUser, Function<List<Case>, List<Case>> filter) {
-    super(loggedInUser);
+    super(loggedInUser, new LogController(loggedInUser));
     this.customerController = new CustomerController(loggedInUser);
     this.userController = new UserController(loggedInUser);
     this.filter = filter;
@@ -132,6 +136,13 @@ public class CaseController extends RecordController<Case> {
     pStatement.setInt(10, record.dateOpened.getSeconds());
     pStatement.setInt(11, record.dateOpened.getMinutes());
     pStatement.setInt(12, record.dateOpened.getHours());
+
+    Log log = new Log();
+    log.severity = Severity.LOG;
+    log.user = loggedInUser.id;
+    log.log = "Case Created " + record.toString();
+    logController.createRecord(log);
+
     return pStatement;
   }
 
@@ -145,6 +156,13 @@ public class CaseController extends RecordController<Case> {
         "WHERE rowid=?";
     PreparedStatement pStatement = PopulateCommonSqlParameters(sql, record);
     pStatement.setLong(6, record.id);
+
+    Log log = new Log();
+    log.severity = Severity.DEBUG;
+    log.user = loggedInUser.id;
+    log.log = "Case Updated " + record.toString();
+    logController.createRecord(log);
+
     return pStatement;
   }
 
@@ -178,6 +196,13 @@ public class CaseController extends RecordController<Case> {
       pStatement.setInt(6, dateClosed.getHours());
       pStatement.setLong(7, rowid);
       pStatement.executeUpdate();
+
+      Log log = new Log();
+      log.severity = Severity.LOG;
+      log.user = loggedInUser.id;
+      log.log = "Case Closed: " + rowid;
+      logController.createRecord(log);
+
     } catch (Exception e) {
       System.out.println("Error: " + e.getMessage());
       e.printStackTrace();

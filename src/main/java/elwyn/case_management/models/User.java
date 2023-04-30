@@ -35,4 +35,21 @@ public class User extends Record {
     }
     return filteredCases;
   }
+
+  @Override
+  public String toString(int depth) {
+    String indent = "    ";
+    for (int i = 0; i < depth; i++) {
+      indent += indent;
+    }
+    String val = "{\n";
+    val += indent + "id: " + id + "\n";
+    val += indent + "name: " + name + "\n";
+    val += indent + "username: " + username + "\n";
+    val += indent + "password: " + "Value hidden" + "\n";
+    val += indent + "role: " + role + "\n";
+    val += indent + "teamLead: " + teamLead + "\n";
+    val += "}";
+    return val;
+  }
 }

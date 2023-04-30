@@ -189,22 +189,24 @@ func createdb() {
   if (err != nil) { logError.Fatal(err.Error()) }
   log.Print("subscriptions table created!")
 
-  // _, err = pool.Exec(`CREATE TABLE wishedModelCars (
-  //   modelCarId VARCHAR(64) NOT NULL,
-  //   username VARCHAR(32) NOT NULL,
-  //   wishFactor CHAR(10) NOT NULL,
-  //   PRIMARY KEY (modelCarId, username)
-  //   FOREIGN KEY (modelCarId)
-  //     REFERENCES modelCars(id)
-  //     ON DELETE CASCADE
-  //     ON UPDATE CASCADE
-  //   FOREIGN KEY (username)
-  //     REFERENCES users(username)
-  //     ON DELETE CASCADE
-  //     ON UPDATE CASCADE
-  // );`)
-  // if (err != nil) { logError.Fatal(err.Error()) }
-  // log.Print("ownedModelCars table created!")
+  _, err = pool.Exec(`CREATE TABLE logs (
+    user INTEGER,
+    severity VARCHAR(32) NOT NULL,
+    log TEXT NOT NULL,
+
+    day INTEGER NOT NULL,
+    month INTEGER NOT NULL,
+    year INTEGER NOT NULL,
+    hour INTEGER NOT NULL,
+    minute INTEGER NOT NULL,
+    second INTEGER NOT NULL,
+    FOREIGN KEY (user)
+      REFERENCES users(rowid)
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
+  );`)
+  if (err != nil) { logError.Fatal(err.Error()) }
+  log.Print("logs table created!")
 }
 
 func addTestData() {
@@ -355,6 +357,33 @@ func addTestData() {
     if (err != nil) { logError.Fatal(err.Error()) }
   }
   log.Print("Test data created for the subscriptions tables!")
+
+  for logIndex := 0; logIndex < len(caseManagement.Logs); logIndex++ {
+    log := caseManagement.Logs[logIndex]
+    _, err = pool.Exec(`
+        INSERT INTO logs (
+        user,
+        severity,
+        log,
+        day,
+        month,
+        year,
+        second,
+        minute,
+        hour)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+        log.User,
+        log.Severity,
+        log.Log,
+        log.Day,
+        log.Month,
+        log.Year,
+        log.Second,
+        log.Minute,
+        log.Hour)
+    if (err != nil) { logError.Fatal(err.Error()) }
+  }
+  log.Print("Test data created for the logs tables!")
 }
 
 type User struct {
@@ -447,12 +476,24 @@ type Bill struct {
   MinutePaid int32
   HourPaid int32
 }
+type Log struct {
+  User int64
+  Severity string
+  Log string
+  Day int32
+  Month int32
+  Year int32
+  Second int32
+  Minute int32
+  Hour int32
+} 
 type CaseManagement struct {
   Users []User
   Customers []Customer
   Cases []Case
   Contacts []Contact
   Subscriptions []Subscription
+  Logs []Log
 }
 
 func (errorWriter ErrorWriter) Write(p []byte) (n int, err error) { // TODO: fix common code across modules

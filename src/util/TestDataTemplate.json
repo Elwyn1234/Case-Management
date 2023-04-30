@@ -160,5 +160,62 @@
       "frequency": "Annually",
       "price": 2
     }
+  ],
+  "logs": [
+    {
+      "user": 1,
+      "severity": "Fatal",
+      "log": "Example Fatal Log",
+      "year": 123,
+      "month": 3,
+      "day": 30,
+      "hour": 16,
+      "minute": 34,
+      "second": 11
+    },
+    {
+      "user": 1,
+      "severity": "Error",
+      "log": "Example Error Log",
+      "year": 123,
+      "month": 3,
+      "day": 30,
+      "hour": 16,
+      "minute": 34,
+      "second": 12
+    },
+    {
+      "user": 1,
+      "severity": "Warning",
+      "log": "Example Warning Log",
+      "year": 123,
+      "month": 3,
+      "day": 30,
+      "hour": 16,
+      "minute": 34,
+      "second": 13
+    },
+    {
+      "user": 1,
+      "severity": "Log",
+      "log": "Example Log Log",
+      "year": 123,
+      "month": 3,
+      "day": 30,
+      "hour": 16,
+      "minute": 34,
+      "second": 14
+    },
+    {
+      "user": 1,
+      "severity": "Debug",
+      "log": "Example Debug Log",
+      "year": 123,
+      "month": 3,
+      "day": 30,
+      "hour": 16,
+      "minute": 34,
+      "second": 15
+    }
   ]
 }

@@ -7,7 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import elwyn.case_management.models.Log;
 import elwyn.case_management.models.Record;
+import elwyn.case_management.models.Severity;
 import elwyn.case_management.models.User;
 
 public abstract class RecordController <T extends Record> {
@@ -15,11 +17,15 @@ public abstract class RecordController <T extends Record> {
   Connection conn;
   static final int PAGE_SIZE = 20;
   public User loggedInUser;
+  LogController logController;
 
   protected abstract String tableName();
+  protected abstract String recordName();
+  protected abstract Boolean logMe();
 
-  public RecordController(User loggedInUser) {
+  public RecordController(User loggedInUser, LogController logController) {
     this.loggedInUser = loggedInUser;
+    this.logController = logController;
 
     try { // eTODO: dependency injection
       Class.forName("org.sqlite.JDBC");
@@ -51,6 +57,15 @@ public abstract class RecordController <T extends Record> {
       pStatement.setLong(1, recordId);
       pStatement.executeUpdate(); // eTODO: Do we need to handle the return value
       recursiveDelete(recordId);
+
+      if (logController != null && logMe()) {
+        Log log = new Log();
+        log.severity = Severity.DEBUG;
+        log.user = loggedInUser.id;
+        log.log = recordName() + " Deleted: " + recordId;
+        logController.createRecord(log);
+      }
+
     } catch (Exception e) {
       System.out.println("Error: " + e.getMessage());
       e.printStackTrace();
@@ -85,6 +100,18 @@ public abstract class RecordController <T extends Record> {
     try {
       PreparedStatement pStatement = createMode ? buildInsertPreparedStatement(record) : buildUpdatePreparedStatement(record);
       pStatement.executeUpdate();
+
+      if (logController != null && logMe()) {
+        String logVerb = " Updated ";
+        if (createMode)
+          logVerb = " Created ";
+        Log log = new Log();
+        log.severity = Severity.DEBUG;
+        log.user = loggedInUser.id;
+        log.log = recordName() + logVerb + record.toString(0);
+        logController.createRecord(log);
+      }
+
     } catch (Exception e) {
         System.out.println("Error: " + e.getMessage());
         e.printStackTrace();

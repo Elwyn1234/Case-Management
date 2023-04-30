@@ -13,9 +13,11 @@ import elwyn.case_management.models.User;
 public class SubscriptionController extends RecordController<Subscription> {
   CustomerController customerController;
   protected String tableName() { return "subscriptions"; }
+  protected String recordName() { return "Subscription"; }
+  protected Boolean logMe() { return true; }
 
   public SubscriptionController(User loggedInUser) {
-    super(loggedInUser);
+    super(loggedInUser, new LogController(loggedInUser));
     this.customerController = new CustomerController(loggedInUser);
   }
 

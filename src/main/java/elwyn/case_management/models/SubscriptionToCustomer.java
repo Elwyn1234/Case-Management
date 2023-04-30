@@ -20,4 +20,19 @@ public class SubscriptionToCustomer extends Record {
     }
     return filteredSubscriptionToCustomer;
   }
+
+  public String toString(int depth) {
+    String indent = "    ";
+    for (int i = 0; i < depth; i++) {
+      indent += indent;
+    }
+    String val = "{\n";
+    val += indent + "id: " + id + "\n";
+    val += indent + "subscription: " + subscription + "\n";
+    val += indent + "customer: " + customer + "\n";
+    val += indent + "dateStarted: " + dateStarted + "\n";
+    val += indent + "dateEnded: " + dateEnded + "\n";
+    val += "}";
+    return val;
+  }
 }

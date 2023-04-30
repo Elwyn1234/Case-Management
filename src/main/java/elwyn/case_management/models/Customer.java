@@ -33,4 +33,28 @@ public class Customer extends Record {
     if (hasCountry) fullAddress += country + " ";
     return fullAddress;
   }
+
+  @Override
+  public String toString(int depth) {
+    String indent = "    ";
+    for (int i = 0; i < depth; i++) {
+      indent += indent;
+    }
+    String val = "{\n";
+    val += indent + "id: " + id + "\n";
+    val += indent + "firstName: " + firstName + "\n";
+    val += indent + "secondName: " + secondName + "\n";
+    val += indent + "sirname: " + sirname + "\n";
+    val += indent + "gender: " + gender + "\n";
+    val += indent + "dateOfBirth: " + dateOfBirth + "\n";
+    val += indent + "otherNotes: " + otherNotes + "\n";
+    val += indent + "email: " + email + "\n";
+    val += indent + "phoneNumber: " + phoneNumber + "\n";
+    val += indent + "address: " + address + "\n";
+    val += indent + "city: " + city + "\n";
+    val += indent + "postcode: " + postcode + "\n";
+    val += indent + "country: " + country + "\n";
+    val += "}";
+    return val;
+  }
 }

@@ -21,6 +21,7 @@ import java.util.function.Consumer;
 
 import elwyn.case_management.controllers.CustomerController;
 import elwyn.case_management.controllers.HomeController;
+import elwyn.case_management.controllers.LogController;
 import elwyn.case_management.controllers.PerformanceController;
 import elwyn.case_management.controllers.SubscriptionController;
 import elwyn.case_management.controllers.UserController;
@@ -84,6 +85,10 @@ public class HomeView extends JTabbedPane {
       UserView userView = new UserView(new UserController(homeController.user));
       userView.setViewportView(userView.displayRecordListing());
       addTab("Users", userView);
+
+      LogView logView = new LogView(new LogController(homeController.user));
+      logView.setViewportView(logView.createLogDisplay());
+      addTab("Logs", logView);
     }
   }
 

@@ -13,9 +13,11 @@ import elwyn.case_management.models.User;
 
 public class CustomerController extends RecordController<Customer> {
   protected String tableName() { return "customers"; }
+  protected String recordName() { return "Customer"; }
+  protected Boolean logMe() { return true; }
 
   public CustomerController(User loggedInUser) {
-    super(loggedInUser);
+    super(loggedInUser, new LogController(loggedInUser));
   }
 
   public List<Customer> readRecords(int page) {

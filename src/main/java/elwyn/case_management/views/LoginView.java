@@ -14,16 +14,20 @@ import javax.swing.JScrollPane;
 import javax.swing.text.JTextComponent;
 import javax.swing.JLabel;
 
+import elwyn.case_management.models.Log;
 import elwyn.case_management.models.RouterModel;
+import elwyn.case_management.models.Severity;
 import elwyn.case_management.models.User;
 import elwyn.case_management.models.View;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
+import elwyn.case_management.controllers.LogController;
 import elwyn.case_management.controllers.UserController;
 
 public class LoginView extends JScrollPane {
   protected static final int TITLE_SIZE = 30;
   UserController userController;
+  LogController logController;
   Consumer<RouterModel> displayView;
   JTextComponent usernameField;
   JTextComponent passwordField;
@@ -33,6 +37,7 @@ public class LoginView extends JScrollPane {
   public LoginView(UserController userController, Consumer<RouterModel> displayView) {
     this.userController = userController;
     this.displayView = displayView;
+    this.logController = new LogController(null);
     credentialsValidityMessage.setForeground(Color.RED);
     displayLogin();
   }
@@ -68,10 +73,23 @@ public class LoginView extends JScrollPane {
           String password = passwordField.getText();
           if (userController.areCredentialsValid(username, password)) {
             User user = userController.readRecord(username);
+
+            Log log = new Log();
+            log.severity = Severity.LOG;
+            log.user = user.id;
+            log.log = "User logged in successfully!";
+            logController.createRecord(log);
+
             displayView.accept(new RouterModel(View.HOME, user));
-          } else {
+          }
+          else {
             credentialsValidityMessage.setText("Credentials are invalid");
             credentialsValidityMessage.setVisible(true);
+
+            Log log = new Log();
+            log.severity = Severity.LOG;
+            log.log = "User failed to login with a username of " + username;
+            logController.createRecord(log);
           }
         }
     });

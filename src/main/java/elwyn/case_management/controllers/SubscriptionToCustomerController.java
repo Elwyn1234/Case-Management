@@ -14,9 +14,11 @@ public class SubscriptionToCustomerController extends RecordController<Subscript
   long customer;
 
   protected String tableName() { return "subscriptionToCustomer"; }
+  protected String recordName() { return "Subscription to Customer link"; }
+  protected Boolean logMe() { return true; }
 
   public SubscriptionToCustomerController(User loggedInUser, long customer) {
-    super(loggedInUser);
+    super(loggedInUser, new LogController(loggedInUser));
     this.customer = customer;
   }
 

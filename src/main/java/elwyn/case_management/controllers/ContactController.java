@@ -17,9 +17,11 @@ public class ContactController extends RecordController<Contact> {
   UserController userController;
   Function<List<Contact>, List<Contact>> filter;
   protected String tableName() { return "contacts"; }
+  protected String recordName() { return "Contact"; }
+  protected Boolean logMe() { return true; }
 
   public ContactController(User loggedInUser, Function<List<Contact>, List<Contact>> filter) {
-    super(loggedInUser);
+    super(loggedInUser, new LogController(loggedInUser));
     this.caseController = new CaseController(loggedInUser, null);
     this.userController = new UserController(loggedInUser);
     this.filter = filter;
