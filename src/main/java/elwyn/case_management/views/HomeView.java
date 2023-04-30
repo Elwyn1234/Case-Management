@@ -2,6 +2,7 @@ package elwyn.case_management.views;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -9,6 +10,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JLabel;
 
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 import elwyn.case_management.controllers.CustomerController;
@@ -16,6 +19,7 @@ import elwyn.case_management.controllers.HomeController;
 import elwyn.case_management.controllers.PerformanceController;
 import elwyn.case_management.controllers.SubscriptionController;
 import elwyn.case_management.controllers.UserController;
+import elwyn.case_management.models.Role;
 import elwyn.case_management.models.RouterModel;
 import elwyn.case_management.models.User;
 import elwyn.case_management.models.View;
@@ -34,6 +38,50 @@ public class HomeView extends JTabbedPane {
   }
 
   public void displayHome() {
+    addTab("Home", createHomeView());
+
+    CustomerView customerView = new CustomerView(new CustomerController(homeController.user));
+    customerView.setViewportView(customerView.displayRecordListing());
+    addTab("Customers", customerView);
+
+    ContactView tabContactView = new ContactView(new ContactController(homeController.user, null));
+    tabContactView.setViewportView(tabContactView.displayRecordListing());
+    addTab("Contacts", tabContactView);
+
+    CaseView tabCaseView = new CaseView(new CaseController(homeController.user, null));
+    tabCaseView.setViewportView(tabCaseView.displayRecordListing());
+    addTab("Cases", tabCaseView);
+
+    SubscriptionView subscriptionView = new SubscriptionView(new SubscriptionController(homeController.user));
+    subscriptionView.setViewportView(subscriptionView.displayRecordListing());
+    addTab("Subscriptions", subscriptionView);
+
+    { // My Performance View
+      List<User> loggedInUser = new ArrayList<User>();
+      loggedInUser.add(homeController.user);
+      PerformanceController myPerformanceController = new PerformanceController(homeController.user);
+      PerformanceView myPerformanceView = new PerformanceView(myPerformanceController, loggedInUser);
+      myPerformanceView.display();
+      addTab("My Performance", myPerformanceView);
+    }
+
+    if (homeController.user.role == Role.LEADER || homeController.user.role == Role.ADMIN) {
+      UserController userController = new UserController(homeController.user);
+      List<User> team = userController.readTeamMembers(homeController.user.id);
+      PerformanceController teamPerformanceController = new PerformanceController(homeController.user);
+      PerformanceView teamPerformanceView = new PerformanceView(teamPerformanceController, team);
+      teamPerformanceView.display();
+      addTab("Team's Performance", teamPerformanceView);
+    }
+
+    if (homeController.user.role == Role.ADMIN) {
+      UserView userView = new UserView(new UserController(homeController.user));
+      userView.setViewportView(userView.displayRecordListing());
+      addTab("Users", userView);
+    }
+  }
+
+  JComponent createHomeView() {
     CaseController caseController = new CaseController(homeController.user, homeController.user::selectMyCases);
     ContactController contactController = new ContactController(homeController.user, homeController.user::selectMyContacts);
     CaseView caseView = new CaseView(caseController);
@@ -72,34 +120,7 @@ public class HomeView extends JTabbedPane {
         @Override
         public void componentHidden(ComponentEvent e) {}
     });
-
-    addTab("Home", home);
-
-    CustomerView customerView = new CustomerView(new CustomerController(homeController.user));
-    customerView.setViewportView(customerView.displayRecordListing());
-    addTab("Customers", customerView);
-
-    ContactView tabContactView = new ContactView(new ContactController(homeController.user, null));
-    tabContactView.setViewportView(tabContactView.displayRecordListing());
-    addTab("Contacts", tabContactView);
-
-    CaseView tabCaseView = new CaseView(new CaseController(homeController.user, null));
-    tabCaseView.setViewportView(tabCaseView.displayRecordListing());
-    addTab("Cases", tabCaseView);
-
-    SubscriptionView subscriptionView = new SubscriptionView(new SubscriptionController(homeController.user));
-    subscriptionView.setViewportView(subscriptionView.displayRecordListing());
-    addTab("Subscriptions", subscriptionView);
-
-    PerformanceController performanceController = new PerformanceController(homeController.user);
-    addTab("Team's Performance", new PerformanceView(performanceController));
-
-    // addTab("My Performance", performancePanel);
-
-    // if (homeController.user.role == Role.ADMIN)
-    UserView userView = new UserView(new UserController(homeController.user));
-    userView.setViewportView(userView.displayRecordListing());
-    addTab("Users", userView);
+    return home;
   }
 }
 

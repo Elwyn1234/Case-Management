@@ -13,16 +13,17 @@ import elwyn.case_management.models.Role;
 import elwyn.case_management.models.User;
 
 public class UserView extends RecordView<User> {
-  JTextComponent name;
-  JTextComponent username;
+  JTextComponent name; JTextComponent username;
   JTextComponent password;
   JList<String> roles;
+  JTextComponent teamLead;
   // Contacts List
 
   JLabel nameValidityMessage = new JLabel();
   JLabel usernameValidityMessage = new JLabel();
   JLabel passwordValidityMessage = new JLabel();
   JLabel rolesValidityMessage = new JLabel();
+  JLabel teamLeadValidityMessage = new JLabel();
   Boolean editing = false;
 
   protected String pageTitle() { return "Users"; } // eTODO: use these again to add titles
@@ -36,6 +37,7 @@ public class UserView extends RecordView<User> {
     usernameValidityMessage.setForeground(Color.RED);
     passwordValidityMessage.setForeground(Color.RED);
     rolesValidityMessage.setForeground(Color.RED);
+    teamLeadValidityMessage.setForeground(Color.RED);
   }
 
   protected void addRecordManagementFields(JComponent leftPanel, JComponent rightPanel, User record) {
@@ -43,11 +45,14 @@ public class UserView extends RecordView<User> {
     usernameValidityMessage.setVisible(false);
     passwordValidityMessage.setVisible(false);
     rolesValidityMessage.setVisible(false);
+    teamLeadValidityMessage.setVisible(false);
 
     name = addTextField(leftPanel, "Name", record.name, false, true);
     leftPanel.add(nameValidityMessage);
+
     username = addTextField(leftPanel, "Username", record.username, false, true);
     leftPanel.add(usernameValidityMessage);
+
     String passwordLabel = "Password";
     if (editing)
       passwordLabel = "Password - leave empty to keep old password";
@@ -57,6 +62,9 @@ public class UserView extends RecordView<User> {
     String role = record.role == null ? null : record.role.toString();
     roles = addSelectList(leftPanel, "Role", Role.stringValues(), role);
     leftPanel.add(rolesValidityMessage);
+
+    teamLead = addTextField(leftPanel, "Team Lead", Long.toString(record.teamLead), false, true);
+    leftPanel.add(teamLeadValidityMessage);
   }
 
   protected void addRecordFields(JComponent leftPanel, JComponent rightPanel, User record, boolean editable) {
@@ -73,11 +81,14 @@ public class UserView extends RecordView<User> {
     editing = false;
 
     //eTODO: rename from "" to "Field"
-    name = addTextField(leftPanel, "Name", record.name, false, editable);
-    username = addTextField(leftPanel, "Username", record.username, false, editable);
+    addTextField(leftPanel, "Name", record.name, false, editable);
+
+    addTextField(leftPanel, "Username", record.username, false, editable);
 
     String role = record.role == null ? null : record.role.toString();
     addTextField(leftPanel, "Role", role, true, false);
+
+    addTextField(leftPanel, "Team Lead", Long.toString(record.teamLead), false, editable);
   }
 
   protected User validateFormValues() {
@@ -89,6 +100,8 @@ public class UserView extends RecordView<User> {
     passwordValidityMessage.setVisible(false);
     rolesValidityMessage.setText("");
     rolesValidityMessage.setVisible(false);
+    teamLeadValidityMessage.setText("");
+    teamLeadValidityMessage.setVisible(false);
 
     UserController userController = new UserController(null);
     boolean formIsValid = true;
@@ -146,6 +159,21 @@ public class UserView extends RecordView<User> {
       formIsValid = false;
     }
     record.role = Role.parseSelectedRole(roles.getSelectedValue());
+
+    // Team Lead
+    try {
+      record.teamLead = Long.parseLong(teamLead.getText()); // eTODO: handle exception
+    } catch (Exception e) {
+      teamLeadValidityMessage.setText("Team Lead must be a valid User ID");
+      teamLeadValidityMessage.setVisible(true);
+      formIsValid = false;
+    }
+    User user = userController.readRecord(record.teamLead);
+    if (user == null) {
+      teamLeadValidityMessage.setText("Team Lead must be a valid User ID");
+      teamLeadValidityMessage.setVisible(true);
+      formIsValid = false;
+    }
 
     if (formIsValid)
       return record;

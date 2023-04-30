@@ -87,6 +87,10 @@ def main():
                 "hour": random.randint(0, 23),
             }
         })
+
+    # for i in range(len(obj["users"])):
+    #     print(type(obj["users"][i]["password"]))
+    #     obj["users"][i]["password"] = bcrypt.hashpw(obj["users"][i]["password"].decode("utf8"), bcrypt.gensalt())
     
     outFile = open("testData.json", "w")
     outFile.write(json.dumps(obj))

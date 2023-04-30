@@ -24,13 +24,15 @@ import elwyn.case_management.controllers.PerformanceController;
 import elwyn.case_management.models.Case;
 import elwyn.case_management.models.Contact;
 import elwyn.case_management.models.Priority;
+import elwyn.case_management.models.User;
 
 public class PerformanceView extends JScrollPane {
   PerformanceController performanceController;
+  List<User> users;
 
-  public PerformanceView(PerformanceController performanceController) {
+  public PerformanceView(PerformanceController performanceController, List<User> users) {
     this.performanceController = performanceController;
-    display();
+    this.users = users;
   }
 
   public void display() {

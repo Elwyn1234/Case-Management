@@ -46,8 +46,13 @@ func createdb() {
     password VARCHAR(32) NOT NULL,
     name VARCHAR(32) NOT NULL,
     role VARCHAR(32) NOT NULL,
+    teamLead INTEGER NOT NULL,
     PRIMARY KEY (username)
-  );`) // TODO: Do we want a primary key here
+    FOREIGN KEY (teamLead)
+      REFERENCES users(rowid)
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
+  );`)
   if (err != nil) { logError.Fatal(err.Error()) }
   log.Print("users table created!")
 
@@ -217,7 +222,7 @@ func addTestData() {
 
   for userIndex := 0; userIndex < len(caseManagement.Users); userIndex++ {
     user := caseManagement.Users[userIndex]
-    _, err = pool.Exec(`INSERT INTO users (username, password, name, role) VALUES (?, ?, ?, ?);`, user.Username, user.Password, user.Name, user.Role)
+    _, err = pool.Exec(`INSERT INTO users (username, password, name, role, teamLead) VALUES (?, ?, ?, ?, ?);`, user.Username, user.Password, user.Name, user.Role, user.TeamLead)
     if (err != nil) { logError.Fatal(err.Error()) }
   }
   log.Print("Test data created for the users tables!")
@@ -357,6 +362,7 @@ type User struct {
   Password string
   Name string
   Role string
+  TeamLead int64
   // OwnedModelCars []OwnedModelCar
 }
 type Customer struct {

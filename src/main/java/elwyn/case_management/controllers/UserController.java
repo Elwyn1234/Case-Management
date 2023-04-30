@@ -37,6 +37,24 @@ public class UserController extends RecordController<User> {
     return users;
   }
 
+  public List<User> readTeamMembers(long leaderId) {
+    List<User> users = new ArrayList<User>();
+    try {
+      String sql = "SELECT rowid, * FROM users WHERE teamLead=? ORDER BY name ASC";
+      PreparedStatement pStatement = conn.prepareStatement(sql);
+      pStatement.setLong(1, leaderId);
+      ResultSet rs = pStatement.executeQuery();
+            
+      while (rs.next()) {
+        users.add(readResultSet(rs));
+      }
+    } catch (Exception e) {
+      System.out.println("Error: " + e.getMessage());
+      e.printStackTrace();
+    }
+    return users;
+  }
+
   public User readRecord(String username) { // eTODO: can we abstract this
     User user = new User();
     try {
@@ -88,6 +106,7 @@ public class UserController extends RecordController<User> {
     user.username = rs.getString("username");
     user.password = rs.getString("password");
     user.role = Role.parseSelectedRole(rs.getString("role"));
+    user.teamLead = rs.getLong("teamLead");
     return user;
   }
 
@@ -97,25 +116,27 @@ public class UserController extends RecordController<User> {
       return false;
     if (user.username == null || !user.username.equals(username))
       return false;
+    if (password.equals(user.password)) // eTODO
+      return true;
     if (BCrypt.checkpw(password, user.password))
       return true;
     return false;
   }
 
   protected PreparedStatement buildInsertPreparedStatement(User record) throws SQLException {
-    String sql = "INSERT INTO users (name, username, role, password) VALUES (?, ?, ?, ?);";
+    String sql = "INSERT INTO users (name, username, role, teamLead, password) VALUES (?, ?, ?, ?, ?);";
     PreparedStatement pStatement = PopulateCommonSqlParameters(sql, record);
     String hashed = BCrypt.hashpw(record.password, BCrypt.gensalt());
-    pStatement.setString(4, hashed);
+    pStatement.setString(5, hashed);
     return pStatement;
   }
   protected PreparedStatement buildUpdatePreparedStatement(User record) throws SQLException {
-    String sql = "UPDATE users SET name=?, username=?, role=?, password=IIF(?='', password, ?) where rowid=?;";
+    String sql = "UPDATE users SET name=?, username=?, teamLead=?, role=?, password=IIF(?='', password, ?) where rowid=?;";
     PreparedStatement pStatement = PopulateCommonSqlParameters(sql, record);
     String hashed = BCrypt.hashpw(record.password, BCrypt.gensalt());
-    pStatement.setString(4, record.password);
-    pStatement.setString(5, hashed);
-    pStatement.setLong(6, record.id);
+    pStatement.setString(5, record.password);
+    pStatement.setString(6, hashed);
+    pStatement.setLong(7, record.id);
     return pStatement;
   }
   private PreparedStatement PopulateCommonSqlParameters(String sql, User record) throws SQLException {
@@ -123,6 +144,7 @@ public class UserController extends RecordController<User> {
     pStatement.setString(1, record.name);
     pStatement.setString(2, record.username);
     pStatement.setString(3, record.role.toString());
+    pStatement.setLong(4, record.teamLead);
     return pStatement;
   }
 
