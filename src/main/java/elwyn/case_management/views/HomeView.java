@@ -1,5 +1,7 @@
 package elwyn.case_management.views;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -7,9 +9,12 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 
 import java.awt.event.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -23,6 +28,7 @@ import elwyn.case_management.models.Role;
 import elwyn.case_management.models.RouterModel;
 import elwyn.case_management.models.User;
 import elwyn.case_management.models.View;
+import net.miginfocom.swing.MigLayout;
 import elwyn.case_management.controllers.CaseController;
 import elwyn.case_management.controllers.ContactController;
 
@@ -84,16 +90,19 @@ public class HomeView extends JTabbedPane {
   JComponent createHomeView() {
     CaseController caseController = new CaseController(homeController.user, homeController.user::selectMyCases);
     ContactController contactController = new ContactController(homeController.user, homeController.user::selectMyContacts);
-    CaseView caseView = new CaseView(caseController);
-    ContactView contactView = new ContactView(contactController);
-    caseView.setViewportView(caseView.displayRecordListing());
-    caseView.setViewportView(caseView.displayRecordListing());
-    JPanel panel = new JPanel();
-    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-    panel.add(new JLabel("Hello " + homeController.user.name));
-    panel.add(new JLabel("You have " + caseController.readRecords(0).size() + " cases assigned to you")); // eTODO: fix pagination
-    panel.add(new JLabel("You have " + contactController.readRecords(0).size() + " contacts assigned to you")); // eTODO: how many contacts in the last week?
+    JLabel titleLabel = new JLabel("Hello " + homeController.user.name);
+    titleLabel.setFont(new Font(getFont().getFontName(), Font.PLAIN, 30));
+    titleLabel.setBorder(new EmptyBorder(new Insets(30, 0, 0, 0)));
+
+    JLabel caseCountLabel = new JLabel("You have " + caseController.readRecords(0).size() + " cases assigned to you");
+    caseCountLabel.setFont(new Font(getFont().getFontName(), Font.PLAIN, 18));
+    caseCountLabel.setBorder(new EmptyBorder(new Insets(30, 0, 0, 0)));
+
+    JLabel contactCountLabel = new JLabel("You have " + contactController.readRecords(0).size() + " contacts assigned to you");
+    contactCountLabel.setFont(new Font(getFont().getFontName(), Font.PLAIN, 18));
+    contactCountLabel.setBorder(new EmptyBorder(new Insets(10, 0, 0, 0)));
+
     JButton logoutButton = new JButton("Logout");
     logoutButton.addActionListener(new ActionListener() {
         @Override
@@ -101,9 +110,27 @@ public class HomeView extends JTabbedPane {
           displayView.accept(new RouterModel(View.LOGIN, new User()));
         }
     });
-    panel.add(logoutButton);
-    panel.add(caseView);
-    panel.add(contactView);
+
+    CaseView caseView = new CaseView(caseController);
+    caseView.setViewportView(caseView.displayRecordListing());
+    caseView.setBorder(new EmptyBorder(new Insets(30, 0, 0, 0)));
+
+    ContactView contactView = new ContactView(contactController);
+    contactView.setViewportView(contactView.displayRecordListing());
+    contactView.setBorder(new EmptyBorder(new Insets(30, 0, 0, 0)));
+
+    MigLayout mig = new MigLayout("wrap 1, alignx center");
+    JPanel panel = new JPanel();
+    panel.setLayout(mig);
+    panel.add(titleLabel, "alignx center");
+    panel.add(caseCountLabel, "alignx center"); // eTODO: fix pagination
+    panel.add(contactCountLabel, "alignx center"); // eTODO: how many contacts in the last week?
+    panel.add(Box.createVerticalStrut(10));
+    panel.add(logoutButton, "alignx center");
+    panel.add(caseView, "alignx center");
+    panel.add(contactView, "alignx center");
+
+
 
     JScrollPane home = new JScrollPane();
     home.setViewportView(panel);
