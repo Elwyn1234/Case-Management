@@ -24,6 +24,7 @@ import elwyn.case_management.controllers.SubscriptionToCustomerController;
 import elwyn.case_management.models.Customer;
 import elwyn.case_management.models.Gender;
 import elwyn.case_management.models.MiscButton;
+import elwyn.case_management.models.Role;
 import elwyn.case_management.models.SubscribeActionListener;
 import elwyn.case_management.models.Subscription;
 import elwyn.case_management.models.SubscriptionToCustomer;
@@ -216,9 +217,11 @@ public class CustomerView extends RecordView<Customer> {
     subscribeButton.addActionListener(new SubscribeActionListener(panel, rowid, this));
     panel.add(subscribeButton);
 
-    JButton unsubscribeButton = new JButton("Unsubscribe");
-    unsubscribeButton.addActionListener(new UnsubscribeActionListener(panel, rowid, this));
-    panel.add(unsubscribeButton);
+    if (controller.loggedInUser.role != Role.AGENT) {
+      JButton unsubscribeButton = new JButton("Unsubscribe");
+      unsubscribeButton.addActionListener(new UnsubscribeActionListener(panel, rowid, this));
+      panel.add(unsubscribeButton);
+    }
 
     return panel;
   }

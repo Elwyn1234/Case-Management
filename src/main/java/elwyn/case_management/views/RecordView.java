@@ -25,6 +25,7 @@ import javax.swing.JComponent;
 
 import elwyn.case_management.models.MiscButton;
 import elwyn.case_management.models.Record;
+import elwyn.case_management.models.Role;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 import elwyn.case_management.controllers.RecordController;
@@ -204,8 +205,11 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
       }
       JPanel buttons = new JPanel();
       buttons.add(editButton);
-      buttons.add(Box.createHorizontalStrut(15));
-      buttons.add(deleteButton);
+      Boolean showDeleteButton = controller.loggedInUser.role == Role.ADMIN;
+      if (showDeleteButton) {
+        buttons.add(Box.createHorizontalStrut(15));
+        buttons.add(deleteButton);
+      }
       buttons.add(Box.createHorizontalStrut(15));
       if (miscButton != null)
         buttons.add(miscButton);
