@@ -91,14 +91,14 @@ public class CaseController extends RecordController<Case> {
     record.description = rs.getString("description");
     int dayOpened = rs.getInt("dayOpened");
     int monthOpened = rs.getInt("monthOpened");
-    int yearOpened = rs.getInt("yearOpened");
+    int yearOpened = rs.getInt("yearOpened") - 1900;
     int secondOpened = rs.getInt("secondOpened");
     int minuteOpened = rs.getInt("minuteOpened");
     int hourOpened = rs.getInt("hourOpened");
     record.dateOpened = new Date(yearOpened, monthOpened, dayOpened, hourOpened, minuteOpened, secondOpened);
-    int dayClosed = rs.getInt("dayClosed"); // eTODO: somehow check for null
+    int dayClosed = rs.getInt("dayClosed");
     int monthClosed = rs.getInt("monthClosed");
-    int yearClosed = rs.getInt("yearClosed");
+    int yearClosed = rs.getInt("yearClosed") - 1900;
     int secondClosed = rs.getInt("secondClosed");
     int minuteClosed = rs.getInt("minuteClosed");
     int hourClosed = rs.getInt("hourClosed");
@@ -132,7 +132,7 @@ public class CaseController extends RecordController<Case> {
     pStatement.setLong(6, loggedInUser.id);
     pStatement.setInt(7, record.dateOpened.getDate());
     pStatement.setInt(8, record.dateOpened.getMonth());
-    pStatement.setInt(9, record.dateOpened.getYear());
+    pStatement.setInt(9, record.dateOpened.getYear() + 1900);
     pStatement.setInt(10, record.dateOpened.getSeconds());
     pStatement.setInt(11, record.dateOpened.getMinutes());
     pStatement.setInt(12, record.dateOpened.getHours());
@@ -178,7 +178,7 @@ public class CaseController extends RecordController<Case> {
       Date dateClosed = new Date();
       pStatement.setInt(1, dateClosed.getDate());
       pStatement.setInt(2, dateClosed.getMonth());
-      pStatement.setInt(3, dateClosed.getYear());
+      pStatement.setInt(3, dateClosed.getYear() + 1900);
       pStatement.setInt(4, dateClosed.getSeconds());
       pStatement.setInt(5, dateClosed.getMinutes());
       pStatement.setInt(6, dateClosed.getHours());

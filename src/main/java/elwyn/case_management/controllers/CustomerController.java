@@ -70,7 +70,7 @@ public class CustomerController extends RecordController<Customer> {
     customer.gender = Gender.parseSelectedGender(rs.getString("gender"));
     int day = rs.getInt("dayOfBirth");
     int month = rs.getInt("monthOfBirth");
-    int year = rs.getInt("yearOfBirth");
+    int year = rs.getInt("yearOfBirth") - 1900;
     customer.dateOfBirth = new Date(year, month, day);
     customer.otherNotes = rs.getString("otherNotes");
     customer.email = rs.getString("email");
@@ -107,7 +107,7 @@ public class CustomerController extends RecordController<Customer> {
     pStatement.setString(3, record.sirname);
     pStatement.setInt(4, record.dateOfBirth.getDate());
     pStatement.setInt(5, record.dateOfBirth.getMonth());
-    pStatement.setInt(6, record.dateOfBirth.getYear());
+    pStatement.setInt(6, record.dateOfBirth.getYear() + 1900);
     pStatement.setString(7, record.otherNotes);
     pStatement.setString(8, record.email);
     pStatement.setString(9, record.phoneNumber);

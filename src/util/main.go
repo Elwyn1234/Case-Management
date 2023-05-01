@@ -82,7 +82,6 @@ func createdb() {
     createdBy INTEGER NOT NULL,
     assignedTo INTEGER,
     priority VARCHAR(32) NOT NULL,
-
     dayOpened INTEGER NOT NULL,
     monthOpened INTEGER NOT NULL,
     yearOpened INTEGER NOT NULL,
@@ -116,7 +115,6 @@ func createdb() {
     contactMethod VARCHAR(10) NOT NULL,
     caseId INTEGER,
     user INTEGER NOT NULL,
-
     day INTEGER NOT NULL,
     month INTEGER NOT NULL,
     year INTEGER NOT NULL,
@@ -174,7 +172,6 @@ func createdb() {
   _, err = pool.Exec(`CREATE TABLE bills (
     subsctiptionToCustomer INTEGER NOT NULL,
     paid INTEGER NOT NULL,
-
     dayPaid INTEGER NOT NULL,
     monthPaid INTEGER NOT NULL,
     yearPaid INTEGER NOT NULL,
@@ -193,7 +190,6 @@ func createdb() {
     user INTEGER,
     severity VARCHAR(32) NOT NULL,
     log TEXT NOT NULL,
-
     day INTEGER NOT NULL,
     month INTEGER NOT NULL,
     year INTEGER NOT NULL,
@@ -212,9 +208,9 @@ func createdb() {
 func addTestData() {
   pool := openDatabase()
   
-  testData, err := os.ReadFile("./testData.json")
+  testData, err := os.ReadFile("./testData/testData.json")
   if (err != nil) {
-    logError.Fatal("Failed to read file testData.json")
+    logError.Fatal("Failed to read file testData/testData.json")
   }
   var caseManagement CaseManagement
   err = json.Unmarshal(testData, &caseManagement)
@@ -394,6 +390,7 @@ type User struct {
   TeamLead int64
   // OwnedModelCars []OwnedModelCar
 }
+
 type Customer struct {
   FirstName string
   SecondName string
@@ -410,6 +407,7 @@ type Customer struct {
   Postcode string;
   Country string;
 }
+
 type Case struct {
   Summary string
   Description string
@@ -430,6 +428,7 @@ type Case struct {
   HourClosed int32
   Priority string
 }
+
 type Contact struct {
   Description string
   Day int32
@@ -442,23 +441,23 @@ type Contact struct {
   Case int64
   User int64
 }
+
 type Subscription struct {
   Name string
   Description string
   Frequency string
   Price int
 }
+
 type SubscriptionToCustomer struct {
   Subscription int64
   Customer int64
-
   DayStarted int32
   MonthStarted int32
   YearStarted int32
   SecondStarted int32
   MinuteStarted int32
   HourStarted int32
-
   DayEnded int32
   MonthEnded int32
   YearEnded int32
@@ -466,6 +465,7 @@ type SubscriptionToCustomer struct {
   MinuteEnded int32
   HourEnded int32
 }
+
 type Bill struct {
   SubscriptionToCustomer int64
   paid int32
@@ -476,6 +476,7 @@ type Bill struct {
   MinutePaid int32
   HourPaid int32
 }
+
 type Log struct {
   User int64
   Severity string
@@ -487,6 +488,7 @@ type Log struct {
   Minute int32
   Hour int32
 } 
+
 type CaseManagement struct {
   Users []User
   Customers []Customer
@@ -500,6 +502,7 @@ func (errorWriter ErrorWriter) Write(p []byte) (n int, err error) { // TODO: fix
   color.Red(string(p))
   return 0, nil
 }
+
 type ErrorWriter struct {}
 var logError *log.Logger
 

@@ -114,8 +114,8 @@ public class CustomerView extends RecordView<Customer> {
     String yearOfBirthString = "";
     if (record.dateOfBirth != null) {
       dayOfBirthString = Integer.toString(record.dateOfBirth.getDay());
-      monthOfBirthString = Integer.toString(record.dateOfBirth.getMonth());
-      yearOfBirthString = Integer.toString(record.dateOfBirth.getYear());
+      monthOfBirthString = Integer.toString(record.dateOfBirth.getMonth() + 1);
+      yearOfBirthString = Integer.toString(record.dateOfBirth.getYear() + 1900);
     }
     dayOfBirth = addTextField(leftPanel, "Day of Birth", dayOfBirthString, true, true);
     leftPanel.add(dayOfBirthValidityMessage);
@@ -320,14 +320,14 @@ public class CustomerView extends RecordView<Customer> {
     }
     try {
       if (!yearOfBirth.getText().isBlank())
-        year = Integer.parseInt(yearOfBirth.getText());
+        year = Integer.parseInt(yearOfBirth.getText()) - 1900;
     } catch (Exception e) {
       yearOfBirthValidityMessage.setText("Year of Birth must be a number");
       yearOfBirthValidityMessage.setVisible(true);
       formIsValid = false;
     }
     record.dateOfBirth = new Date(year, month, day);
-    boolean invalidYearGiven =
+    boolean invalidDateGiven =
         record.dateOfBirth.getDate() != day ||
         record.dateOfBirth.getMonth() != month ||
         record.dateOfBirth.getYear() != year;
@@ -335,7 +335,7 @@ public class CustomerView extends RecordView<Customer> {
         !yearOfBirth.getText().isBlank() ||
         !monthOfBirth.getText().isBlank() ||
         !dayOfBirth.getText().isBlank();
-    if (dateWasGiven && invalidYearGiven) {
+    if (dateWasGiven && invalidDateGiven) {
       dateOfBirthValidityMessage.setText("The date given is not valid");
       dateOfBirthValidityMessage.setVisible(true);
       formIsValid = false;

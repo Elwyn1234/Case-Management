@@ -72,7 +72,7 @@ public class LogController extends RecordController<Log> {
 
     int day = rs.getInt("day");
     int month = rs.getInt("month");
-    int year = rs.getInt("year");
+    int year = rs.getInt("year") - 1900; // dont ask
     int second = rs.getInt("second");
     int minute = rs.getInt("minute");
     int hour = rs.getInt("hour");
@@ -117,7 +117,7 @@ public class LogController extends RecordController<Log> {
     record.date = new Date();
     pStatement.setInt(4, record.date.getDate());
     pStatement.setInt(5, record.date.getMonth());
-    pStatement.setInt(6, record.date.getYear());
+    pStatement.setInt(6, record.date.getYear() + 1900);
     pStatement.setInt(7, record.date.getSeconds());
     pStatement.setInt(8, record.date.getMinutes());
     pStatement.setInt(9, record.date.getHours());

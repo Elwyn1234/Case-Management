@@ -27,6 +27,19 @@ public class LogView extends JScrollPane {
     super();
     this.logController = logController;
     this.userController = new UserController(logController.loggedInUser);
+
+    addComponentListener(new ComponentListener() { // This must be done to handle databases changes that could happen in other tabs
+        @Override
+        public void componentShown(ComponentEvent e) {
+          setViewportView(createLogDisplay());
+        }
+        @Override
+        public void componentResized(ComponentEvent e) {}
+        @Override
+        public void componentMoved(ComponentEvent e) {}
+        @Override
+        public void componentHidden(ComponentEvent e) {}
+    });
   }
 
   protected JComponent createLogDisplay() {
@@ -64,19 +77,6 @@ public class LogView extends JScrollPane {
       panel.add(log);
       panel.add(Box.createVerticalStrut(15));
     }
-
-    addComponentListener(new ComponentListener() { // This must be done to handle databases changes that could happen in other tabs
-        @Override
-        public void componentShown(ComponentEvent e) {
-          setViewportView(createLogDisplay());
-        }
-        @Override
-        public void componentResized(ComponentEvent e) {}
-        @Override
-        public void componentMoved(ComponentEvent e) {}
-        @Override
-        public void componentHidden(ComponentEvent e) {}
-    });
 
     return panel;
   }

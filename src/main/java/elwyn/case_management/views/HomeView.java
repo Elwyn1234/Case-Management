@@ -48,19 +48,15 @@ public class HomeView extends JTabbedPane {
     addTab("Home", createHomeView());
 
     CustomerView customerView = new CustomerView(new CustomerController(homeController.user));
-    customerView.setViewportView(customerView.displayRecordListing());
     addTab("Customers", customerView);
 
     ContactView tabContactView = new ContactView(new ContactController(homeController.user, null));
-    tabContactView.setViewportView(tabContactView.displayRecordListing());
     addTab("Contacts", tabContactView);
 
     CaseView tabCaseView = new CaseView(new CaseController(homeController.user, null));
-    tabCaseView.setViewportView(tabCaseView.displayRecordListing());
     addTab("Cases", tabCaseView);
 
     SubscriptionView subscriptionView = new SubscriptionView(new SubscriptionController(homeController.user));
-    subscriptionView.setViewportView(subscriptionView.displayRecordListing());
     addTab("Subscriptions", subscriptionView);
 
     { // My Performance View
@@ -83,28 +79,26 @@ public class HomeView extends JTabbedPane {
 
     if (homeController.user.role == Role.ADMIN) {
       UserView userView = new UserView(new UserController(homeController.user));
-      userView.setViewportView(userView.displayRecordListing());
       addTab("Users", userView);
 
       LogView logView = new LogView(new LogController(homeController.user));
-      logView.setViewportView(logView.createLogDisplay());
       addTab("Logs", logView);
     }
   }
 
   JComponent createHomeView() {
     CaseController caseController = new CaseController(homeController.user, homeController.user::selectMyCases);
-    ContactController contactController = new ContactController(homeController.user, homeController.user::selectMyContacts);
+    ContactController contactController = new ContactController(homeController.user, null);
 
     JLabel titleLabel = new JLabel("Hello " + homeController.user.name);
     titleLabel.setFont(new Font(getFont().getFontName(), Font.PLAIN, 30));
     titleLabel.setBorder(new EmptyBorder(new Insets(30, 0, 0, 0)));
 
-    JLabel caseCountLabel = new JLabel("You have " + caseController.readRecords(0).size() + " cases assigned to you");
+    JLabel caseCountLabel = new JLabel("You have " + caseController.readRecords(0).size() + " cases assigned to you"); // eTODO: show my records
     caseCountLabel.setFont(new Font(getFont().getFontName(), Font.PLAIN, 18));
     caseCountLabel.setBorder(new EmptyBorder(new Insets(30, 0, 0, 0)));
 
-    JLabel contactCountLabel = new JLabel("You have " + contactController.readRecords(0).size() + " contacts assigned to you");
+    JLabel contactCountLabel = new JLabel("You have " + contactController.readRecords(homeController.user.id).size() + " contacts assigned to you");
     contactCountLabel.setFont(new Font(getFont().getFontName(), Font.PLAIN, 18));
     contactCountLabel.setBorder(new EmptyBorder(new Insets(10, 0, 0, 0)));
 

@@ -83,7 +83,7 @@ public class ContactController extends RecordController<Contact> {
 
     int day = rs.getInt("day");
     int month = rs.getInt("month");
-    int year = rs.getInt("year");
+    int year = rs.getInt("year") - 1900;
     int second = rs.getInt("second");
     int minute = rs.getInt("minute");
     int hour = rs.getInt("hour");
@@ -110,7 +110,7 @@ public class ContactController extends RecordController<Contact> {
 
         int day = rs.getInt("day");
         int month = rs.getInt("month");
-        int year = rs.getInt("year");
+        int year = rs.getInt("year") - 1900;
         int second = rs.getInt("second");
         int minute = rs.getInt("minute");
         int hour = rs.getInt("hour");
@@ -138,7 +138,7 @@ public class ContactController extends RecordController<Contact> {
     record.date = new Date();
     pStatement.setLong(5, record.date.getDate());
     pStatement.setLong(6, record.date.getMonth());
-    pStatement.setLong(7, record.date.getYear());
+    pStatement.setLong(7, record.date.getYear() + 1900);
     pStatement.setLong(8, record.date.getSeconds());
     pStatement.setLong(9, record.date.getMinutes());
     pStatement.setLong(10, record.date.getHours());
@@ -165,7 +165,7 @@ public class ContactController extends RecordController<Contact> {
   public static List<Contact> selectMyContacts(List<Contact> contacts) {
     List<Contact> filteredContacts = new ArrayList<Contact>();
     for (Contact contactRecord : contacts) {
-      if (contactRecord.user.id == 1)
+      if (contactRecord.user.id == 1) // eTODO
         filteredContacts.add(contactRecord);
     }
     return filteredContacts;

@@ -39,10 +39,23 @@ public class PerformanceView extends JScrollPane {
   public PerformanceView(PerformanceController performanceController, List<User> users) {
     this.performanceController = performanceController;
     this.users = users;
+
+    addComponentListener(new ComponentListener() { // This must be done to handle databases changes that could happen in other tabs
+        @Override
+        public void componentShown(ComponentEvent e) {
+          display();
+        }
+        @Override
+        public void componentResized(ComponentEvent e) {}
+        @Override
+        public void componentMoved(ComponentEvent e) {}
+        @Override
+        public void componentHidden(ComponentEvent e) {}
+    });
   }
 
   public void display() {
-    ContactController contactController = new ContactController(performanceController.user, performanceController.user::selectMyContacts);
+    ContactController contactController = new ContactController(performanceController.user, null);
     CaseController caseController = new CaseController(performanceController.user, performanceController.user::selectMyCases);
 
     List<Contact> contacts = contactController.readRecords(performanceController.user.id);
@@ -62,21 +75,8 @@ public class PerformanceView extends JScrollPane {
       panel.add(createContactsHandledChart(contacts), "alignx center");
     }
 
-
-
     setViewportView(panel);
-    addComponentListener(new ComponentListener() { // This must be done to handle databases changes that could happen in other tabs
-        @Override
-        public void componentShown(ComponentEvent e) {
-          display();
-        }
-        @Override
-        public void componentResized(ComponentEvent e) {}
-        @Override
-        public void componentMoved(ComponentEvent e) {}
-        @Override
-        public void componentHidden(ComponentEvent e) {}
-    });
+
     //    open cases and a listing of open VIP cases
     //    make cases hold a list of users and have a collaboration field shown here?
     //    high priority or vip cases?
@@ -171,15 +171,6 @@ public class PerformanceView extends JScrollPane {
     List<Integer> contactCounts = new ArrayList<Integer>();
 
     if (contacts.size() > 0) {
-      // quickSort(contacts, 0, contacts.size());
-      contacts.sort(new Comparator<Contact>() {
-        public int compare(Contact o1, Contact o2) {
-          int o1Value = o1.date.getYear() * 12 + o1.date.getMonth() * 31 + o1.date.getDate();
-          int o2Value = o2.date.getYear() * 12 + o2.date.getMonth() * 31 + o2.date.getDate();
-          return o1Value - o2Value;
-        }
-      });
-
       Date lastDate = contacts.get(0).date;
       contactDates.add(lastDate);
       contactCounts.add(1);

@@ -72,7 +72,7 @@ public class SubscriptionToCustomerController extends RecordController<Subscript
 
     int dayStarted = rs.getInt("dayStarted");
     int monthStarted = rs.getInt("monthStarted");
-    int yearStarted = rs.getInt("yearStarted");
+    int yearStarted = rs.getInt("yearStarted") - 1900;
     int hourStarted = rs.getInt("hourStarted");
     int minuteStarted = rs.getInt("minuteStarted");
     int secondStarted = rs.getInt("secondStarted");
@@ -80,7 +80,7 @@ public class SubscriptionToCustomerController extends RecordController<Subscript
 
     int dayEnded = rs.getInt("dayEnded");
     int monthEnded = rs.getInt("monthEnded");
-    int yearEnded = rs.getInt("yearEnded");
+    int yearEnded = rs.getInt("yearEnded") - 1900;
     int hourEnded = rs.getInt("hourEnded");
     int minuteEnded = rs.getInt("minuteEnded");
     int secondEnded = rs.getInt("secondEnded");
@@ -109,7 +109,7 @@ public class SubscriptionToCustomerController extends RecordController<Subscript
     pStatement.setLong(2, record.customer);
     pStatement.setInt(3, record.dateStarted.getDate());
     pStatement.setInt(4, record.dateStarted.getMonth());
-    pStatement.setInt(5, record.dateStarted.getYear());
+    pStatement.setInt(5, record.dateStarted.getYear() + 1900);
     pStatement.setInt(6, record.dateStarted.getSeconds());
     pStatement.setInt(7, record.dateStarted.getMinutes());
     pStatement.setInt(8, record.dateStarted.getHours());
@@ -128,7 +128,7 @@ public class SubscriptionToCustomerController extends RecordController<Subscript
     PreparedStatement pStatement = conn.prepareStatement(sql);
     pStatement.setInt(1, record.dateEnded.getDate());
     pStatement.setInt(2, record.dateEnded.getMonth());
-    pStatement.setInt(3, record.dateEnded.getYear());
+    pStatement.setInt(3, record.dateEnded.getYear() + 1900);
     pStatement.setInt(4, record.dateEnded.getSeconds());
     pStatement.setInt(5, record.dateEnded.getMinutes());
     pStatement.setInt(6, record.dateEnded.getHours());

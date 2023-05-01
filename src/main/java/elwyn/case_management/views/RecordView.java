@@ -47,18 +47,7 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
   public RecordView(RecordController<T> controller) {
     super();
     this.controller = controller;
-  }
-    
-  //*********** Component Initialisation ***********//
 
-  protected abstract void addRecordFields(JComponent leftPanel, JComponent rightPanel, T record, boolean editable);
-  
-  public JComponent displayRecordListing() {
-    JComponent panel = new JPanel();
-    panel.setSize(1028, 630);
-    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
-    // panel.removeAll();
     addComponentListener(new ComponentListener() { // This must be done to handle databases changes that could happen in other tabs
         @Override
         public void componentShown(ComponentEvent e) {
@@ -71,7 +60,18 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
         @Override
         public void componentHidden(ComponentEvent e) {}
     });
+  }
+    
+  //*********** Component Initialisation ***********//
 
+  protected abstract void addRecordFields(JComponent leftPanel, JComponent rightPanel, T record, boolean editable);
+  
+  public JComponent displayRecordListing() {
+    JComponent panel = new JPanel();
+    panel.setSize(1028, 630);
+    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+    // panel.removeAll();
 
     JButton previousButton = new JButton("Previous");
     if (page > 0) {
