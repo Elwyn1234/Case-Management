@@ -22,17 +22,21 @@ public class SubscriptionToCustomer extends Record {
   }
 
   public String toString(int depth) {
-    String indent = "    ";
+    String oneIndent = "        ";
+    String indent1 = "";
+    String indent2 = oneIndent;
     for (int i = 0; i < depth; i++) {
-      indent += indent;
+      indent1 += oneIndent;
+      indent2 += oneIndent;
     }
     String val = "{\n";
-    val += indent + "id: " + id + "\n";
-    val += indent + "subscription: " + subscription + "\n";
-    val += indent + "customer: " + customer + "\n";
-    val += indent + "dateStarted: " + dateStarted + "\n";
-    val += indent + "dateEnded: " + dateEnded + "\n";
-    val += "}";
+    if (id != 0)
+      val += indent2 + "id: " + id + "\n";
+    val += indent2 + "subscription: " + subscription + "\n";
+    val += indent2 + "customer: " + customer + "\n";
+    val += indent2 + "dateStarted: " + dateStarted + "\n";
+    val += indent2 + "dateEnded: " + dateEnded + "\n";
+    val += indent1 + "}";
     return val;
   }
 }

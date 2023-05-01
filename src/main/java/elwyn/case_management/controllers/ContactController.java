@@ -37,25 +37,7 @@ public class ContactController extends RecordController<Contact> {
       ResultSet rs = pStatement.executeQuery();
             
       while (rs.next()) {
-        Contact record = new Contact();
-        long caseId = rs.getLong("caseId");
-        record.caseRecord = caseController.readRecord(caseId);
-        long userId = rs.getLong("user");
-        record.user = userController.readRecord(userId);
-
-        record.id = rs.getLong("rowid");
-        record.description = rs.getString("description");
-
-        int day = rs.getInt("day");
-        int month = rs.getInt("month");
-        int year = rs.getInt("year");
-        int second = rs.getInt("second");
-        int minute = rs.getInt("minute");
-        int hour = rs.getInt("hour");
-        record.date = new Date(year, month, day, hour, minute, second);
-
-        record.contactMethod = ContactMethod.parseSelectedContactMethod(rs.getString("contactMethod"));
-        contacts.add(record);
+        contacts.add(readResultSet(rs));
       }
     } catch (Exception e) {
       System.out.println("Error: " + e.getMessage());
@@ -65,6 +47,51 @@ public class ContactController extends RecordController<Contact> {
       return filter.apply(contacts);
     else
       return contacts;
+  }
+
+  public Contact readRecord(long rowid) {
+    Contact contact = new Contact();
+    try {
+      String sql = "SELECT rowid, * from contacts WHERE rowid=?";
+      PreparedStatement pStatement = conn.prepareStatement(sql);
+      pStatement.setLong(1, rowid);
+      ResultSet rs = pStatement.executeQuery();
+            
+      int count = 0;
+      while (rs.next()) {
+        count++;
+        contact = readResultSet(rs);
+      }
+      if (count == 0)
+        contact = null; // No record found
+    } catch (Exception e) {
+      System.out.println("Error: " + e.getMessage());
+      e.printStackTrace();
+    }
+    return contact;
+  }
+
+  Contact readResultSet(ResultSet rs) throws SQLException {
+    Contact record = new Contact();
+    long caseId = rs.getLong("caseId");
+    record.caseRecord = caseController.readRecord(caseId);
+    long userId = rs.getLong("user");
+    record.user = userController.readRecord(userId);
+
+    record.id = rs.getLong("rowid");
+    record.description = rs.getString("description");
+
+    int day = rs.getInt("day");
+    int month = rs.getInt("month");
+    int year = rs.getInt("year");
+    int second = rs.getInt("second");
+    int minute = rs.getInt("minute");
+    int hour = rs.getInt("hour");
+    record.date = new Date(year, month, day, hour, minute, second);
+
+    record.contactMethod = ContactMethod.parseSelectedContactMethod(rs.getString("contactMethod"));
+
+    return record;
   }
 
   public List<Contact> readRecords(long userId) {

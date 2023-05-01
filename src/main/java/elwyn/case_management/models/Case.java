@@ -20,34 +20,38 @@ public class Case extends Record {
 
   @Override
   public String toString(int depth) {
-    String indent = "    ";
+    String oneIndent = "        ";
+    String indent1 = "";
+    String indent2 = oneIndent;
     for (int i = 0; i < depth; i++) {
-      indent += indent;
+      indent1 += oneIndent;
+      indent2 += oneIndent;
     }
     String val = "{\n";
-    val += indent + "id: " + id + "\n";
-    val += indent + "summary: " + summary + "\n";
-    val += indent + "description: " + description + "\n";
+    if (id != 0)
+      val += indent2 + "id: " + id + "\n";
+    val += indent2 + "summary: " + summary + "\n";
+    val += indent2 + "description: " + description + "\n";
 
     if (customer == null)
-      val += indent + "customer: null\n";
+      val += indent2 + "customer: null\n";
     else
-      val += indent + "customer: " + customer.toString(depth + 1) + "\n";
+      val += indent2 + "customer: " + customer.toString(depth + 1) + "\n";
 
     if (createdBy == null)
-      val += indent + "createdBy: null\n";
+      val += indent2 + "createdBy: null\n";
     else
-      val += indent + "createdBy: " + createdBy.toString(depth + 1) + "\n";
+      val += indent2 + "createdBy: " + createdBy.toString(depth + 1) + "\n";
 
     if (assignedTo == null)
-      val += indent + "assignedTo: null\n";
+      val += indent2 + "assignedTo: null\n";
     else
-      val += indent + "assignedTo: " + assignedTo.toString(depth + 1) + "\n";
+      val += indent2 + "assignedTo: " + assignedTo.toString(depth + 1) + "\n";
 
-    val += indent + "dateOpened: " + dateOpened + "\n";
-    val += indent + "dateClosed: " + dateClosed + "\n";
-    val += indent + "priority: " + priority + "\n";
-    val += "}";
+    val += indent2 + "dateOpened: " + dateOpened + "\n";
+    val += indent2 + "dateClosed: " + dateClosed + "\n";
+    val += indent2 + "priority: " + priority + "\n";
+    val += indent1 + "}";
     return val;
   }
 }

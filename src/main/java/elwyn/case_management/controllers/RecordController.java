@@ -45,6 +45,7 @@ public abstract class RecordController <T extends Record> {
   }
 
   public abstract List<T> readRecords(int page);
+  public abstract T readRecord(long rowid);
 
   public void updateRecord(T record) {
     createOrUpdateRecord(record, false);

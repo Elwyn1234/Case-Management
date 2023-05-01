@@ -36,25 +36,29 @@ public class Customer extends Record {
 
   @Override
   public String toString(int depth) {
-    String indent = "    ";
+    String oneIndent = "        ";
+    String indent1 = "";
+    String indent2 = oneIndent;
     for (int i = 0; i < depth; i++) {
-      indent += indent;
+      indent1 += oneIndent;
+      indent2 += oneIndent;
     }
     String val = "{\n";
-    val += indent + "id: " + id + "\n";
-    val += indent + "firstName: " + firstName + "\n";
-    val += indent + "secondName: " + secondName + "\n";
-    val += indent + "sirname: " + sirname + "\n";
-    val += indent + "gender: " + gender + "\n";
-    val += indent + "dateOfBirth: " + dateOfBirth + "\n";
-    val += indent + "otherNotes: " + otherNotes + "\n";
-    val += indent + "email: " + email + "\n";
-    val += indent + "phoneNumber: " + phoneNumber + "\n";
-    val += indent + "address: " + address + "\n";
-    val += indent + "city: " + city + "\n";
-    val += indent + "postcode: " + postcode + "\n";
-    val += indent + "country: " + country + "\n";
-    val += "}";
+    if (id != 0)
+      val += indent2 + "id: " + id + "\n";
+    val += indent2 + "firstName: " + firstName + "\n";
+    val += indent2 + "secondName: " + secondName + "\n";
+    val += indent2 + "sirname: " + sirname + "\n";
+    val += indent2 + "gender: " + gender + "\n";
+    val += indent2 + "dateOfBirth: " + dateOfBirth + "\n";
+    val += indent2 + "otherNotes: " + otherNotes + "\n";
+    val += indent2 + "email: " + email + "\n";
+    val += indent2 + "phoneNumber: " + phoneNumber + "\n";
+    val += indent2 + "address: " + address + "\n";
+    val += indent2 + "city: " + city + "\n";
+    val += indent2 + "postcode: " + postcode + "\n";
+    val += indent2 + "country: " + country + "\n";
+    val += indent1 + "}";
     return val;
   }
 }

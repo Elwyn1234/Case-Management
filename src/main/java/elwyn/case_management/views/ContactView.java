@@ -144,9 +144,10 @@ public class ContactView extends RecordView<Contact> {
         caseIdValidityMessage.setText("Case ID must be a valid Case ID");
         caseIdValidityMessage.setVisible(true);
         formIsValid = false;
+        record.caseRecord = null;
       }
-      Case caseRecord = caseController.readRecord(record.caseRecord.id);
-      if (caseRecord == null) {
+      record.caseRecord = caseController.readRecord(record.caseRecord.id);
+      if (record.caseRecord == null) {
         caseIdValidityMessage.setText("Case ID must be a valid Case ID");
         caseIdValidityMessage.setVisible(true);
         formIsValid = false;
@@ -161,9 +162,10 @@ public class ContactView extends RecordView<Contact> {
       userIdValidityMessage.setText("User ID must be a valid User ID");
       userIdValidityMessage.setVisible(true);
       formIsValid = false;
+      record.user = null;
     }
-    User user = userController.readRecord(record.user.id);
-    if (user == null) {
+    record.user = userController.readRecord(record.user.id);
+    if (record.user == null) {
       userIdValidityMessage.setText("User ID must be a valid User ID");
       userIdValidityMessage.setVisible(true);
       formIsValid = false;

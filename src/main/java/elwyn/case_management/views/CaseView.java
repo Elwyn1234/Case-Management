@@ -186,9 +186,10 @@ public class CaseView extends RecordView<Case> {
       customerIdValidityMessage.setText("Customer ID must be a valid Customer ID");
       customerIdValidityMessage.setVisible(true);
       formIsValid = false;
+      record.customer = null;
     }
-    Customer customer = caseController.customerController.readRecord(record.customer.id);
-    if (customer == null) {
+    record.customer = caseController.customerController.readRecord(record.customer.id);
+    if (record.customer == null) {
       customerIdValidityMessage.setText("Customer ID must be a valid Customer ID");
       customerIdValidityMessage.setVisible(true);
       formIsValid = false;
@@ -203,9 +204,10 @@ public class CaseView extends RecordView<Case> {
         assignedToValidityMessage.setText("Assignee must be a valid User ID");
         assignedToValidityMessage.setVisible(true);
         formIsValid = false;
+        record.assignedTo = null;
       }
-      User user = caseController.userController.readRecord(record.assignedTo.id);
-      if (user == null) {
+      record.assignedTo = caseController.userController.readRecord(record.assignedTo.id);
+      if (record.assignedTo == null) {
         assignedToValidityMessage.setText("Assignee must be a valid User ID");
         assignedToValidityMessage.setVisible(true);
         formIsValid = false;

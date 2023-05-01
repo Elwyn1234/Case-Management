@@ -38,18 +38,22 @@ public class User extends Record {
 
   @Override
   public String toString(int depth) {
-    String indent = "    ";
+    String oneIndent = "        ";
+    String indent1 = "";
+    String indent2 = oneIndent;
     for (int i = 0; i < depth; i++) {
-      indent += indent;
+      indent1 += oneIndent;
+      indent2 += oneIndent;
     }
     String val = "{\n";
-    val += indent + "id: " + id + "\n";
-    val += indent + "name: " + name + "\n";
-    val += indent + "username: " + username + "\n";
-    val += indent + "password: " + "Value hidden" + "\n";
-    val += indent + "role: " + role + "\n";
-    val += indent + "teamLead: " + teamLead + "\n";
-    val += "}";
+    if (id != 0)
+      val += indent2 + "id: " + id + "\n";
+    val += indent2 + "name: " + name + "\n";
+    val += indent2 + "username: " + username + "\n";
+    val += indent2 + "password: " + "Value hidden" + "\n";
+    val += indent2 + "role: " + role + "\n";
+    val += indent2 + "teamLead: " + teamLead + "\n";
+    val += indent1 + "}";
     return val;
   }
 }

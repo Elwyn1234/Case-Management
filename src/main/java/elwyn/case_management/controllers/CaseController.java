@@ -137,12 +137,6 @@ public class CaseController extends RecordController<Case> {
     pStatement.setInt(11, record.dateOpened.getMinutes());
     pStatement.setInt(12, record.dateOpened.getHours());
 
-    Log log = new Log();
-    log.severity = Severity.LOG;
-    log.user = loggedInUser.id;
-    log.log = "Case Created " + record.toString();
-    logController.createRecord(log);
-
     return pStatement;
   }
 
@@ -156,12 +150,6 @@ public class CaseController extends RecordController<Case> {
         "WHERE rowid=?";
     PreparedStatement pStatement = PopulateCommonSqlParameters(sql, record);
     pStatement.setLong(6, record.id);
-
-    Log log = new Log();
-    log.severity = Severity.DEBUG;
-    log.user = loggedInUser.id;
-    log.log = "Case Updated " + record.toString();
-    logController.createRecord(log);
 
     return pStatement;
   }

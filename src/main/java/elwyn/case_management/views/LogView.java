@@ -35,7 +35,7 @@ public class LogView extends JScrollPane {
     panel.setLayout(mig);
 
     JLabel title = new JLabel("Logs");
-    title.setFont(new Font(getFont().getFontName(), Font.PLAIN, 30));
+    title.setFont(new Font(getFont().getFontName(), Font.PLAIN, 40));
     panel.add(title);
     panel.add(Box.createVerticalStrut(30));
 
@@ -45,7 +45,7 @@ public class LogView extends JScrollPane {
       JLabel name = null;
       if (user != null) {
         name = new JLabel(user.fullNameAndId());
-        name.setFont(new Font(getFont().getFontName(), Font.PLAIN, 24));
+        name.setFont(new Font(getFont().getFontName(), Font.BOLD, 30));
       }
 
       JLabel date = new JLabel(record.date.toString());
@@ -54,7 +54,7 @@ public class LogView extends JScrollPane {
       JLabel severity = createSeverityLabel(record.severity, getFont().getFontName());
 
       JTextComponent log = RecordView.createTextArea(record.log);
-      log.setPreferredSize(new Dimension(560, 50));
+      log.setPreferredSize(new Dimension(1000, 50));
       log.setFont(new Font(getFont().getFontName(), Font.PLAIN, 20));
 
       if (name != null)

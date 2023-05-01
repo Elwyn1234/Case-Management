@@ -18,17 +18,21 @@ public class Subscription extends Record {
 
   @Override
   public String toString(int depth) {
-    String indent = "    ";
+    String oneIndent = "        ";
+    String indent1 = "";
+    String indent2 = oneIndent;
     for (int i = 0; i < depth; i++) {
-      indent += indent;
+      indent1 += oneIndent;
+      indent2 += oneIndent;
     }
     String val = "{\n";
-    val += indent + "id: " + id + "\n";
-    val += indent + "name: " + name + "\n";
-    val += indent + "description: " + description + "\n";
-    val += indent + "frequency: " + frequency + "\n";
-    val += indent + "price: " + price + "\n";
-    val += "}";
+    if (id != 0)
+      val += indent2 + "id: " + id + "\n";
+    val += indent2 + "name: " + name + "\n";
+    val += indent2 + "description: " + description + "\n";
+    val += indent2 + "frequency: " + frequency + "\n";
+    val += indent2 + "price: " + price + "\n";
+    val += indent1 + "}";
     return val;
   }
 }
