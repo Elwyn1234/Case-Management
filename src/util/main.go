@@ -334,6 +334,9 @@ func addTestData() {
         contact.Case,
         contact.User)
     if (err != nil) { logError.Fatal(err.Error()) }
+    if contactIndex % 500 == 0 {
+      log.Print(contactIndex)
+    }
   }
   log.Print("Test data created for the contacts tables!")
 

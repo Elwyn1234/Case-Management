@@ -20,7 +20,7 @@ def main():
         paras.append(loremIpsum["paras"][i])
 
     obj["contacts"] = []
-    for i in range(1100):
+    for i in range(100000):
         date = generateDate()
 
         contactMethod = "";
@@ -38,7 +38,7 @@ def main():
         obj["contacts"][i]["description"] = sentences[random.randrange(0, len(sentences))]
         obj["contacts"][i]["contactMethod"] = contactMethod
         obj["contacts"][i]["case"] = random.randint(1, 100)
-        obj["contacts"][i]["user"] = 1
+        obj["contacts"][i]["user"] = random.randint(1, 7)
         obj["contacts"][i]["day"] = date["day"]
         obj["contacts"][i]["month"] = date["month"]
         obj["contacts"][i]["year"] = date["year"]
@@ -66,7 +66,7 @@ def main():
         obj["cases"].append({})
         obj["cases"][i]["summary"] = sentences[random.randrange(0, len(sentences))]
         obj["cases"][i]["description"] = paras[random.randrange(0, len(paras))]
-        obj["cases"][i]["customer"] = 2
+        obj["cases"][i]["customer"] = random.randint(1, 7)
         obj["cases"][i]["assignedTo"] = random.randint(1, 7)
         obj["cases"][i]["createdBy"] = random.randint(1, 7)
         obj["cases"][i]["priority"] = priority
@@ -107,7 +107,7 @@ def main():
 
 
     for i in range(len(obj["subscriptions"])):
-        obj["subscriptions"][i]["name"] = "Subscription " + i
+        obj["subscriptions"][i]["name"] = "Subscription " + str(i)
         obj["subscriptions"][i]["price"] = i * 500
         obj["subscriptions"][i]["description"] = paras[random.randrange(0, len(paras))]
 
@@ -126,9 +126,9 @@ def generateDate():
     day = random.randint(1, 28)
 
     x = random.randint(1, 100)
-    x = float(x) / 100 * 1.57 # need radian values between 0 and 0.5
+    x = float(x) / 100.0 * 1.5 # need radian values between 0 and 0.5 (1.57 is 180)
     y = math.sin(x)
-    month = int(y * 12)
+    month = int(y * 12.0)
     month = min(month, 11)
     # Hack to get the most busy months to be the most recent (May)
     month = month + 5
@@ -136,7 +136,7 @@ def generateDate():
         month = month - 12
 
     year = 2023
-    if month > 3:
+    if month > 4:
         year = 2022
 
     return {

@@ -8,41 +8,41 @@
     },
     {
       "username": "2",
-      "password": "$2y$10$WebCsvCmBMASlXD3aLs3BeFkWNCXFx96QmNShzpBLoem8BSJ93zEe",
+      "password": "2",
       "name": "leader1",
       "role": "Leader"
     },
     {
       "username": "3",
-      "password": "$2y$10$WebCsvCmBMASlXD3aLs3BeFkWNCXFx96QmNShzpBLoem8BSJ93zEe",
+      "password": "3",
       "name": "agent1",
       "role": "Agent",
       "teamLead": 2
     },
     {
       "username": "4",
-      "password": "$2y$10$WebCsvCmBMASlXD3aLs3BeFkWNCXFx96QmNShzpBLoem8BSJ93zEe",
+      "password": "4",
       "name": "agent2",
       "role": "Agent",
       "teamLead": 2
     },
     {
       "username": "5",
-      "password": "$2y$10$WebCsvCmBMASlXD3aLs3BeFkWNCXFx96QmNShzpBLoem8BSJ93zEe",
+      "password": "5",
       "name": "agent3",
       "role": "Agent",
       "teamLead": 2
     },
     {
       "username": "6",
-      "password": "$2y$10$WebCsvCmBMASlXD3aLs3BeFkWNCXFx96QmNShzpBLoem8BSJ93zEe",
+      "password": "6",
       "name": "agent4",
       "role": "Agent",
       "teamLead": 2
     },
     {
       "username": "7",
-      "password": "$2y$10$WebCsvCmBMASlXD3aLs3BeFkWNCXFx96QmNShzpBLoem8BSJ93zEe",
+      "password": "7",
       "name": "agent5",
       "role": "Agent",
       "teamLead": 2
