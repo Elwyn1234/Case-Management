@@ -49,7 +49,7 @@ public class CaseView extends RecordView<Case> {
     super(controller);
     this.controller = controller;
     this.caseController = controller;
-    miscButtonParams = new MiscButton<Case>(controller::closeRecord, controller::shouldShowButton, "Close");
+    miscButtonParams = new MiscButton<Case>(controller::closeRecord, controller::shouldShowButton, "Close", new Dimension(80, 30));
 
     summaryValidityMessage.setForeground(Color.RED);
     customerIdValidityMessage.setForeground(Color.RED);
@@ -96,7 +96,10 @@ public class CaseView extends RecordView<Case> {
 
     JTextArea title = RecordView.createTextArea(record.summary);
     title.setPreferredSize(new Dimension(400, 50));
-    title.setFont(new Font(font, Font.PLAIN, TITLE_SIZE));
+    title.setFont(new Font(font, Font.PLAIN, 20));
+
+    Box idBox = new Box(BoxLayout.X_AXIS);
+    idBox = RecordView.createLabelledFieldInline("ID", Long.toString(record.id), font);
 
     Box creatorBox = new Box(BoxLayout.X_AXIS);
     if (record.createdBy != null)
@@ -142,10 +145,11 @@ public class CaseView extends RecordView<Case> {
     leftPanel.add(customerBox, "cell 0 1 1 4");
     leftPanel.add(statusBox, "cell 1 1, align right");
     leftPanel.add(priorityBox, "cell 1 2, align right");
-    leftPanel.add(creatorBox, "cell 0 5");
-    leftPanel.add(assigneeBox, "cell 0 6");
-    leftPanel.add(dateOpenedBox, "cell 0 7");
-    leftPanel.add(dateClosedBox, "wrap, cell 0 8");
+    leftPanel.add(idBox, "cell 0 5");
+    leftPanel.add(creatorBox, "cell 0 6");
+    leftPanel.add(assigneeBox, "cell 0 7");
+    leftPanel.add(dateOpenedBox, "cell 0 8");
+    leftPanel.add(dateClosedBox, "wrap, cell 0 9");
     leftPanel.add(descriptionBox, "span");
   }
 
@@ -181,36 +185,24 @@ public class CaseView extends RecordView<Case> {
     // Customer
     record.customer = new Customer();
     try {
-      record.customer.id = Long.parseLong(customerId.getText()); // eTODO: handle exception
+      record.customer = caseController.customerController.readRecord(Long.parseLong(customerId.getText()));
     } catch (Exception e) {
       customerIdValidityMessage.setText("Customer ID must be a valid Customer ID");
       customerIdValidityMessage.setVisible(true);
       formIsValid = false;
       record.customer = null;
     }
-    record.customer = caseController.customerController.readRecord(record.customer.id);
-    if (record.customer == null) {
-      customerIdValidityMessage.setText("Customer ID must be a valid Customer ID");
-      customerIdValidityMessage.setVisible(true);
-      formIsValid = false;
-    }
 
     // Assignee
     record.assignedTo = new User();
     if (!assignedTo.getText().isBlank()) {
       try {
-        record.assignedTo.id = Long.parseLong(assignedTo.getText()); // eTODO: handle exception
+        record.assignedTo = caseController.userController.readRecord(Long.parseLong(assignedTo.getText()));
       } catch (Exception e) {
         assignedToValidityMessage.setText("Assignee must be a valid User ID");
         assignedToValidityMessage.setVisible(true);
         formIsValid = false;
         record.assignedTo = null;
-      }
-      record.assignedTo = caseController.userController.readRecord(record.assignedTo.id);
-      if (record.assignedTo == null) {
-        assignedToValidityMessage.setText("Assignee must be a valid User ID");
-        assignedToValidityMessage.setVisible(true);
-        formIsValid = false;
       }
     }
 

@@ -5,7 +5,6 @@ import java.awt.Insets;
 import java.awt.Font;
 import java.awt.Dimension;
 import java.awt.event.*;
-import java.awt.FlowLayout;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -43,6 +42,7 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
   protected abstract String tabNameOfViewRecords();
   protected abstract String tabNameOfCreateRecord();
   protected abstract String tabNameOfEditRecord();
+  protected String migLayoutString() { return "wrap 3, alignx center"; } 
     
   public RecordView(RecordController<T> controller) {
     super();
@@ -68,10 +68,8 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
   
   public JComponent displayRecordListing() {
     JComponent panel = new JPanel();
-    panel.setSize(1028, 630);
-    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
-    // panel.removeAll();
+    MigLayout migOuter = new MigLayout(migLayoutString());
+    panel.setLayout(migOuter);
 
     JButton previousButton = new JButton("Previous");
     if (page > 0) {
@@ -131,33 +129,19 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
     mainButtons.add(Box.createHorizontalStrut(15));
     mainButtons.add(nextButton);
 
-    panel.add(Box.createVerticalStrut(15));
-    panel.add(titleBox);
-    panel.add(Box.createVerticalStrut(15));
-    panel.add(mainButtons);
+    panel.add(Box.createVerticalStrut(15), "span");
+    panel.add(titleBox, "span, alignx center, aligny top");
+    panel.add(Box.createVerticalStrut(15), "span");
+    panel.add(mainButtons, "span, alignx center, aligny top");
 
-    int i = 0;
-    JPanel rowPanel = new JPanel();
-    JPanel lastPanelAdded = new JPanel();
     for (T record: controller.readRecords(page)) {
-      rowPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 40, 10));
-      rowPanel.setAlignmentX(CENTER_ALIGNMENT);
-      if (i % 3 == 0 && i != 0) {
-        panel.add(rowPanel);
-        lastPanelAdded = rowPanel;
-        rowPanel = new JPanel();
-      }
-      Dimension expectedDimension = new Dimension(500, 630);
-      LC lc = new LC();
-      lc.setWrapAfter(1);
-      MigLayout mig = new MigLayout(lc);
+      Dimension expectedDimension = new Dimension(500, 200);
+      MigLayout migInner = new MigLayout("wrap 1, aligny top");
       JPanel leftFields = new JPanel();
       Border innerBorder = BorderFactory.createEmptyBorder(10, 20, 10, 20);
       Border outerBorder = BorderFactory.createLineBorder(Color.BLACK, 1, true);
       leftFields.setBorder(BorderFactory.createCompoundBorder(outerBorder, innerBorder));
-      leftFields.setLayout(mig);
-      leftFields.setPreferredSize(expectedDimension);
-      leftFields.setMaximumSize(expectedDimension);
+      leftFields.setLayout(migInner);
       leftFields.setMinimumSize(expectedDimension);
 
       JPanel rightFields = new JPanel();
@@ -189,7 +173,7 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
       JButton miscButton = null;
       if (miscButtonParams != null && miscButtonParams.shouldShowButton.apply(record)) {
         miscButton = new JButton(miscButtonParams.buttonText);
-        miscButton.setPreferredSize(new Dimension(80, 30));
+        miscButton.setPreferredSize(miscButtonParams.buttonDimension);
         miscButton.addActionListener(new ActionListener() {
             long recordId = record.id;
             @Override
@@ -214,13 +198,9 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
       if (miscButton != null)
         buttons.add(miscButton);
       leftFields.add(buttons);
-      rowPanel.add(leftFields);
+      panel.add(leftFields, "aligny top, grow");
+    }
 
-      i++;
-    }
-    if (lastPanelAdded != rowPanel) {
-      panel.add(rowPanel);
-    }
     return panel;
   }
 

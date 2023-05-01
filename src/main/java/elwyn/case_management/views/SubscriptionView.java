@@ -80,7 +80,7 @@ public class SubscriptionView extends RecordView<Subscription> {
     MigLayout mig = new MigLayout(lc);
     leftPanel.setLayout(mig);
 
-    JLabel titleLabel = new JLabel(record.name, SwingConstants.CENTER);
+    JLabel titleLabel = new JLabel(record.name + " (" + record.id + ")", SwingConstants.CENTER);
     titleLabel.setFont(new Font(getFont().getFontName(), Font.PLAIN, TITLE_SIZE));
 
     JTextArea descriptionArea = new JTextArea(record.description);

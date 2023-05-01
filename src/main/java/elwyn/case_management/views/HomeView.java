@@ -94,11 +94,11 @@ public class HomeView extends JTabbedPane {
     titleLabel.setFont(new Font(getFont().getFontName(), Font.PLAIN, 30));
     titleLabel.setBorder(new EmptyBorder(new Insets(30, 0, 0, 0)));
 
-    JLabel caseCountLabel = new JLabel("You have " + caseController.readRecords(0).size() + " cases assigned to you"); // eTODO: show my records
+    JLabel caseCountLabel = new JLabel("You have " + caseController.readRecords(0).size() + " active cases assigned to you."); // eTODO: show my records
     caseCountLabel.setFont(new Font(getFont().getFontName(), Font.PLAIN, 18));
     caseCountLabel.setBorder(new EmptyBorder(new Insets(30, 0, 0, 0)));
 
-    JLabel contactCountLabel = new JLabel("You have " + contactController.readRecords(homeController.user.id).size() + " contacts assigned to you");
+    JLabel contactCountLabel = new JLabel("You have handled " + contactController.readRecords(homeController.user.id).size() + " contacts!");
     contactCountLabel.setFont(new Font(getFont().getFontName(), Font.PLAIN, 18));
     contactCountLabel.setBorder(new EmptyBorder(new Insets(10, 0, 0, 0)));
 

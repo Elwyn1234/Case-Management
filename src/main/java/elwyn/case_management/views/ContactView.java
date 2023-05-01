@@ -82,12 +82,15 @@ public class ContactView extends RecordView<Contact> {
 
     JTextComponent title = RecordView.createTextArea(record.description);
     title.setPreferredSize(new Dimension(400, 50));
-    title.setFont(new Font(font, Font.PLAIN, 18));
+    title.setFont(new Font(font, Font.PLAIN, 20));
 
     JLabel dateLabel = new JLabel();
     if (record.date != null)
       dateLabel = new JLabel(record.date.toString());
     dateLabel.setFont(new Font(font, Font.PLAIN, 14));
+
+    Box idBox = new Box(BoxLayout.X_AXIS);
+    idBox = RecordView.createLabelledFieldInline("ID", Long.toString(record.id), font);
 
     Box contactMethodBox = new Box(BoxLayout.X_AXIS);
     if (record.contactMethod != null)
@@ -105,9 +108,10 @@ public class ContactView extends RecordView<Contact> {
     }
 
     leftPanel.add(title, "span, aligny top");
-    leftPanel.add(caseBox, "aligny top");
-    leftPanel.add(customerBox, "align right, aligny top");
+    leftPanel.add(customerBox, "aligny top");
+    leftPanel.add(caseBox, "align right, aligny top, span 1 10");
     leftPanel.add(dateLabel, "span, aligny top");
+    leftPanel.add(idBox, "span, aligny top");
     leftPanel.add(contactMethodBox, "span, aligny top");
     leftPanel.add(userBox, "span, aligny top");
   }
@@ -139,36 +143,24 @@ public class ContactView extends RecordView<Contact> {
     record.caseRecord = new Case();
     if (!caseId.getText().isBlank()) {
       try {
-        record.caseRecord.id = Long.parseLong(caseId.getText()); // eTODO: handle exception
+        record.caseRecord = caseController.readRecord(Long.parseLong(caseId.getText()));
       } catch (Exception e) {
         caseIdValidityMessage.setText("Case ID must be a valid Case ID");
         caseIdValidityMessage.setVisible(true);
         formIsValid = false;
         record.caseRecord = null;
       }
-      record.caseRecord = caseController.readRecord(record.caseRecord.id);
-      if (record.caseRecord == null) {
-        caseIdValidityMessage.setText("Case ID must be a valid Case ID");
-        caseIdValidityMessage.setVisible(true);
-        formIsValid = false;
-      }
     }
 
     // User
     record.user = new User();
     try {
-      record.user.id = Long.parseLong(userId.getText()); // eTODO: handle exception
+      record.user = userController.readRecord(Long.parseLong(userId.getText()));
     } catch (Exception e) {
       userIdValidityMessage.setText("User ID must be a valid User ID");
       userIdValidityMessage.setVisible(true);
       formIsValid = false;
       record.user = null;
-    }
-    record.user = userController.readRecord(record.user.id);
-    if (record.user == null) {
-      userIdValidityMessage.setText("User ID must be a valid User ID");
-      userIdValidityMessage.setVisible(true);
-      formIsValid = false;
     }
 
     // Contact

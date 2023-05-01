@@ -1,7 +1,11 @@
 package elwyn.case_management.views;
 
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -30,6 +34,9 @@ public class UserView extends RecordView<User> {
   protected String tabNameOfViewRecords() { return "View Users"; } // eTODO: use these again to add titles
   protected String tabNameOfCreateRecord() { return "Create User"; }
   protected String tabNameOfEditRecord() { return "Edit User"; }
+  @Override
+  protected String migLayoutString() { return "wrap 5, alignx center"; };
+
 
   public UserView(RecordController<User> controller) {
     super(controller);
@@ -80,17 +87,30 @@ public class UserView extends RecordView<User> {
       return;
     }
     editing = false;
+    String font = getFont().getFontName();
+    Dimension expectedDimension = new Dimension(300, 200);
+    leftPanel.setMinimumSize(expectedDimension);
 
-    //eTODO: rename from "" to "Field"
-    addTextField(leftPanel, "Name", record.name, false, editable);
+    JTextComponent title = RecordView.createTextArea(record.name + " (" + record.id + ")");
+    title.setPreferredSize(new Dimension(300, 50));
+    title.setFont(new Font(font, Font.PLAIN, 25));
 
-    addTextField(leftPanel, "Username", record.username, false, editable);
+    Box usernameBox = new Box(BoxLayout.X_AXIS);
+    if (record.username != null)
+      usernameBox = RecordView.createLabelledFieldInline("Username", record.username, font);
 
-    String role = record.role == null ? null : record.role.toString();
-    addTextField(leftPanel, "Role", role, true, false);
+    Box roleBox = new Box(BoxLayout.X_AXIS);
+    if (record.role != null)
+      roleBox = RecordView.createLabelledFieldInline("Role", record.role.toString(), font);
 
-    String teamLeadString = record.teamLead == null ? "" : Long.toString(record.teamLead);
-    addTextField(leftPanel, "Team Lead", teamLeadString, false, editable);
+    Box teamLeadBox = new Box(BoxLayout.X_AXIS);
+    if (record.teamLead != null)
+      teamLeadBox = RecordView.createLabelledFieldInline("Team Lead", Long.toString(record.teamLead), font);
+
+    leftPanel.add(title);
+    leftPanel.add(usernameBox);
+    leftPanel.add(roleBox);
+    leftPanel.add(teamLeadBox);
   }
 
   protected User validateFormValues() {

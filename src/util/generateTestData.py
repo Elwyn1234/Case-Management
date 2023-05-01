@@ -38,7 +38,7 @@ def main():
         obj["contacts"][i]["description"] = sentences[random.randrange(0, len(sentences))]
         obj["contacts"][i]["contactMethod"] = contactMethod
         obj["contacts"][i]["case"] = random.randint(1, 100)
-        obj["contacts"][i]["user"] = random.randint(1, 7)
+        obj["contacts"][i]["user"] = 1
         obj["contacts"][i]["day"] = date["day"]
         obj["contacts"][i]["month"] = date["month"]
         obj["contacts"][i]["year"] = date["year"]
@@ -106,6 +106,13 @@ def main():
 
 
 
+    for i in range(len(obj["subscriptions"])):
+        obj["subscriptions"][i]["name"] = "Subscription " + i
+        obj["subscriptions"][i]["price"] = i * 500
+        obj["subscriptions"][i]["description"] = paras[random.randrange(0, len(paras))]
+
+
+
     # for i in range(len(obj["users"])):
     #     print(type(obj["users"][i]["password"]))
     #     obj["users"][i]["password"] = bcrypt.hashpw(obj["users"][i]["password"].decode("utf8"), bcrypt.gensalt())
@@ -127,8 +134,6 @@ def generateDate():
     month = month + 5
     if month > 11:
         month = month - 12
-
-    month = 3 # eTODO: REMOVE
 
     year = 2023
     if month > 3:

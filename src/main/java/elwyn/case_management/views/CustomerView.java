@@ -69,7 +69,7 @@ public class CustomerView extends RecordView<Customer> {
 
   public CustomerView(RecordController<Customer> controller) {
     super(controller);
-    miscButtonParams = new MiscButton<Customer>(this::subscriptionManagementPanel, CustomerView::shouldShowButton, "Subscriptions");
+    miscButtonParams = new MiscButton<Customer>(this::subscriptionManagementPanel, CustomerView::shouldShowButton, "Subscriptions", new Dimension(140, 30));
 
     firstNameValidityMessage.setForeground(Color.RED);
     secondNameValidityMessage.setForeground(Color.RED);
@@ -156,7 +156,7 @@ public class CustomerView extends RecordView<Customer> {
 
     JTextComponent title = RecordView.createTextArea(record.fullNameAndId());
     title.setPreferredSize(new Dimension(300, 50));
-    title.setFont(new Font(font, Font.PLAIN, 18));
+    title.setFont(new Font(font, Font.PLAIN, 25));
 
     JLabel emailLabel = new JLabel();
     if (record.email != null)
