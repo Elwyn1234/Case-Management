@@ -56,16 +56,16 @@ public class PerformanceView extends JScrollPane {
 
   public void display() {
     ContactController contactController = new ContactController(performanceController.user, null);
-    CaseController caseController = new CaseController(performanceController.user, performanceController.user::selectMyCases);
-
-    List<Contact> contacts = contactController.readRecords(performanceController.user.id);
-    List<Case> cases = caseController.readRecords(0); // eTODO: fix: pagination
+    CaseController caseController = new CaseController(performanceController.user, null);
 
     MigLayout mig = new MigLayout("wrap 3, alignx center");
     JPanel panel = new JPanel();
     panel.setLayout(mig);
     panel.setAlignmentX(CENTER_ALIGNMENT);
     for (User user : users) {
+      List<Contact> contacts = contactController.readRecords(user.id);
+      List<Case> cases = caseController.readRecords(user.id); // eTODO: fix: pagination
+
       JLabel titleLabel = new JLabel(user.name, SwingConstants.CENTER);
       titleLabel.setFont(new Font(getFont().getFontName(), Font.PLAIN, 30));
       titleLabel.setBorder(new EmptyBorder(new Insets(30, 0, 0, 0)));

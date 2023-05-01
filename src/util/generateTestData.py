@@ -49,7 +49,7 @@ def main():
 
 
     obj["cases"] = []
-    for i in range(1200):
+    for i in range(120):
         date = generateDate()
 
         priority = ""
@@ -128,10 +128,10 @@ def generateDate():
     if month > 11:
         month = month - 12
 
-    month = 4 # eTODO: REMOVE
+    month = 3 # eTODO: REMOVE
 
     year = 2023
-    if month > 4:
+    if month > 3:
         year = 2022
 
     return {

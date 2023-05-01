@@ -102,7 +102,7 @@ public abstract class RecordController <T extends Record> {
       PreparedStatement pStatement = createMode ? buildInsertPreparedStatement(record) : buildUpdatePreparedStatement(record);
       pStatement.executeUpdate();
 
-      if (logController != null && logMe()) {
+      if (logController != null && loggedInUser != null && logMe()) {
         String logVerb = " Updated ";
         if (createMode)
           logVerb = " Created ";

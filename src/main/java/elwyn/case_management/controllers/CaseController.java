@@ -34,7 +34,7 @@ public class CaseController extends RecordController<Case> {
   public List<Case> readRecords(int page) {
     ArrayList<Case> cases = new ArrayList<Case>();
     try {
-      String sql = "SELECT rowid, * FROM cases ORDER BY yearOpened DESC, monthOpened DESC, dayOpened DESC LIMIT ?,?"; // eTODO: Use tableName function
+      String sql = "SELECT rowid, * FROM cases ORDER BY yearOpened DESC, monthOpened DESC, dayOpened DESC LIMIT ?,?";
       PreparedStatement pStatement = conn.prepareStatement(sql);
       pStatement.setInt(1, page * PAGE_SIZE);
       pStatement.setInt(2, PAGE_SIZE);
@@ -42,6 +42,29 @@ public class CaseController extends RecordController<Case> {
             
       while (rs.next()) {
         cases.add(readResultSet(rs));
+      }
+    } catch (Exception e) {
+      System.out.println("Error: " + e.getMessage());
+      e.printStackTrace();
+    }
+    if (filter != null)
+      return filter.apply(cases);
+    else
+      return cases;
+  }
+
+  public List<Case> readRecords(long userId) {
+    ArrayList<Case> cases = new ArrayList<Case>();
+    try {
+      String sql = "SELECT priority FROM cases WHERE assignedTo=?";
+      PreparedStatement pStatement = conn.prepareStatement(sql);
+      pStatement.setLong(1, userId);
+      ResultSet rs = pStatement.executeQuery();
+            
+      while (rs.next()) {
+        Case record = new Case();
+        record.priority = Priority.parseSelectedPriority(rs.getString("priority"));
+        cases.add(record);
       }
     } catch (Exception e) {
       System.out.println("Error: " + e.getMessage());
