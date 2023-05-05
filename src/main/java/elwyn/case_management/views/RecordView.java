@@ -323,7 +323,7 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
   }
 
   public static JList<String> addSelectList(JComponent panel, String labelText, String[] strings, String defaultSelection) {
-    JLabel label = new JLabel("labelText");
+    JLabel label = new JLabel(labelText);
     label.setBorder(BorderFactory.createEmptyBorder(TOP_MARGIN, 0, 0, 0));
     panel.add(label);
     JList<String> list = new JList<String>(strings);
