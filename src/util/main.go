@@ -20,7 +20,7 @@ func main() {
 }
 
 func openDatabase() (pool *sql.DB) {
-  pool, err := sql.Open("sqlite3", "../../assets/caseManagement.db") // TODO: get the password from a file
+  pool, err := sql.Open("sqlite3", "../../assets/clinic.db") // TODO: get the password from a file
   if (err != nil) { logError.Fatal(err.Error()) } // TODO: error handling
 
   pool.SetConnMaxLifetime(0)
@@ -32,8 +32,8 @@ func openDatabase() (pool *sql.DB) {
 }
 
 func dropDatabase() {
-  log.Print("Dropping caseManagement Database.")
-  err := os.Remove("../../assets/caseManagement.db")
+  log.Print("Dropping clinic Database.")
+  err := os.Remove("../../assets/clinic.db")
   if (err != nil && !os.IsNotExist(err)) { logError.Fatal(err.Error()) }
   log.Print("Database dropped!")
 }
@@ -46,12 +46,7 @@ func createdb() {
     password VARCHAR(32) NOT NULL,
     name VARCHAR(32) NOT NULL,
     role VARCHAR(32) NOT NULL,
-    teamLead INTEGER,
     PRIMARY KEY (username)
-    FOREIGN KEY (teamLead)
-      REFERENCES users(rowid)
-      ON DELETE CASCADE
-      ON UPDATE CASCADE
   );`)
   if (err != nil) { logError.Fatal(err.Error()) }
   log.Print("users table created!")
@@ -70,30 +65,33 @@ func createdb() {
     address VARCHAR(32),
     city VARCHAR(32),
     postcode VARCHAR(32),
-    country VARCHAR(32)
+    country VARCHAR(32),
+
+    healthConditions TEXT,
+    currentPrescriptions TEXT,
+    allergies TEXT
   );`)
   if (err != nil) { logError.Fatal(err.Error()) }
   log.Print("customers table created!")
 
-  _, err = pool.Exec(`CREATE TABLE cases (
+  _, err = pool.Exec(`CREATE TABLE appointments (
     summary VARCHAR(80) NOT NULL,
     description TEXT,
     customer INTEGER NOT NULL,
     createdBy INTEGER NOT NULL,
     assignedTo INTEGER,
-    priority VARCHAR(32) NOT NULL,
-    dayOpened INTEGER NOT NULL,
-    monthOpened INTEGER NOT NULL,
-    yearOpened INTEGER NOT NULL,
-    hourOpened INTEGER NOT NULL,
-    minuteOpened INTEGER NOT NULL,
-    secondOpened INTEGER NOT NULL,
-    dayClosed INTEGER,
-    monthClosed INTEGER,
-    yearClosed INTEGER,
-    hourClosed INTEGER,
-    minuteClosed INTEGER,
-    secondClosed INTEGER,
+    day INTEGER NOT NULL,
+    month INTEGER NOT NULL,
+    year INTEGER NOT NULL,
+    hour INTEGER NOT NULL,
+    minute INTEGER NOT NULL,
+    second INTEGER NOT NULL,
+    visitationStatus VARCHAR(32),
+    referredTo INTEGER,
+    FOREIGN KEY (referredTo)
+      REFERENCES users(rowid)
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
     FOREIGN KEY (customer)
       REFERENCES customers(rowid)
       ON DELETE CASCADE
@@ -102,94 +100,44 @@ func createdb() {
       REFERENCES users(rowid)
       ON DELETE CASCADE
       ON UPDATE CASCADE
-    FOREIGN KEY (assignedTo)
-      REFERENCES users(rowid)
-      ON DELETE CASCADE
-      ON UPDATE CASCADE
   );`)
   if (err != nil) { logError.Fatal(err.Error()) }
-  log.Print("cases table created!")
+  log.Print("appointments table created!")
 
-  _, err = pool.Exec(`CREATE TABLE contacts (
-    description TEXT NOT NULL,
-    contactMethod VARCHAR(10) NOT NULL,
-    caseId INTEGER,
-    user INTEGER NOT NULL,
-    day INTEGER NOT NULL,
-    month INTEGER NOT NULL,
-    year INTEGER NOT NULL,
-    hour INTEGER NOT NULL,
-    minute INTEGER NOT NULL,
-    second INTEGER NOT NULL,
-    FOREIGN KEY (caseId)
-      REFERENCES cases(rowid)
-      ON DELETE CASCADE
-      ON UPDATE CASCADE
-    FOREIGN KEY (user)
-      REFERENCES users(rowid)
-      ON DELETE CASCADE
-      ON UPDATE CASCADE
-  );`)
-  if (err != nil) { logError.Fatal(err.Error()) }
-  log.Print("contacts table created!")
-
-  _, err = pool.Exec(`CREATE TABLE subscriptions (
+  _, err = pool.Exec(`CREATE TABLE diseases (
     name VARCHAR(32) NOT NULL,
-    description TEXT,
-    frequency VARCHAR(10) NOT NULL,
-    price INTEGER NOT NULL
+    description TEXT NOT NULL,
+    category VARCHAR(64) NOT NULL
   );`)
   if (err != nil) { logError.Fatal(err.Error()) }
-  log.Print("subscriptions table created!")
+  log.Print("diseases table created!")
 
-  _, err = pool.Exec(`CREATE TABLE subscriptionToCustomer (
-    customer INTEGER NOT NULL,
-    subscription INTEGER NOT NULL,
-    dayStarted INTEGER NOT NULL,
-    monthStarted INTEGER NOT NULL,
-    yearStarted INTEGER NOT NULL,
-    hourStarted INTEGER NOT NULL,
-    minuteStarted INTEGER NOT NULL,
-    secondStarted INTEGER NOT NULL,
-    dayEnded INTEGER,
-    monthEnded INTEGER,
-    yearEnded INTEGER,
-    hourEnded INTEGER,
-    minuteEnded INTEGER,
-    secondEnded INTEGER,
-    FOREIGN KEY (customer)
-      REFERENCES customers(rowid)
+  _, err = pool.Exec(`CREATE TABLE medicines (
+    name VARCHAR(32) NOT NULL,
+    description TEXT NOT NULL
+  );`)
+  if (err != nil) { logError.Fatal(err.Error()) }
+  log.Print("medicines table created!")
+
+  _, err = pool.Exec(`CREATE TABLE diseaseToMedicine (
+    disease INTEGER NOT NULL,
+    medicine INTEGER NOT NULL,
+    FOREIGN KEY (disease)
+      REFERENCES diseases(rowid)
       ON DELETE CASCADE
       ON UPDATE CASCADE
-    FOREIGN KEY (subscription)
-      REFERENCES subscriptions(rowid)
+    FOREIGN KEY (medicine)
+      REFERENCES medicines(rowid)
       ON DELETE CASCADE
       ON UPDATE CASCADE
   );`)
   if (err != nil) { logError.Fatal(err.Error()) }
   log.Print("subscriptionToCustomer table created!")
 
-  _, err = pool.Exec(`CREATE TABLE bills (
-    subsctiptionToCustomer INTEGER NOT NULL,
-    paid INTEGER NOT NULL,
-    dayPaid INTEGER NOT NULL,
-    monthPaid INTEGER NOT NULL,
-    yearPaid INTEGER NOT NULL,
-    hourPaid INTEGER NOT NULL,
-    minutePaid INTEGER NOT NULL,
-    secondPaid INTEGER NOT NULL,
-    FOREIGN KEY (subsctiptionToCustomer)
-      REFERENCES subsctiptionToCustomer(rowid)
-      ON DELETE CASCADE
-      ON UPDATE CASCADE
-  );`)
-  if (err != nil) { logError.Fatal(err.Error()) }
-  log.Print("subscriptions table created!")
-
   _, err = pool.Exec(`CREATE TABLE logs (
     user INTEGER,
-    severity VARCHAR(32) NOT NULL,
     log TEXT NOT NULL,
+    severity VARCHAR(32) NOT NULL,
     day INTEGER NOT NULL,
     month INTEGER NOT NULL,
     year INTEGER NOT NULL,
@@ -212,21 +160,21 @@ func addTestData() {
   if (err != nil) {
     logError.Fatal("Failed to read file testData/testData.json")
   }
-  var caseManagement CaseManagement
-  err = json.Unmarshal(testData, &caseManagement)
+  var clinic Clinic
+  err = json.Unmarshal(testData, &clinic)
   if (err != nil) {
     logError.Fatal(err)
   }
 
-  for userIndex := 0; userIndex < len(caseManagement.Users); userIndex++ {
-    user := caseManagement.Users[userIndex]
-    _, err = pool.Exec(`INSERT INTO users (username, password, name, role, teamLead) VALUES (?, ?, ?, ?, ?);`, user.Username, user.Password, user.Name, user.Role, user.TeamLead)
+  for userIndex := 0; userIndex < len(clinic.Users); userIndex++ {
+    user := clinic.Users[userIndex]
+    _, err = pool.Exec(`INSERT INTO users (username, password, name, role) VALUES (?, ?, ?, ?);`, user.Username, user.Password, user.Name, user.Role)
     if (err != nil) { logError.Fatal(err.Error()) }
   }
   log.Print("Test data created for the users tables!")
 
-  for customerIndex := 0; customerIndex < len(caseManagement.Customers); customerIndex++ {
-    customer := caseManagement.Customers[customerIndex]
+  for customerIndex := 0; customerIndex < len(clinic.Customers); customerIndex++ {
+    customer := clinic.Customers[customerIndex]
 ;
     _, err = pool.Exec(`
         INSERT INTO customers (
@@ -263,102 +211,70 @@ func addTestData() {
   }
   log.Print("Test data created for the customers tables!")
 
-  for caseIndex := 0; caseIndex < len(caseManagement.Cases); caseIndex++ {
-    caseRecord := caseManagement.Cases[caseIndex]
+  for appointmentIndex := 0; appointmentIndex < len(clinic.Appointments); appointmentIndex++ {
+    appointmentRecord := clinic.Appointments[appointmentIndex]
     _, err = pool.Exec(`
-        INSERT INTO cases (
+        INSERT INTO appointments (
         summary,
         description,
         customer,
         createdBy,
         assignedTo,
-        dayOpened,
-        monthOpened,
-        yearOpened,
-        secondOpened,
-        minuteOpened,
-        hourOpened,
-        dayClosed,
-        monthClosed,
-        yearClosed,
-        secondClosed,
-        minuteClosed,
-        hourClosed,
-        priority)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
-        caseRecord.Summary,
-        caseRecord.Description,
-        caseRecord.Customer,
-        caseRecord.CreatedBy,
-        caseRecord.AssignedTo,
-        caseRecord.DayOpened,
-        caseRecord.MonthOpened,
-        caseRecord.YearOpened,
-        caseRecord.SecondOpened,
-        caseRecord.MinuteOpened,
-        caseRecord.HourOpened,
-        caseRecord.DayClosed,
-        caseRecord.MonthClosed,
-        caseRecord.YearClosed,
-        caseRecord.SecondClosed,
-        caseRecord.MinuteClosed,
-        caseRecord.HourClosed,
-        caseRecord.Priority)
-    if (err != nil) { logError.Fatal(err.Error()) }
-  }
-  log.Print("Test data created for the cases tables!")
-
-  for contactIndex := 0; contactIndex < len(caseManagement.Contacts); contactIndex++ {
-    contact := caseManagement.Contacts[contactIndex]
-    _, err = pool.Exec(`
-        INSERT INTO contacts (
-        description,
         day,
         month,
         year,
         second,
         minute,
-        hour,
-        contactMethod,
-        caseId,
-        user)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
-        contact.Description,
-        contact.Day,
-        contact.Month,
-        contact.Year,
-        contact.Second,
-        contact.Minute,
-        contact.Hour,
-        contact.ContactMethod,
-        contact.Case,
-        contact.User)
+        hour)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+        appointmentRecord.Summary,
+        appointmentRecord.Description,
+        appointmentRecord.Customer,
+        appointmentRecord.CreatedBy,
+        appointmentRecord.AssignedTo,
+        appointmentRecord.Day,
+        appointmentRecord.Month,
+        appointmentRecord.Year,
+        appointmentRecord.Second,
+        appointmentRecord.Minute,
+        appointmentRecord.Hour)
     if (err != nil) { logError.Fatal(err.Error()) }
-    if contactIndex % 500 == 0 {
-      log.Print(contactIndex)
-    }
   }
-  log.Print("Test data created for the contacts tables!")
+  log.Print("Test data created for the appointments tables!")
 
-  for subscriptionIndex := 0; subscriptionIndex < len(caseManagement.Subscriptions); subscriptionIndex++ {
-    subscription := caseManagement.Subscriptions[subscriptionIndex]
+  for diseaseIndex := 0; diseaseIndex < len(clinic.Diseases); diseaseIndex++ {
+    disease := clinic.Diseases[diseaseIndex]
     _, err = pool.Exec(`
-        INSERT INTO subscriptions (
+        INSERT INTO diseases (
         name,
         description,
-        frequency,
-        price)
-        VALUES (?, ?, ?, ?);`,
-        subscription.Name,
-        subscription.Description,
-        subscription.Frequency,
-        subscription.Price)
+        category)
+        VALUES (?, ?, ?);`,
+        disease.Name,
+        disease.Description,
+        disease.Category)
+    if (err != nil) { logError.Fatal(err.Error()) }
+    if diseaseIndex % 500 == 0 {
+      log.Print(diseaseIndex)
+    }
+  }
+  log.Print("Test data created for the diseases tables!")
+
+  for medicineIndex := 0; medicineIndex < len(clinic.Medicines); medicineIndex++ {
+    medicine := clinic.Medicines[medicineIndex]
+    _, err = pool.Exec(`
+        INSERT INTO medicines (
+        name,
+        description)
+        VALUES (?, ?);`,
+        medicine.Name,
+        medicine.Description)
     if (err != nil) { logError.Fatal(err.Error()) }
   }
-  log.Print("Test data created for the subscriptions tables!")
+  log.Print("Test data created for the medicines tables!")
 
-  for logIndex := 0; logIndex < len(caseManagement.Logs); logIndex++ {
-    log := caseManagement.Logs[logIndex]
+  for logIndex := 0; logIndex < len(clinic.Logs); logIndex++ {
+    log := clinic.Logs[logIndex]
     _, err = pool.Exec(`
         INSERT INTO logs (
         user,
@@ -390,8 +306,6 @@ type User struct {
   Password string
   Name string
   Role string
-  TeamLead int64
-  // OwnedModelCars []OwnedModelCar
 }
 
 type Customer struct {
@@ -411,73 +325,34 @@ type Customer struct {
   Country string;
 }
 
-type Case struct {
+type Appointment struct {
   Summary string
   Description string
   Customer int64
   CreatedBy int64
   AssignedTo int64
-  DayOpened int32
-  MonthOpened int32
-  YearOpened int32
-  SecondOpened int32
-  MinuteOpened int32
-  HourOpened int32
-  DayClosed int32
-  MonthClosed int32
-  YearClosed int32
-  SecondClosed int32
-  MinuteClosed int32
-  HourClosed int32
-  Priority string
-}
-
-type Contact struct {
-  Description string
   Day int32
   Month int32
   Year int32
   Second int32
   Minute int32
   Hour int32
-  ContactMethod string
-  Case int64
-  User int64
 }
 
-type Subscription struct {
+type Disease struct {
   Name string
   Description string
-  Frequency string
-  Price int
+  Category string
 }
 
-type SubscriptionToCustomer struct {
-  Subscription int64
-  Customer int64
-  DayStarted int32
-  MonthStarted int32
-  YearStarted int32
-  SecondStarted int32
-  MinuteStarted int32
-  HourStarted int32
-  DayEnded int32
-  MonthEnded int32
-  YearEnded int32
-  SecondEnded int32
-  MinuteEnded int32
-  HourEnded int32
+type Medicine struct {
+  Name string
+  Description string
 }
 
-type Bill struct {
-  SubscriptionToCustomer int64
-  paid int32
-  DayPaid int32
-  MonthPaid int32
-  YearPaid int32
-  SecondPaid int32
-  MinutePaid int32
-  HourPaid int32
+type DiseaseToMedicine struct {
+  Disease int64
+  Medicine int64
 }
 
 type Log struct {
@@ -492,12 +367,12 @@ type Log struct {
   Hour int32
 } 
 
-type CaseManagement struct {
+type Clinic struct {
   Users []User
   Customers []Customer
-  Cases []Case
-  Contacts []Contact
-  Subscriptions []Subscription
+  Appointments []Appointment
+  Diseases []Disease
+  Medicines []Medicine
   Logs []Log
 }
 
