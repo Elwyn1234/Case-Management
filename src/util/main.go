@@ -66,6 +66,7 @@ func createdb() {
     city VARCHAR(32),
     postcode VARCHAR(32),
     country VARCHAR(32),
+    active VARCHAR(32),
 
     healthConditions TEXT,
     currentPrescriptions TEXT,
@@ -80,6 +81,7 @@ func createdb() {
     customer INTEGER NOT NULL,
     createdBy INTEGER NOT NULL,
     assignedTo INTEGER,
+    referredTo INTEGER,
     day INTEGER NOT NULL,
     month INTEGER NOT NULL,
     year INTEGER NOT NULL,
@@ -87,7 +89,14 @@ func createdb() {
     minute INTEGER NOT NULL,
     second INTEGER NOT NULL,
     visitationStatus VARCHAR(32),
-    referredTo INTEGER,
+    closed VARCHAR(32),
+    prescribedHourlyFrequency INTEGER,
+    prescribedMgDose INTEGER,
+    prescribedMedication VARCHAR(32),
+    FOREIGN KEY (assignedTo)
+      REFERENCES users(rowid)
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
     FOREIGN KEY (referredTo)
       REFERENCES users(rowid)
       ON DELETE CASCADE
