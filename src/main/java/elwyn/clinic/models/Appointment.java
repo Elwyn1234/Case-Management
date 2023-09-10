@@ -7,9 +7,14 @@ public class Appointment extends Record {
   public String description;
   public Customer customer;
   public User createdBy;
-  public User referredTo;
   public Date date;
   public VisitationStatus visitationStatus;
+  public boolean closed;
+  public User assignedTo;
+  public User referredTo;
+  public int prescribedHourlyFrequency;
+  public int prescribedMgDose;
+  public String prescribedMedication;
 
   public String toString(int depth) {
     String indent = "    ";

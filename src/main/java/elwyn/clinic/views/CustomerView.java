@@ -1,6 +1,8 @@
 package elwyn.clinic.views;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -16,13 +18,16 @@ import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
+import elwyn.clinic.controllers.AppointmentController;
+import elwyn.clinic.controllers.CustomerController;
 import elwyn.clinic.controllers.RecordController;
 import elwyn.clinic.controllers.UserController;
+import elwyn.clinic.models.Appointment;
 import elwyn.clinic.models.Customer;
 import elwyn.clinic.models.Gender;
+import elwyn.clinic.models.MiscButton;
 import elwyn.clinic.models.Role;
 import elwyn.clinic.models.User;
-import elwyn.clinic.models.VisitationStatus;
 import net.miginfocom.swing.MigLayout;
 
 public class CustomerView extends RecordView<Customer> {
@@ -40,11 +45,12 @@ public class CustomerView extends RecordView<Customer> {
   JTextComponent city;
   JTextComponent postcode;
   JTextComponent country;
+  JTextComponent familyName;
+  JList<String> familyList;
 
   JTextComponent healthConditions;
   JTextComponent currentPrescriptions;
   JTextComponent allergies;
-  JTextComponent referredTo;
 
   JLabel firstNameValidityMessage = new JLabel();
   JLabel secondNameValidityMessage = new JLabel();
@@ -60,13 +66,15 @@ public class CustomerView extends RecordView<Customer> {
   JLabel cityValidityMessage = new JLabel();
   JLabel postcodeValidityMessage = new JLabel();
   JLabel countryValidityMessage = new JLabel();
+  JLabel familyNameValidityMessage = new JLabel();
 
   JLabel healthConditionsValidityMessage = new JLabel();
   JLabel currentPrescriptionsValidityMessage = new JLabel();
   JLabel allergiesValidityMessage = new JLabel();
-  JLabel referredToValidityMessage = new JLabel();
 
+  CustomerController customerController;
   UserController userController;
+  AppointmentController appointmentController;
   
   protected String pageTitle() { return "Customers"; }
   protected String tabNameOfViewRecords() { return "View Customers"; }
@@ -76,13 +84,21 @@ public class CustomerView extends RecordView<Customer> {
   public CustomerView(RecordController<Customer> controller) {
     super(controller);
     this.userController = new UserController(controller.loggedInUser);
+    this.customerController = new CustomerController(controller.loggedInUser);
+    this.appointmentController = new AppointmentController(controller.loggedInUser, null);
+    miscButtonParams = new MiscButton<Customer>(controller::deactivateAccount, controller::shouldShowButton, "Deactivate", new Dimension(80, 30));
 
-    if    (controller.loggedInUser.role != Role.ADMIN) {
+    if (controller.loggedInUser.role != Role.ADMIN) {
       this.showDeleteButton = false;
     }
-    if    (controller.loggedInUser.role == Role.GP 
-        || controller.loggedInUser.role == Role.SP) {
+    if (controller.loggedInUser.role == Role.GP ||
+        controller.loggedInUser.role == Role.SP) {
       this.showCreateButton = false;
+    }
+    List<Appointment> appointments = appointmentController.readRecordsReferredTo(controller.loggedInUser.id);
+    boolean customerReferredToMe = !appointments.isEmpty();
+    if (controller.loggedInUser.role == Role.SP && !customerReferredToMe) {
+      this.showUpdateButton = false;
     }
 
     firstNameValidityMessage.setForeground(Color.RED);
@@ -99,11 +115,11 @@ public class CustomerView extends RecordView<Customer> {
     cityValidityMessage.setForeground(Color.RED);
     postcodeValidityMessage.setForeground(Color.RED);
     countryValidityMessage.setForeground(Color.RED);
+    familyNameValidityMessage.setForeground(Color.RED);
 
     healthConditionsValidityMessage.setForeground(Color.RED);
     currentPrescriptions.setForeground(Color.RED);
     allergiesValidityMessage.setForeground(Color.RED);
-    referredToValidityMessage.setForeground(Color.RED);
   }
 
   protected void addRecordManagementFields(JComponent leftPanel, JComponent rightPanel, Customer record) {
@@ -121,11 +137,11 @@ public class CustomerView extends RecordView<Customer> {
     cityValidityMessage.setVisible(false);
     postcodeValidityMessage.setVisible(false);
     countryValidityMessage.setVisible(false);
+    familyNameValidityMessage.setVisible(false);
 
     healthConditionsValidityMessage.setVisible(false);
     currentPrescriptionsValidityMessage.setVisible(false);
     allergiesValidityMessage.setVisible(false);
-    referredToValidityMessage.setVisible(false);
 
     firstName = addTextField(leftPanel, "First Name", record.firstName, false, true);
     leftPanel.add(firstNameValidityMessage);
@@ -160,8 +176,15 @@ public class CustomerView extends RecordView<Customer> {
     leftPanel.add(cityValidityMessage);
     postcode = addTextField(leftPanel, "Postcode", record.postcode, true, true);
     leftPanel.add(postcodeValidityMessage);
+
     country = addTextField(leftPanel, "Country", record.country, true, true);
     leftPanel.add(countryValidityMessage);
+
+    familyName = addTextField(leftPanel, "Country", record.familyName, true, true);
+    leftPanel.add(familyNameValidityMessage);
+
+    familyList = addSelectList(leftPanel, "Families", customerController.readFamilies().toArray(new String[12]), null);
+
     genderList = addSelectList(leftPanel, "Gender", Gender.stringValues(), null);
 
     healthConditions = addTextField(leftPanel, "Health Conditions", record.healthConditions, true, true);
@@ -170,9 +193,6 @@ public class CustomerView extends RecordView<Customer> {
     leftPanel.add(currentPrescriptionsValidityMessage);
     allergies = addTextField(leftPanel, "allergies", record.allergies, true, true);
     leftPanel.add(allergiesValidityMessage);
-    String referredToString = record.referredTo == null ? "" : Long.toString(record.referredTo.id);
-    referredTo = addTextField(leftPanel, "Referred To", referredToString, false, true);
-    leftPanel.add(referredToValidityMessage);
 
 
     // GP can only update "otherNotes" field and medical information (allergies etc)
@@ -190,6 +210,8 @@ public class CustomerView extends RecordView<Customer> {
       city.setVisible(false);
       postcode.setVisible(false);
       country.setVisible(false);
+      familyName.setVisible(false);
+      familyList.setVisible(false);
       genderList.setVisible(false);
     }
     // SP can only update "otherNotes" field
@@ -197,7 +219,6 @@ public class CustomerView extends RecordView<Customer> {
       healthConditions.setVisible(false);
       currentPrescriptions.setVisible(false);
       allergies.setVisible(false);
-      referredTo.setVisible(false);
     }
   }
 
@@ -249,8 +270,9 @@ public class CustomerView extends RecordView<Customer> {
     leftPanel.add(genderBox, "span, aligny top");
     leftPanel.add(locationBox, "span, aligny top");
     leftPanel.add(otherNotesBox, "span, aligny top");
-    if (controller.loggedInUser.role != Role.SP ||
-        record.referredTo.id == controller.loggedInUser.id) {
+    List<Appointment> appointments = appointmentController.readRecordsReferredTo(controller.loggedInUser.id);
+    boolean customerReferredToMe = !appointments.isEmpty();
+    if (controller.loggedInUser.role != Role.SP || customerReferredToMe) {
       JPanel panel = createCustomerMedicalInfoBox(record, font, true);
       leftPanel.add(panel, "span, aligny top");
     }
@@ -289,6 +311,8 @@ public class CustomerView extends RecordView<Customer> {
     postcodeValidityMessage.setVisible(false);
     countryValidityMessage.setText("");
     countryValidityMessage.setVisible(false);
+    familyNameValidityMessage.setText("");
+    familyNameValidityMessage.setVisible(false);
 
     healthConditionsValidityMessage.setText("");
     healthConditionsValidityMessage.setText("");
@@ -296,10 +320,6 @@ public class CustomerView extends RecordView<Customer> {
     currentPrescriptionsValidityMessage.setVisible(false);
     allergiesValidityMessage.setText("");
     allergiesValidityMessage.setVisible(false);
-    visitationStatusValidityMessage.setText("");
-    visitationStatusValidityMessage.setVisible(false);
-    referredToValidityMessage.setText("");
-    referredToValidityMessage.setVisible(false);
 
     boolean formIsValid = true;
     Customer record = new Customer();
@@ -438,23 +458,30 @@ public class CustomerView extends RecordView<Customer> {
       formIsValid = false;
     }
 
+    // Family Name
+    record.familyName = familyName.getText();
+    if (familyList.isSelectionEmpty()) {
+      List<String> families = customerController.readFamilies();
+      for (String family : families) {
+        if (family.equals(record.familyName)) {
+          familyNameValidityMessage.setText("Family Name must be unique");
+          familyNameValidityMessage.setVisible(true);
+          formIsValid = false;
+          break;
+        }
+      }
+    }
+    else {
+      record.familyName = familyList.getSelectedValue();
+    }
+
+
     // Health Conditions
     record.healthConditions = healthConditions.getText();
     // Current Prescriptions
     record.currentPrescriptions = currentPrescriptions.getText();
     // Allergies
     record.allergies = allergies.getText();
-    }
-    // Referred To
-    record.referredTo = new User();
-    if (!referredTo.getText().isBlank()) {
-        record.referredTo = userController.readRecord(Long.parseLong(referredTo.getText()));
-      if (record.referredTo == null) {
-        referredToValidityMessage.setText("'Referred To' must be a valid User ID");
-        referredToValidityMessage.setVisible(true);
-        formIsValid = false;
-      }
-    }
 
     if (formIsValid)
       return record;
@@ -501,14 +528,10 @@ public class CustomerView extends RecordView<Customer> {
     JLabel healthConditionsLabel = new JLabel(customer.healthConditions, SwingConstants.RIGHT);
     JLabel currentPrescriptionsLabel = new JLabel(customer.currentPrescriptions, SwingConstants.RIGHT);
     JLabel allergiesLabel = new JLabel(customer.allergies, SwingConstants.RIGHT);
-    JLabel visitationStatusLabel = new JLabel(customer.visitationStatus.toString(), SwingConstants.RIGHT);
-    JLabel referredToLabel = new JLabel(record.referredTo.fullNameAndId(), SwingConstants.RIGHT);
 
     healthConditionsLabel.setFont(new Font(fontName, Font.PLAIN, 14));
     currentPrescriptionsLabel.setFont(new Font(fontName, Font.PLAIN, 14));
     allergiesLabel.setFont(new Font(fontName, Font.PLAIN, 14));
-    visitationStatusLabel.setFont(new Font(fontName, Font.PLAIN, 14));
-    referredToLabel.setFont(new Font(fontName, Font.PLAIN, 14));
 
     String s = "align right";
     if (leftAlign)
@@ -517,9 +540,6 @@ public class CustomerView extends RecordView<Customer> {
     panel.add(healthConditionsLabel, s);
     panel.add(currentPrescriptionsLabel, s);
     panel.add(allergiesLabel, s);
-    panel.add(visitationStatusLabel, s);
-    if (record.referredTo != null)
-      panel.add(referredToLabel, s);
 
     return panel;
   }

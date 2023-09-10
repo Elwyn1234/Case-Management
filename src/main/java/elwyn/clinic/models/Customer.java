@@ -15,9 +15,9 @@ public class Customer extends Record {
   public String city;
   public String postcode;
   public String country;
+  public boolean active;
+  public String familyName;
 
-  public VisitationStatus visitationStatus;
-  public User referredTo;
   public String healthConditions;
   public String currentPrescriptions;
   public String allergies;

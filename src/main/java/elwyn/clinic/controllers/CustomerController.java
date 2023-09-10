@@ -7,10 +7,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.swing.JComponent;
+
 import elwyn.clinic.models.Customer;
 import elwyn.clinic.models.Gender;
+import elwyn.clinic.models.Log;
+import elwyn.clinic.models.Severity;
 import elwyn.clinic.models.User;
-import elwyn.clinic.models.VisitationStatus;
 
 public class CustomerController extends RecordController<Customer> {
   protected String tableName() { return "customers"; }
@@ -64,6 +67,23 @@ public class CustomerController extends RecordController<Customer> {
     return customer;
   }
 
+  public List<String> readFamilies() {
+    ArrayList<String> families = new ArrayList<String>();
+    try {
+      String sql = "SELECT DISTINCT familyName FROM customers WHERE familyName!='' AND familyName IS NOT NULL ORDER BY familyName ASC";
+      PreparedStatement pStatement = conn.prepareStatement(sql);
+      ResultSet rs = pStatement.executeQuery();
+            
+      while (rs.next()) {
+        families.add(rs.getString("familyName"));
+      }
+    } catch (Exception e) {
+      System.out.println("Error: " + e.getMessage());
+      e.printStackTrace();
+    }
+    return families;
+  }
+
   public Customer readResultSet(ResultSet rs) throws SQLException {
     Customer customer = new Customer();
     customer.id = rs.getLong("rowid");
@@ -82,10 +102,9 @@ public class CustomerController extends RecordController<Customer> {
     customer.city = rs.getString("city");
     customer.postcode = rs.getString("postcode");
     customer.country = rs.getString("country");
+    customer.active = rs.getString("active") == "true" ? true : false;
+    customer.familyName = rs.getString("familyName");
 
-    customer.visitationStatus = VisitationStatus.parseSelectedStatus(rs.getString("visitationStatus"));
-    long referredToId = rs.getLong("referredTo");
-    customer.referredTo = userController.readRecord(referredToId);
     customer.healthConditions = rs.getString("healthConditions");
     customer.currentPrescriptions = rs.getString("currentPrescriptions");
     customer.allergies = rs.getString("allergies");
@@ -96,18 +115,54 @@ public class CustomerController extends RecordController<Customer> {
 
   protected PreparedStatement buildInsertPreparedStatement(Customer record) throws SQLException {
     String sql="INSERT INTO customers " + 
-        "(firstName, secondName, sirname, dayOfBirth, monthOfBirth, yearOfBirth, otherNotes, email, phoneNumber, address, city, postcode, country, gender, healthConditions, currentPrescriptions, allergies, visitationStatus, referredTo) " +
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        "(firstName, " +
+        "secondName, " +
+        "sirname, " +
+        "dayOfBirth, " +
+        "monthOfBirth, " +
+        "yearOfBirth, " +
+        "otherNotes, " +
+        "email, " +
+        "phoneNumber, " +
+        "address, " +
+        "city, " +
+        "postcode, " +
+        "country, " +
+        "gender, " +
+        "familyName, " +
+        "healthConditions, " +
+        "currentPrescriptions, " +
+        "allergies, " +
+        "active) " +
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
     PreparedStatement pStatement = PopulateCommonSqlParameters(sql, record);
+    pStatement.setString(19, "true");
     return pStatement;
   }
 
   protected PreparedStatement buildUpdatePreparedStatement(Customer record) throws SQLException {
     String sql="UPDATE customers SET " +
-        "firstName=?, secondName=?, sirname=?, dayOfBirth=?, monthOfBirth=?, yearOfBirth=?, otherNotes=?, email=?, phoneNumber=?, address=?, city=?, postcode=?, country=?, gender=?, healthConditions=?, currentPrescriptions=?, allergies=?" +
+        "firstName=?, " +
+        "secondName=?, " +
+        "sirname=?, " +
+        "dayOfBirth=?, " +
+        "monthOfBirth=?, " +
+        "yearOfBirth=?, " +
+        "otherNotes=?, " +
+        "email=?, " +
+        "phoneNumber=?, " +
+        "address=?, " +
+        "city=?, " +
+        "postcode=?, " +
+        "country=?, " +
+        "gender=?, " +
+        "familyName=?, " +
+        "healthConditions=?, " +
+        "currentPrescriptions=?, " +
+        "allergies=?" +
         "WHERE rowid=?";
     PreparedStatement pStatement = PopulateCommonSqlParameters(sql, record);
-    pStatement.setLong(17, record.id);
+    pStatement.setLong(19, record.id);
     return pStatement;
   }
 
@@ -127,9 +182,38 @@ public class CustomerController extends RecordController<Customer> {
     pStatement.setString(12, record.postcode);
     pStatement.setString(13, record.country);
     pStatement.setString(14, record.gender == null ? null : record.gender.toString());
-    pStatement.setString(14, record.healthConditions);
-    pStatement.setString(15, record.currentPrescriptions);
-    pStatement.setString(16, record.allergies);
+    pStatement.setString(15, record.familyName);
+    pStatement.setString(16, record.healthConditions);
+    pStatement.setString(17, record.currentPrescriptions);
+    pStatement.setString(18, record.allergies);
     return pStatement;
+  }
+
+  public JComponent deactivateAccount(Long rowid) {
+    try {
+      String sql="UPDATE customers SET " +
+          "active=? " +
+          "WHERE rowid=?";
+      PreparedStatement pStatement = conn.prepareStatement(sql);
+      pStatement.setString(1, "false");
+      pStatement.setLong(2, rowid);
+      pStatement.executeUpdate();
+
+      Log log = new Log();
+      log.severity = Severity.LOG;
+      log.user = loggedInUser.id;
+      log.log = "Patient account deactivated: " + rowid;
+      logController.createRecord(log);
+    }
+    catch (Exception e) {
+      System.out.println("Error: " + e.getMessage());
+      e.printStackTrace();
+    }
+
+    return null;
+  }
+
+  public Boolean shouldShowButton(Customer record) {
+    return record.active;
   }
 }

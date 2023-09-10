@@ -192,10 +192,10 @@ public abstract class RecordView <T extends Record> extends JScrollPane {
         });
       }
       JPanel buttons = new JPanel();
-      if (showUpdateButton) {
+      if (showUpdateButton && record.showUpdateButton) {
         buttons.add(editButton);
       }
-      if (showDeleteButton) {
+      if (showDeleteButton && record.showDeleteButton) {
         buttons.add(Box.createHorizontalStrut(15));
         buttons.add(deleteButton);
       }
