@@ -33,18 +33,27 @@ public class AppointmentView extends RecordView<Appointment> {
   JTextComponent assignedTo;
   JTextComponent referredTo;
   JList<String> visitationStatusList;
+  JList<String> pharmacyList;
+  JList<String> closedList;
   JTextComponent prescribedHourlyFrequency;
   JTextComponent prescribedMgDose;
   JTextComponent prescribedMedication;
+  JTextComponent day;
+  JTextComponent month;
+  JTextComponent year;
 
   JLabel summaryValidityMessage = new JLabel();
   JLabel customerIdValidityMessage = new JLabel();
   JLabel assignedToValidityMessage = new JLabel();
   JLabel referredToValidityMessage = new JLabel();
   JLabel visitationStatusValidityMessage = new JLabel();
-  JLabel prescribedHourlyFrequencyValidityMessage;
-  JLabel prescribedMgDoseValidityMessage;
-  JLabel prescribedMedicationValidityMessage;
+  JLabel prescribedHourlyFrequencyValidityMessage = new JLabel();
+  JLabel prescribedMgDoseValidityMessage = new JLabel();
+  JLabel prescribedMedicationValidityMessage = new JLabel();
+  JLabel dayValidityMessage = new JLabel();
+  JLabel monthValidityMessage = new JLabel();
+  JLabel yearValidityMessage = new JLabel();
+  JLabel dateValidityMessage = new JLabel();
 
   AppointmentController appointmentController;
 
@@ -75,6 +84,10 @@ public class AppointmentView extends RecordView<Appointment> {
     prescribedHourlyFrequencyValidityMessage.setForeground(Color.RED);
     prescribedMgDoseValidityMessage.setForeground(Color.RED);
     prescribedMedicationValidityMessage.setForeground(Color.RED);
+    dayValidityMessage.setForeground(Color.RED);
+    monthValidityMessage.setForeground(Color.RED);
+    yearValidityMessage.setForeground(Color.RED);
+    dateValidityMessage.setForeground(Color.RED);
   }
 
   protected void addRecordManagementFields(JComponent leftPanel, JComponent rightPanel, Appointment record) {
@@ -89,6 +102,10 @@ public class AppointmentView extends RecordView<Appointment> {
     prescribedHourlyFrequencyValidityMessage.setVisible(false);
     prescribedMgDoseValidityMessage.setVisible(false);
     prescribedMedicationValidityMessage.setVisible(false);
+    dayValidityMessage.setVisible(false);
+    monthValidityMessage.setVisible(false);
+    yearValidityMessage.setVisible(false);
+    dateValidityMessage.setVisible(false);
 
     String customerId = record.customer == null ? "" : Long.toString(record.customer.id);
     String assignedTo = record.assignedTo == null ? "" : Long.toString(record.assignedTo.id);
@@ -103,17 +120,26 @@ public class AppointmentView extends RecordView<Appointment> {
     this.customerId = addTextField(leftPanel, "Customer ID", customerId, false, true); 
     leftPanel.add(customerIdValidityMessage);
 
-    if (controller.loggedInUser.role == Role.CLERK ||
-        controller.loggedInUser.role == Role.ADMIN) {
-      this.assignedTo = addTextField(leftPanel, "Assigned To", assignedTo, false, true);
-      leftPanel.add(assignedToValidityMessage);
+    this.assignedTo = addTextField(leftPanel, "Assigned To", assignedTo, false, true);
+    leftPanel.add(assignedToValidityMessage);
+    if (controller.loggedInUser.role == Role.SP) {
+      this.assignedTo.setVisible(false);
     }
 
     this.referredTo = addTextField(leftPanel, "Referred To", referredTo, false, true);
     leftPanel.add(referredToValidityMessage);
 
     visitationStatusList = addSelectList(leftPanel, "Visitation Status", VisitationStatus.stringValues(), null);
+    if (record.visitationStatus != null) {
+      visitationStatusList.setSelectedValue(record.visitationStatus.toString(), true);
+    }
     leftPanel.add(visitationStatusValidityMessage);
+
+    pharmacyList = addSelectList(leftPanel, "Pharmacy", appointmentController.readPharmacies().toArray(new String[12]), null);
+    pharmacyList.setSelectedValue(record.pharmacy, true);
+
+    closedList = addSelectList(leftPanel, "Closed", new String[]{"Complete", "Open"}, null);
+    closedList.setSelectedValue(record.closed, true);
 
     prescribedHourlyFrequency = addTextField(leftPanel, "Prescribed Hourly Frequency", Integer.toString(record.prescribedHourlyFrequency), false, true);
     leftPanel.add(prescribedHourlyFrequency);
@@ -123,6 +149,22 @@ public class AppointmentView extends RecordView<Appointment> {
 
     prescribedMedication = addTextField(leftPanel, "Prescribed Medication", record.prescribedMedication, false, true);
     leftPanel.add(prescribedMedication);
+
+    String dayString = "";
+    String monthString = "";
+    String yearString = "";
+    if (record.date != null) {
+      dayString = Integer.toString(record.date.getDay());
+      monthString = Integer.toString(record.date.getMonth() + 1);
+      yearString = Integer.toString(record.date.getYear() + 1900);
+    }
+    day = addTextField(leftPanel, "Day", dayString, true, true);
+    leftPanel.add(dayValidityMessage);
+    month = addTextField(leftPanel, "Month", monthString, true, true);
+    leftPanel.add(monthValidityMessage);
+    year = addTextField(leftPanel, "Year", yearString, true, true);
+    leftPanel.add(yearValidityMessage);
+    leftPanel.add(dateValidityMessage);
   }
 
   protected void addRecordFields(JComponent leftPanel, JComponent rightPanel, Appointment record, boolean editable) {
@@ -162,6 +204,21 @@ public class AppointmentView extends RecordView<Appointment> {
     if (record.date != null)
       dateBox = RecordView.createLabelledFieldInline("", record.date.toString(), font);
 
+    Box dateCreatedBox = new Box(BoxLayout.X_AXIS);
+    if (record.dateCreated != null)
+      dateCreatedBox = RecordView.createLabelledFieldInline("", record.dateCreated.toString(), font);
+
+    Box isClosedBox = new Box(BoxLayout.X_AXIS);
+    isClosedBox = RecordView.createLabelledFieldInline("Status", record.closed, font);
+
+    Box visitationStatusBox = new Box(BoxLayout.X_AXIS);
+    if (record.visitationStatus != null)
+      visitationStatusBox = RecordView.createLabelledFieldInline("Visitation Status", record.visitationStatus.toString(), font);
+
+    Box pharmacyBox = new Box(BoxLayout.X_AXIS);
+    if (record.pharmacy != null)
+      pharmacyBox = RecordView.createLabelledFieldInline("Pharmacy", record.pharmacy, font);
+
     Box prescribedHourlyFrequencyBox = new Box(BoxLayout.X_AXIS);
     if (record.prescribedMedication != null)
       prescribedHourlyFrequencyBox = RecordView.createLabelledFieldInline("Prescribed Hourly Frequency", Integer.toString(record.prescribedHourlyFrequency), font);
@@ -188,17 +245,21 @@ public class AppointmentView extends RecordView<Appointment> {
 
     Box descriptionBox = RecordView.createLabelledTextArea("Description", record.description, new Insets(TOP_MARGIN, 0, 0, 0));
 
-    leftPanel.add(title, "span 2");
-    leftPanel.add(customerBox, "cell 0 1 1 4");
-    leftPanel.add(idBox, "cell 0 5");
-    leftPanel.add(creatorBox, "cell 0 6");
-    leftPanel.add(assignedToBox, "cell 0 7");
-    leftPanel.add(referredToBox, "cell 0 7");
-    leftPanel.add(dateBox, "cell 0 8");
-    leftPanel.add(prescribedHourlyFrequencyBox, "cell 0 8");
-    leftPanel.add(prescribedMgDoseBox, "cell 0 8");
-    leftPanel.add(prescribedMedicationBox, "cell 0 8");
-    leftPanel.add(descriptionBox, "span");
+    leftPanel.add(title, "span, aligny top");
+    leftPanel.add(customerBox, "span, aligny top");
+    leftPanel.add(idBox, "span, aligny top");
+    leftPanel.add(isClosedBox, "span, aligny top");
+    leftPanel.add(dateBox, "span, aligny top");
+    leftPanel.add(dateCreatedBox, "span, aligny top");
+    leftPanel.add(creatorBox, "span, aligny top");
+    leftPanel.add(assignedToBox, "span, aligny top");
+    leftPanel.add(referredToBox, "span, aligny top");
+    leftPanel.add(prescribedHourlyFrequencyBox, "span, aligny top");
+    leftPanel.add(prescribedMgDoseBox, "span, aligny top");
+    leftPanel.add(prescribedMedicationBox, "span, aligny top");
+    leftPanel.add(visitationStatusBox, "span, aligny top");
+    leftPanel.add(pharmacyBox, "span, aligny top");
+    leftPanel.add(descriptionBox, "span, aligny top");
   }
 
   protected Appointment validateFormValues() {
@@ -210,6 +271,14 @@ public class AppointmentView extends RecordView<Appointment> {
     assignedToValidityMessage.setVisible(false);
     referredToValidityMessage.setText("");
     referredToValidityMessage.setVisible(false);
+    dayValidityMessage.setText("");
+    dayValidityMessage.setVisible(false);
+    monthValidityMessage.setText("");
+    monthValidityMessage.setVisible(false);
+    yearValidityMessage.setText("");
+    yearValidityMessage.setVisible(false);
+    dateValidityMessage.setText("");
+    dateValidityMessage.setVisible(false);
 
     boolean formIsValid = true;
     Appointment record = new Appointment();
@@ -266,6 +335,10 @@ public class AppointmentView extends RecordView<Appointment> {
       record.visitationStatus = VisitationStatus.parseSelectedStatus(visitationStatusList.getSelectedValue());
     }
 
+    record.pharmacy = pharmacyList.getSelectedValue();
+
+    record.closed = closedList.getSelectedValue();
+
     // Prescribed Hourly Frequency
     if (!prescribedHourlyFrequency.getText().isBlank()) {
       try {
@@ -295,8 +368,49 @@ public class AppointmentView extends RecordView<Appointment> {
         record.prescribedMedication = prescribedMedication.getText();
     }
 
+    // Date
+    int dayInt = 0;
+    int monthInt = 0;
+    int yearInt = 0;
+    try {
+      dayInt = Integer.parseInt(day.getText());
+    } catch (Exception e) {
+      dayValidityMessage.setText("Day must be a number");
+      dayValidityMessage.setVisible(true);
+      formIsValid = false;
+    }
+    try {
+      monthInt = Integer.parseInt(month.getText());
+      monthInt--;
+    } catch (Exception e) {
+      monthValidityMessage.setText("Month must be a number");
+      monthValidityMessage.setVisible(true);
+      formIsValid = false;
+    }
+    try {
+      yearInt = Integer.parseInt(year.getText()) - 1900;
+    } catch (Exception e) {
+      yearValidityMessage.setText("Year must be a number");
+      yearValidityMessage.setVisible(true);
+      formIsValid = false;
+    }
+    record.date = new Date(yearInt, monthInt, dayInt);
+    boolean invalidDateGiven =
+        record.date.getDate() != dayInt ||
+        record.date.getMonth() != monthInt ||
+        record.date.getYear() != yearInt;
+    boolean dateWasGiven =
+        !year.getText().isBlank() ||
+        !month.getText().isBlank() ||
+        !day.getText().isBlank();
+    if (dateWasGiven && invalidDateGiven) {
+      dateValidityMessage.setText("The date given is not valid");
+      dateValidityMessage.setVisible(true);
+      formIsValid = false;
+    }
+
     record.createdBy = appointmentController.loggedInUser;
-    record.date = new Date();
+    record.dateCreated = new Date();
 
     if (formIsValid)
       return record;

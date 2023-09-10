@@ -91,10 +91,10 @@ public class DiseaseView extends RecordView<Disease> {
 
     Box descriptionBox = RecordView.createLabelledTextArea("Description", record.description, new Insets(TOP_MARGIN, 0, 0, 0));
 
-    leftPanel.add(title, "span 2");
-    leftPanel.add(categoryBox, "cell 1 2, align right");
-    leftPanel.add(idBox, "cell 0 5");
-    leftPanel.add(descriptionBox, "span");
+    leftPanel.add(title, "span, aligny top");
+    leftPanel.add(categoryBox, "span, aligny top");
+    leftPanel.add(idBox, "span, aligny top");
+    leftPanel.add(descriptionBox, "span, aligny top");
   }
 
   protected Disease validateFormValues() {

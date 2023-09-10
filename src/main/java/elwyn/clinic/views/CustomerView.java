@@ -81,7 +81,7 @@ public class CustomerView extends RecordView<Customer> {
   protected String tabNameOfCreateRecord() { return "Create Customer"; }
   protected String tabNameOfEditRecord() { return "Edit Customer"; }
 
-  public CustomerView(RecordController<Customer> controller) {
+  public CustomerView(CustomerController controller) {
     super(controller);
     this.userController = new UserController(controller.loggedInUser);
     this.customerController = new CustomerController(controller.loggedInUser);
@@ -118,7 +118,7 @@ public class CustomerView extends RecordView<Customer> {
     familyNameValidityMessage.setForeground(Color.RED);
 
     healthConditionsValidityMessage.setForeground(Color.RED);
-    currentPrescriptions.setForeground(Color.RED);
+    currentPrescriptionsValidityMessage.setForeground(Color.RED);
     allergiesValidityMessage.setForeground(Color.RED);
   }
 
@@ -180,7 +180,7 @@ public class CustomerView extends RecordView<Customer> {
     country = addTextField(leftPanel, "Country", record.country, true, true);
     leftPanel.add(countryValidityMessage);
 
-    familyName = addTextField(leftPanel, "Country", record.familyName, true, true);
+    familyName = addTextField(leftPanel, "Family", record.familyName, true, true);
     leftPanel.add(familyNameValidityMessage);
 
     familyList = addSelectList(leftPanel, "Families", customerController.readFamilies().toArray(new String[12]), null);

@@ -59,6 +59,9 @@ public class HomeView extends JTabbedPane {
 
       LogView logView = new LogView(new LogController(homeController.user));
       addTab("Logs", logView);
+
+      QuoteOfTheDayView quoteOfTheDayView = new QuoteOfTheDayView();
+      addTab("Quote of the Day", quoteOfTheDayView);
     }
   }
 

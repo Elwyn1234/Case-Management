@@ -5,11 +5,13 @@ import java.util.Date;
 public class Appointment extends Record {
   public String summary;
   public String description;
+  public String pharmacy;
   public Customer customer;
   public User createdBy;
   public Date date;
+  public Date dateCreated;
   public VisitationStatus visitationStatus;
-  public boolean closed;
+  public String closed;
   public User assignedTo;
   public User referredTo;
   public int prescribedHourlyFrequency;

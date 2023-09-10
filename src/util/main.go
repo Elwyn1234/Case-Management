@@ -79,6 +79,7 @@ func createdb() {
   _, err = pool.Exec(`CREATE TABLE appointments (
     summary VARCHAR(80) NOT NULL,
     description TEXT,
+    pharmacy TEXT,
     customer INTEGER NOT NULL,
     assignedTo INTEGER,
     referredTo INTEGER,
@@ -88,6 +89,14 @@ func createdb() {
     prescribedMedication VARCHAR(32),
     closed VARCHAR(32),
     createdBy INTEGER NOT NULL,
+
+    dayCreated INTEGER NOT NULL,
+    monthCreated INTEGER NOT NULL,
+    yearCreated INTEGER NOT NULL,
+    hourCreated INTEGER NOT NULL,
+    minuteCreated INTEGER NOT NULL,
+    secondCreated INTEGER NOT NULL,
+
     day INTEGER NOT NULL,
     month INTEGER NOT NULL,
     year INTEGER NOT NULL,
@@ -121,6 +130,12 @@ func createdb() {
   );`)
   if (err != nil) { logError.Fatal(err.Error()) }
   log.Print("diseases table created!")
+
+  _, err = pool.Exec(`CREATE TABLE quoteOfTheDay (
+    quote TEXT NOT NULL
+  );`)
+  if (err != nil) { logError.Fatal(err.Error()) }
+  log.Print("quoteOfTheDay table created!")
 
   _, err = pool.Exec(`CREATE TABLE medicines (
     name VARCHAR(32) NOT NULL,
@@ -227,21 +242,35 @@ func addTestData() {
         INSERT INTO appointments (
         summary,
         description,
+        pharmacy,
         customer,
         createdBy,
         assignedTo,
+        dayCreated,
+        monthCreated,
+        yearCreated,
+        secondCreated,
+        minuteCreated,
+        hourCreated,
         day,
         month,
         year,
         second,
         minute,
         hour)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
         appointmentRecord.Summary,
         appointmentRecord.Description,
+        appointmentRecord.Pharmacy,
         appointmentRecord.Customer,
         appointmentRecord.CreatedBy,
         appointmentRecord.AssignedTo,
+        appointmentRecord.DayCreated,
+        appointmentRecord.MonthCreated,
+        appointmentRecord.YearCreated,
+        appointmentRecord.SecondCreated,
+        appointmentRecord.MinuteCreated,
+        appointmentRecord.HourCreated,
         appointmentRecord.Day,
         appointmentRecord.Month,
         appointmentRecord.Year,
@@ -338,9 +367,16 @@ type Customer struct {
 type Appointment struct {
   Summary string
   Description string
+  Pharmacy string
   Customer int64
   CreatedBy int64
   AssignedTo int64
+  DayCreated int32
+  MonthCreated int32
+  YearCreated int32
+  SecondCreated int32
+  MinuteCreated int32
+  HourCreated int32
   Day int32
   Month int32
   Year int32

@@ -57,13 +57,30 @@ public class AppointmentController extends RecordController<Appointment> {
   public List<Appointment> readRecordsReferredTo(long rowid) {
     ArrayList<Appointment> appointments = new ArrayList<Appointment>();
     try {
-      String sql = "SELECT rowid, * FROM appointments ORDER BY year DESC, month DESC, day DESC WHERE rowid=?";
+      String sql = "SELECT rowid, * FROM appointments WHERE rowid=? ORDER BY year DESC, month DESC, day DESC";
       PreparedStatement pStatement = conn.prepareStatement(sql);
       pStatement.setLong(1, rowid);
       ResultSet rs = pStatement.executeQuery();
 
       while (rs.next()) {
         appointments.add(readResultSet(rs));
+      }
+    } catch (Exception e) {
+      System.out.println("Error: " + e.getMessage());
+      e.printStackTrace();
+    }
+    return appointments;
+  }
+
+  public List<String> readPharmacies() {
+    ArrayList<String> appointments = new ArrayList<String>();
+    try {
+      String sql = "SELECT DISTINCT pharmacy FROM appointments";
+      PreparedStatement pStatement = conn.prepareStatement(sql);
+      ResultSet rs = pStatement.executeQuery();
+
+      while (rs.next()) {
+        appointments.add(rs.getString("pharmacy"));
       }
     } catch (Exception e) {
       System.out.println("Error: " + e.getMessage());
@@ -100,6 +117,7 @@ public class AppointmentController extends RecordController<Appointment> {
     record.id = rs.getLong("rowid");
     record.summary = rs.getString("summary");
     record.description = rs.getString("description");
+    record.pharmacy = rs.getString("pharmacy");
 
     long customerId = rs.getLong("customer");
     record.customer = customerController.readRecord(customerId);
@@ -125,9 +143,17 @@ public class AppointmentController extends RecordController<Appointment> {
     int hour = rs.getInt("hour");
     record.date = new Date(year, month, day, hour, minute, second);
 
+    int dayCreated = rs.getInt("day");
+    int monthCreated = rs.getInt("month");
+    int yearCreated = rs.getInt("year") - 1900;
+    int secondCreated = rs.getInt("second");
+    int minuteCreated = rs.getInt("minute");
+    int hourCreated = rs.getInt("hour");
+    record.dateCreated = new Date(yearCreated, monthCreated, dayCreated, hourCreated, minuteCreated, secondCreated);
+
     record.visitationStatus = VisitationStatus.parseSelectedStatus(rs.getString("visitationStatus"));
 
-    record.closed = rs.getString("closed") == "true" ? true : false;
+    record.closed = rs.getString("closed");
 
     record.prescribedHourlyFrequency = rs.getInt("prescribedHourlyFrequency");
     record.prescribedMgDose = rs.getInt("prescribedMgDose");
@@ -147,6 +173,7 @@ public class AppointmentController extends RecordController<Appointment> {
     String sql="INSERT INTO appointments " + 
         "(summary, " +
         "description, " +
+        "pharmacy, " +
         "customer, " +
         "assignedTo, " +
         "referredTo, " +
@@ -154,25 +181,31 @@ public class AppointmentController extends RecordController<Appointment> {
         "prescribedHourlyFrequency, " +
         "prescribedMgDose, " +
         "prescribedMedication, " +
-        "closed, " +
-        "createdBy, " +
         "day, " +
         "month, " +
         "year, " +
         "second, " +
         "minute, " +
-        "hour) " +
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        "hour, " +
+        "closed, " +
+        "createdBy, " +
+        "dayCreated, " +
+        "monthCreated, " +
+        "yearCreated, " +
+        "secondCreated, " +
+        "minuteCreated, " +
+        "hourCreated) " +
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
     PreparedStatement pStatement = PopulateCommonSqlParameters(sql, record);
-    record.date = new Date();
-    pStatement.setString(10, "false");
-    pStatement.setLong(11, loggedInUser.id);
-    pStatement.setInt(12, record.date.getDate());
-    pStatement.setInt(13, record.date.getMonth());
-    pStatement.setInt(14, record.date.getYear() + 1900);
-    pStatement.setInt(15, record.date.getSeconds());
-    pStatement.setInt(16, record.date.getMinutes());
-    pStatement.setInt(17, record.date.getHours());
+    record.dateCreated = new Date();
+    pStatement.setString(17, "false");
+    pStatement.setLong(18, loggedInUser.id);
+    pStatement.setInt(19, record.dateCreated.getDate());
+    pStatement.setInt(20, record.dateCreated.getMonth());
+    pStatement.setInt(21, record.dateCreated.getYear() + 1900);
+    pStatement.setInt(22, record.dateCreated.getSeconds());
+    pStatement.setInt(23, record.dateCreated.getMinutes());
+    pStatement.setInt(24, record.dateCreated.getHours());
 
     return pStatement;
   }
@@ -181,16 +214,25 @@ public class AppointmentController extends RecordController<Appointment> {
     String sql="UPDATE appointments SET " +
         "summary=?, " +
         "description=?, " +
+        "pharmacy=?, " +
         "customer=?, " +
-        "assignedTo=? " +
-        "referredTo=? " +
-        "visitationStatus=? " +
-        "prescribedHourlyFrequency=? " +
-        "prescribedMgDose=? " +
-        "prescribedMedication=? " +
+        "assignedTo=?, " +
+        "referredTo=?, " +
+        "visitationStatus=?, " +
+        "prescribedHourlyFrequency=?, " +
+        "prescribedMgDose=?, " +
+        "prescribedMedication=?, " +
+        "dayCreated=?, " +
+        "monthCreated=?, " +
+        "yearCreated=?, " +
+        "secondCreated=?, " +
+        "minuteCreated=?, " +
+        "hourCreated=?, " +
+        "closed=? " +
         "WHERE rowid=?";
     PreparedStatement pStatement = PopulateCommonSqlParameters(sql, record);
-    pStatement.setLong(10, record.id);
+    pStatement.setString(17, record.closed);
+    pStatement.setLong(18, record.id);
 
     return pStatement;
   }
@@ -199,13 +241,20 @@ public class AppointmentController extends RecordController<Appointment> {
     PreparedStatement pStatement = conn.prepareStatement(sql);
     pStatement.setString(1, record.summary);
     pStatement.setString(2, record.description);
-    pStatement.setLong(3, record.customer.id);
-    pStatement.setLong(4, record.assignedTo.id);
-    pStatement.setLong(5, record.referredTo.id);
-    pStatement.setString(6, record.visitationStatus.toString());
-    pStatement.setLong(7, record.prescribedHourlyFrequency);
-    pStatement.setLong(8, record.prescribedMgDose);
-    pStatement.setString(9, record.prescribedMedication);
+    pStatement.setString(3, record.pharmacy);
+    pStatement.setLong(4, record.customer.id);
+    pStatement.setLong(5, record.assignedTo.id);
+    pStatement.setLong(6, record.referredTo.id);
+    pStatement.setString(7, record.visitationStatus == null ? null : record.visitationStatus.toString());
+    pStatement.setLong(8, record.prescribedHourlyFrequency);
+    pStatement.setLong(9, record.prescribedMgDose);
+    pStatement.setString(10, record.prescribedMedication);
+    pStatement.setInt(11, record.date.getDate());
+    pStatement.setInt(12, record.date.getMonth());
+    pStatement.setInt(13, record.date.getYear() + 1900);
+    pStatement.setInt(14, record.date.getSeconds());
+    pStatement.setInt(15, record.date.getMinutes());
+    pStatement.setInt(16, record.date.getHours());
     return pStatement;
   }
 
@@ -234,7 +283,7 @@ public class AppointmentController extends RecordController<Appointment> {
   }
 
   public Boolean shouldShowButton(Appointment record) {
-    if (record.closed)
+    if (record.closed == "Complete")
       return false;
     if (loggedInUser.role == Role.SP && record.referredTo != null && record.referredTo.id == loggedInUser.id)
       return true;
